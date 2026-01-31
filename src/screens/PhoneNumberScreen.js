@@ -11,9 +11,10 @@ export default function PhoneNumberScreen() {
   const [codigoPais, setCodigoPais] = useState('+351')
   const [numero, setNumero] = useState('')
 
-  // Local assets
-  const IMG_BACKGROUND = require('../../assets/background.png')
-  const IMG_LOGO_PATTERN = require('../../assets/logo_background.png')
+  // Local assets - place your images in /assets folder
+  // For now, we'll use a solid background color if images are missing
+  const IMG_BACKGROUND = null // require('../../assets/background.png')
+  const IMG_LOGO_PATTERN = null // require('../../assets/logo_background.png')
 
   // Pattern configuration for the background logo tiles
   const PATTERN_ROWS = 12
@@ -61,16 +62,20 @@ export default function PhoneNumberScreen() {
   return (
     <View style={styles.container}>
       {/* Background Image */}
-      <FastImage
-        source={IMG_BACKGROUND}
-        style={styles.backgroundImage}
-        resizeMode={FastImage.resizeMode.cover}
-      />
+      {IMG_BACKGROUND && (
+        <FastImage
+          source={IMG_BACKGROUND}
+          style={styles.backgroundImage}
+          resizeMode={FastImage.resizeMode.cover}
+        />
+      )}
 
       {/* Pattern Overlay */}
-      <View style={styles.patternContainer} pointerEvents="none">
-        {renderPatternTiles()}
-      </View>
+      {IMG_LOGO_PATTERN && (
+        <View style={styles.patternContainer} pointerEvents="none">
+          {renderPatternTiles()}
+        </View>
+      )}
 
       {/* Content */}
       <View style={styles.content}>
