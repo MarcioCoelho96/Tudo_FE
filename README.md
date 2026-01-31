@@ -55,6 +55,21 @@ npm run android
 
 **Design File:** https://www.figma.com/design/CHPrkdGjQUMRM3FbsDMCOr/tudo?node-id=430-175
 
+### Setting Up Figma MCP in Cursor
+
+1. Copy the example config:
+   ```bash
+   cp .cursor/mcp.json.example .cursor/mcp.json
+   ```
+
+2. Edit `.cursor/mcp.json` and replace `YOUR_FIGMA_API_KEY_HERE` with your actual Figma API key
+
+3. Get your Figma API key from: Figma → Settings → Personal access tokens
+
+4. Restart Cursor
+
+> **Note:** Never commit `.cursor/mcp.json` - it contains your API key. The `.gitignore` is configured to exclude it.
+
 ### Exporting Assets from Figma
 
 1. Open your Figma design file

@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+build/
+dist/
+
+# React Native
+.expo/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# iOS
+ios/Pods/
+ios/build/
+*.xcworkspace
+!*.xcworkspace/contents.xcworkspacedata
+
+# Android
+android/.gradle/
+android/app/build/
+android/build/
+*.apk
+*.aab
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+
+# Cursor MCP config (contains API keys)
+.cursor/mcp.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+
+# Misc
+.DS_Store
+Thumbs.db
