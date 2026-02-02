@@ -11,7 +11,7 @@ import {
 import { useNavigation } from '@react-navigation/native'
 import FastImage from 'react-native-fast-image'
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window')
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 export default function OTPVerificationScreen({ route }) {
   const navigation = useNavigation()
@@ -19,11 +19,8 @@ export default function OTPVerificationScreen({ route }) {
   // Masked phone number from previous screen
   const maskedNumber = route?.params?.maskedNumber || '******920'
 
-  // Assets
-  const IMG_PATTERN = require('../../assets/pattern_light.png')
-  const IMG_BUBBLE = require('../../assets/bubble_orange.png')
-  const IMG_PANEL = require('../../assets/panel_white.png')
-  const IMG_BOTTOM_CARD = require('../../assets/bottom_card.png')
+  // Assets - reuse the same pattern from phone number screen
+  const IMG_PATTERN = require('../../assets/background.png')
 
   // OTP State
   const OTP_LENGTH = 6
@@ -67,7 +64,7 @@ export default function OTPVerificationScreen({ route }) {
     <View style={styles.container}>
       <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
 
-      {/* Background Pattern */}
+      {/* Background Pattern - increased opacity */}
       <FastImage
         source={IMG_PATTERN}
         style={styles.backgroundPattern}
@@ -77,57 +74,51 @@ export default function OTPVerificationScreen({ route }) {
       {/* Main Content */}
       <View style={styles.content}>
         {/* Orange Bubble Card */}
-        <View style={styles.bubbleContainer}>
-          <FastImage
-            source={IMG_BUBBLE}
-            style={styles.bubbleImage}
-            resizeMode={FastImage.resizeMode.contain}
-          />
+        <View style={styles.bubbleWrapper}>
+          <View style={styles.bubbleContainer}>
+            {/* Orange bubble background */}
+            <View style={styles.bubbleOrange}>
+              {/* White panel inside */}
+              <View style={styles.panelWhite}>
+                {/* Message Text */}
+                <Text style={styles.messageText}>
+                  Foi enviado um código para o{'\n'}
+                  número {maskedNumber}, por{'\n'}
+                  favor indique-nos o código{'\n'}
+                  de 6 digitos que recebeu:
+                </Text>
 
-          {/* White Panel Overlay */}
-          <View style={styles.panelContainer}>
-            <FastImage
-              source={IMG_PANEL}
-              style={styles.panelImage}
-              resizeMode={FastImage.resizeMode.contain}
-            />
-
-            {/* Message Text */}
-            <View style={styles.messageContainer}>
-              <Text style={styles.messageText}>
-                Foi enviado um código para o{'\n'}
-                número {maskedNumber}, por{'\n'}
-                favor indique-nos o código{'\n'}
-                de 6 digitos que recebeu:
-              </Text>
-
-              {/* OTP Input Row */}
-              <View style={styles.otpRow}>
-                {otp.map((digit, index) => (
-                  <View key={index} style={styles.otpCircle}>
-                    <TextInput
-                      ref={(ref) => (inputRefs.current[index] = ref)}
-                      style={styles.otpInput}
-                      value={digit}
-                      onChangeText={(text) => handleDigitChange(index, text)}
-                      onKeyPress={(e) => handleKeyPress(index, e)}
-                      keyboardType="number-pad"
-                      maxLength={1}
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      textAlign="center"
-                    />
-                  </View>
-                ))}
+                {/* OTP Input Row */}
+                <View style={styles.otpRow}>
+                  {otp.map((digit, index) => (
+                    <View key={index} style={styles.otpCircle}>
+                      <TextInput
+                        ref={(ref) => (inputRefs.current[index] = ref)}
+                        style={styles.otpInput}
+                        value={digit}
+                        onChangeText={(text) => handleDigitChange(index, text)}
+                        onKeyPress={(e) => handleKeyPress(index, e)}
+                        keyboardType="number-pad"
+                        maxLength={1}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        textAlign="center"
+                      />
+                    </View>
+                  ))}
+                </View>
               </View>
+
+              {/* Bubble tail */}
+              <View style={styles.bubbleTail} />
             </View>
           </View>
 
-          {/* Continue Button */}
+          {/* Continue Button - positioned at bottom right of bubble */}
           <TouchableOpacity
             style={[
               styles.continueButton,
-              { opacity: isCodeComplete ? 1 : 0.7 },
+              { opacity: isCodeComplete ? 1 : 0.9 },
             ]}
             onPress={handleContinue}
             disabled={!isCodeComplete}
@@ -139,7 +130,15 @@ export default function OTPVerificationScreen({ route }) {
 
         {/* Bottom Section */}
         <View style={styles.bottomSection}>
-          {/* Resend Button */}
+          {/* Gray card behind */}
+          <View style={styles.bottomCard}>
+            <Text style={styles.helperText}>
+              Caso não tenhas recebido,{'\n'}
+              clica em voltar a enviar.
+            </Text>
+          </View>
+
+          {/* Resend Button - overlapping the card */}
           <TouchableOpacity
             style={styles.resendButton}
             onPress={handleResend}
@@ -147,26 +146,13 @@ export default function OTPVerificationScreen({ route }) {
           >
             <Text style={styles.resendButtonText}>VOLTAR A{'\n'}ENVIAR</Text>
           </TouchableOpacity>
-
-          {/* Bottom Card with Helper Text */}
-          <View style={styles.bottomCardContainer}>
-            <FastImage
-              source={IMG_BOTTOM_CARD}
-              style={styles.bottomCardImage}
-              resizeMode={FastImage.resizeMode.contain}
-            />
-            <Text style={styles.helperText}>
-              Caso não tenhas recebido,{'\n'}
-              clica em voltar a enviar.
-            </Text>
-          </View>
         </View>
       </View>
     </View>
   )
 }
 
-const OTP_CIRCLE_SIZE = SCREEN_WIDTH * 0.105
+const OTP_CIRCLE_SIZE = SCREEN_WIDTH * 0.11
 
 const styles = StyleSheet.create({
   container: {
@@ -176,59 +162,59 @@ const styles = StyleSheet.create({
 
   backgroundPattern: {
     ...StyleSheet.absoluteFillObject,
-    opacity: 0.18,
+    opacity: 0.45,
   },
 
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 120,
+    justifyContent: 'center',
+    paddingBottom: SCREEN_HEIGHT * 0.15,
   },
 
-  // Orange Bubble
-  bubbleContainer: {
+  // Bubble wrapper for positioning continue button
+  bubbleWrapper: {
     position: 'relative',
-    alignItems: 'center',
+  },
+
+  bubbleContainer: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
-    elevation: 8,
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 10,
   },
 
-  bubbleImage: {
-    width: '100%',
-    height: undefined,
-    aspectRatio: 380 / 384,
+  bubbleOrange: {
+    backgroundColor: '#EB6300',
+    borderRadius: 30,
+    padding: 12,
+    paddingBottom: 50,
   },
 
-  // White Panel
-  panelContainer: {
+  panelWhite: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 22,
+    padding: 24,
+    paddingBottom: 30,
+  },
+
+  bubbleTail: {
     position: 'absolute',
-    top: '12%',
-    left: '5%',
-    right: '5%',
-    alignItems: 'center',
-  },
-
-  panelImage: {
-    width: '100%',
-    height: undefined,
-    aspectRatio: 347 / 250,
-  },
-
-  messageContainer: {
-    position: 'absolute',
-    top: '12%',
-    left: '10%',
-    right: '10%',
+    bottom: -15,
+    left: 40,
+    width: 40,
+    height: 40,
+    backgroundColor: '#EB6300',
+    borderBottomLeftRadius: 20,
+    transform: [{ rotate: '45deg' }],
   },
 
   messageText: {
     color: '#2B3349',
     fontWeight: '800',
     fontSize: 18,
-    lineHeight: 24,
+    lineHeight: 26,
   },
 
   // OTP Row
@@ -260,15 +246,15 @@ const styles = StyleSheet.create({
   // Continue Button
   continueButton: {
     position: 'absolute',
-    bottom: -20,
-    right: 0,
+    bottom: 15,
+    right: 10,
     backgroundColor: '#FFFFFF',
     borderRadius: 50,
     paddingVertical: 18,
-    paddingHorizontal: 32,
+    paddingHorizontal: 36,
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 6,
   },
@@ -276,58 +262,29 @@ const styles = StyleSheet.create({
   continueButtonText: {
     color: '#2B3349',
     fontWeight: '900',
-    fontSize: 14,
+    fontSize: 15,
     letterSpacing: 1,
   },
 
   // Bottom Section
   bottomSection: {
-    flexDirection: 'row',
-    marginTop: 40,
-    alignItems: 'flex-start',
+    position: 'relative',
+    marginTop: 30,
+    marginLeft: 0,
   },
 
-  resendButton: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#EB6300',
-    justifyContent: 'center',
-    alignItems: 'center',
+  bottomCard: {
+    backgroundColor: '#E0E0E0',
+    borderRadius: 25,
+    paddingVertical: 20,
+    paddingLeft: 100,
+    paddingRight: 24,
+    marginLeft: 50,
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.20,
-    shadowRadius: 10,
-    elevation: 8,
-    zIndex: 10,
-  },
-
-  resendButtonText: {
-    color: '#FFFFFF',
-    fontWeight: '900',
-    fontSize: 13,
-    lineHeight: 18,
-    textAlign: 'center',
-  },
-
-  bottomCardContainer: {
-    flex: 1,
-    marginLeft: -20,
-    paddingLeft: 40,
-    paddingVertical: 16,
-    backgroundColor: '#E8E8E8',
-    borderRadius: 20,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.16,
-    shadowRadius: 10,
-    elevation: 7,
-  },
-
-  bottomCardImage: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 5,
   },
 
   helperText: {
@@ -335,6 +292,30 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     fontSize: 14,
     lineHeight: 20,
-    marginLeft: 20,
+  },
+
+  resendButton: {
+    position: 'absolute',
+    left: 0,
+    top: -15,
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    backgroundColor: '#EB6300',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 10,
+  },
+
+  resendButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '900',
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
   },
 })
