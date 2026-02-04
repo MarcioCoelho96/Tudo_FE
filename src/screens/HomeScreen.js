@@ -102,12 +102,16 @@ export default function HomeScreen() {
             />
           </View>
 
-          {/* Profile Button - Solid dark blue circle */}
+          {/* Search Button */}
           <TouchableOpacity
-            style={styles.profileButton}
+            style={styles.searchButton}
             activeOpacity={0.85}
-            onPress={() => console.log('Navigate to profile')}
-          />
+            onPress={() => console.log('Execute search:', searchQuery)}
+          >
+            {/* Magnifying glass icon */}
+            <View style={styles.searchIconCircle} />
+            <View style={styles.searchIconHandle} />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -227,11 +231,34 @@ const styles = StyleSheet.create({
     padding: 0,
   },
 
-  profileButton: {
+  searchButton: {
     width: 52,
     height: 52,
     backgroundColor: '#2B4066',
     borderRadius: 26,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  searchIconCircle: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+    backgroundColor: 'transparent',
+    marginBottom: -4,
+    marginRight: 4,
+  },
+
+  searchIconHandle: {
+    width: 8,
+    height: 3,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 1.5,
+    transform: [{ rotate: '45deg' }],
+    marginLeft: 8,
+    marginTop: -2,
   },
 
   // Categories
