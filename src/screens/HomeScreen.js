@@ -8,6 +8,7 @@ import {
   FlatList,
   Dimensions,
   StatusBar,
+  ScrollView,
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import FastImage from 'react-native-fast-image'
@@ -21,10 +22,33 @@ export default function HomeScreen() {
   // Assets
   const IMG_LOGO = require('../../assets/logo.png')
   const IMG_BACKGROUND = require('../../assets/homepage_background.png')
-  const IMG_FOOTER = require('../../assets/footer.png')
-  const IMG_CAFE = require('../../assets/images/cafe.jpg')
-  const IMG_RESTAURANTE = require('../../assets/images/restaurante.jpg')
-  const IMG_LAVANDARIA = require('../../assets/images/lavandaria.jpg')
+  const IMG_FOOTER = require('../../assets/footer_homepage.png')
+  const IMG_CAFE = require('../../assets/images/cafe.png')
+  const IMG_RESTAURANTE = require('../../assets/images/restaurante.png')
+  const IMG_LAVANDARIA = require('../../assets/images/lavandaria.png')
+  const IMG_PIN = require('../../assets/icons/pin.png')
+
+  // User balance/credits
+  const userBalance = '34,30 €'
+
+  // Recent places data
+  const recentPlaces = [
+    {
+      id: 'recent1',
+      title: 'RESTAURANTE\nANTÔNIO',
+      image: IMG_CAFE,
+    },
+    {
+      id: 'recent2',
+      title: 'RESTAURANTE',
+      image: IMG_CAFE,
+    },
+    {
+      id: 'recent3',
+      title: 'RESTAURANTE\nBAR',
+      image: IMG_CAFE,
+    },
+  ]
 
   // Category data - can add more items here
   const categories = [
@@ -46,19 +70,44 @@ export default function HomeScreen() {
       image: IMG_LAVANDARIA,
       route: 'lavandaria',
     },
-    // Add more categories as needed:
-    // {
-    //   id: 'padaria',
-    //   title: 'PADARIA',
-    //   image: IMG_PADARIA,
-    //   route: 'padaria',
-    // },
   ]
 
   const handleCategoryPress = (category) => {
     console.log(`Navigate to ${category.route}`)
     // navigation.navigate(category.route)
   }
+
+  const handleRecentPress = (place) => {
+    console.log(`Navigate to recent place: ${place.title}`)
+  }
+
+  const handleLocationPress = () => {
+    console.log('Open location picker')
+    // Open location selection modal/screen
+  }
+
+  const renderRecentCard = ({ item }) => (
+    <TouchableOpacity
+      style={styles.recentCard}
+      activeOpacity={0.9}
+      onPress={() => handleRecentPress(item)}
+    >
+      {/* Card Background Image */}
+      <FastImage
+        source={item.image}
+        style={styles.recentCardImage}
+        resizeMode={FastImage.resizeMode.cover}
+      />
+
+      {/* Orange Accent Circle */}
+      <View style={styles.recentAccentCircle} />
+
+      {/* Label overlay */}
+      <View style={styles.recentLabelContainer}>
+        <Text style={styles.recentLabelText}>{item.title}</Text>
+      </View>
+    </TouchableOpacity>
+  )
 
   const renderCategoryCard = ({ item }) => (
     <TouchableOpacity
@@ -95,53 +144,110 @@ export default function HomeScreen() {
         resizeMode={FastImage.resizeMode.cover}
       />
 
-      {/* Header Section */}
-      <View style={styles.header}>
-        {/* Logo */}
-        <FastImage
-          source={IMG_LOGO}
-          style={styles.logo}
-          resizeMode={FastImage.resizeMode.contain}
-        />
-
-        {/* Search Input - Full width, no button */}
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Pesquisar"
-            placeholderTextColor="#999"
-            autoCapitalize="none"
-            autoCorrect={false}
-            returnKeyType="search"
-            onSubmitEditing={() => console.log('Search:', searchQuery)}
-          />
-        </View>
-      </View>
-
-      {/* Categories FlatList - Scrollable */}
-      <FlatList
-        data={categories}
-        renderItem={renderCategoryCard}
-        keyExtractor={(item) => item.id}
-        style={styles.categoriesList}
-        contentContainerStyle={styles.categoriesContent}
+      <ScrollView 
+        style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-      />
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* Header Section */}
+        <View style={styles.header}>
+          {/* Logo */}
+          <FastImage
+            source={IMG_LOGO}
+            style={styles.logo}
+            resizeMode={FastImage.resizeMode.contain}
+          />
+
+          {/* Location Row */}
+          <View style={styles.locationRow}>
+            {/* Location Picker */}
+            <TouchableOpacity 
+              style={styles.locationPicker}
+              onPress={handleLocationPress}
+              activeOpacity={0.8}
+            >
+              <FastImage
+                source={IMG_PIN}
+                style={styles.locationIcon}
+                resizeMode={FastImage.resizeMode.contain}
+              />
+              <Text style={styles.locationText}>Escolher morada</Text>
+            </TouchableOpacity>
+
+            {/* Balance Display */}
+            <View style={styles.balanceContainer}>
+              <View style={styles.balanceDot} />
+              <Text style={styles.balanceText}>{userBalance}</Text>
+            </View>
+          </View>
+
+          {/* Search Input */}
+          <View style={styles.searchContainer}>
+            <TextInput
+              style={styles.searchInput}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="Pesquisar"
+              placeholderTextColor="#999"
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="search"
+              onSubmitEditing={() => console.log('Search:', searchQuery)}
+            />
+          </View>
+
+          {/* Section Title */}
+          <Text style={styles.sectionTitle}>QUE TIPO DE SERVIÇO PROCURA?</Text>
+        </View>
+
+        {/* Recent Places - Horizontal FlatList */}
+        {recentPlaces.length > 0 && (
+          <View style={styles.recentSection}>
+            <Text style={styles.recentTitle}>RECENTES</Text>
+            <FlatList
+              data={recentPlaces}
+              renderItem={renderRecentCard}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.recentListContent}
+            />
+          </View>
+        )}
+
+        {/* Categories - Vertical List */}
+        <View style={styles.categoriesSection}>
+          {categories.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.card}
+              activeOpacity={0.9}
+              onPress={() => handleCategoryPress(item)}
+            >
+              <FastImage
+                source={item.image}
+                style={styles.cardImage}
+                resizeMode={FastImage.resizeMode.cover}
+              />
+              <View style={styles.cardAccentCircle} />
+              <View style={styles.cardLabelContainer}>
+                <View style={styles.cardLabelBackground} />
+                <Text style={styles.cardLabelText}>{item.title}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
 
       {/* Bottom Navigation - Using footer image */}
       <View style={styles.bottomNavContainer}>
-        {/* Footer Background Image */}
         <FastImage
           source={IMG_FOOTER}
           style={styles.footerImage}
           resizeMode={FastImage.resizeMode.contain}
         />
 
-        {/* Navigation Buttons */}
         <View style={styles.navButtonsContainer}>
-          {/* Left Button - Map */}
           <TouchableOpacity
             style={styles.navButton}
             activeOpacity={0.85}
@@ -154,7 +260,6 @@ export default function HomeScreen() {
             />
           </TouchableOpacity>
 
-          {/* Center Button - Calendar/Agenda */}
           <TouchableOpacity
             style={styles.navCenterButton}
             activeOpacity={0.9}
@@ -167,7 +272,6 @@ export default function HomeScreen() {
             />
           </TouchableOpacity>
 
-          {/* Right Button - List/File */}
           <TouchableOpacity
             style={styles.navButton}
             activeOpacity={0.85}
@@ -186,6 +290,7 @@ export default function HomeScreen() {
 }
 
 const CARD_HEIGHT = SCREEN_HEIGHT * 0.18
+const RECENT_CARD_SIZE = SCREEN_WIDTH * 0.38
 const FOOTER_HEIGHT = 80
 
 const styles = StyleSheet.create({
@@ -198,25 +303,83 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
 
+  scrollView: {
+    flex: 1,
+  },
+
+  scrollContent: {
+    paddingBottom: FOOTER_HEIGHT + 40,
+  },
+
   // Header
   header: {
     paddingTop: (StatusBar.currentHeight || 44) + 10,
     paddingHorizontal: 24,
-    paddingBottom: 12,
   },
 
   logo: {
     width: 110,
     height: 36,
+    marginBottom: 16,
+  },
+
+  // Location Row
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 12,
   },
 
+  locationPicker: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  locationIcon: {
+    width: 24,
+    height: 24,
+    tintColor: '#CCCCCC',
+    marginRight: 8,
+  },
+
+  locationText: {
+    color: '#CCCCCC',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
+  balanceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#2B4066',
+    borderRadius: 25,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+  },
+
+  balanceDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#EB6300',
+    marginRight: 8,
+  },
+
+  balanceText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+
+  // Search
   searchContainer: {
     height: 52,
     backgroundColor: '#E8E8E8',
     borderRadius: 26,
     justifyContent: 'center',
     paddingHorizontal: 20,
+    marginBottom: 16,
   },
 
   searchInput: {
@@ -226,15 +389,76 @@ const styles = StyleSheet.create({
     padding: 0,
   },
 
-  // Categories FlatList
-  categoriesList: {
-    flex: 1,
+  // Section Title
+  sectionTitle: {
+    color: '#2B4066',
+    fontSize: 22,
+    fontWeight: '900',
+    marginBottom: 16,
   },
 
-  categoriesContent: {
+  // Recent Section
+  recentSection: {
+    marginBottom: 16,
+  },
+
+  recentTitle: {
+    color: '#2B4066',
+    fontSize: 18,
+    fontWeight: '900',
+    marginLeft: 24,
+    marginBottom: 12,
+  },
+
+  recentListContent: {
     paddingHorizontal: 24,
-    paddingTop: 8,
-    paddingBottom: FOOTER_HEIGHT + 40,
+    gap: 12,
+  },
+
+  recentCard: {
+    width: RECENT_CARD_SIZE,
+    height: RECENT_CARD_SIZE,
+    borderRadius: 16,
+    overflow: 'hidden',
+    backgroundColor: '#E6E6E6',
+    marginRight: 12,
+  },
+
+  recentCardImage: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+  },
+
+  recentAccentCircle: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    width: 35,
+    height: 35,
+    borderRadius: 18,
+    backgroundColor: '#EB6300',
+  },
+
+  recentLabelContainer: {
+    position: 'absolute',
+    bottom: 12,
+    left: 12,
+    right: 12,
+  },
+
+  recentLabelText: {
+    color: '#FFFFFF',
+    fontWeight: '900',
+    fontSize: 14,
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+
+  // Categories Section
+  categoriesSection: {
+    paddingHorizontal: 24,
     gap: 12,
   },
 
