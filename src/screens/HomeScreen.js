@@ -102,17 +102,12 @@ export default function HomeScreen() {
             />
           </View>
 
-          {/* Profile Button - Dark blue filled */}
+          {/* Profile Button - Solid dark blue circle */}
           <TouchableOpacity
             style={styles.profileButton}
             activeOpacity={0.85}
             onPress={() => console.log('Navigate to profile')}
-          >
-            {/* User icon placeholder - white */}
-            <View style={styles.profileIconOuter}>
-              <View style={styles.profileIconInner} />
-            </View>
-          </TouchableOpacity>
+          />
         </View>
       </View>
 
@@ -237,24 +232,6 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: '#2B4066',
     borderRadius: 26,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  profileIconOuter: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: '#F5F5F5',
-    alignItems: 'center',
-  },
-
-  profileIconInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#2B4066',
-    marginTop: 2,
   },
 
   // Categories
