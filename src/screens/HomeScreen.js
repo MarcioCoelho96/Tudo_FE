@@ -8,7 +8,6 @@ import {
   FlatList,
   Dimensions,
   StatusBar,
-  ScrollView,
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import FastImage from 'react-native-fast-image'
@@ -83,7 +82,6 @@ export default function HomeScreen() {
 
   const handleLocationPress = () => {
     console.log('Open location picker')
-    // Open location selection modal/screen
   }
 
   const renderRecentCard = ({ item }) => (
@@ -92,17 +90,12 @@ export default function HomeScreen() {
       activeOpacity={0.9}
       onPress={() => handleRecentPress(item)}
     >
-      {/* Card Background Image */}
       <FastImage
         source={item.image}
         style={styles.recentCardImage}
         resizeMode={FastImage.resizeMode.cover}
       />
-
-      {/* Orange Accent Circle */}
       <View style={styles.recentAccentCircle} />
-
-      {/* Label overlay */}
       <View style={styles.recentLabelContainer}>
         <Text style={styles.recentLabelText}>{item.title}</Text>
       </View>
@@ -115,17 +108,12 @@ export default function HomeScreen() {
       activeOpacity={0.9}
       onPress={() => handleCategoryPress(item)}
     >
-      {/* Card Background Image */}
       <FastImage
         source={item.image}
         style={styles.cardImage}
         resizeMode={FastImage.resizeMode.cover}
       />
-
-      {/* Orange Accent Circle */}
       <View style={styles.cardAccentCircle} />
-
-      {/* Frosted Glass Label at bottom */}
       <View style={styles.cardLabelContainer}>
         <View style={styles.cardLabelBackground} />
         <Text style={styles.cardLabelText}>{item.title}</Text>
@@ -144,102 +132,81 @@ export default function HomeScreen() {
         resizeMode={FastImage.resizeMode.cover}
       />
 
-      <ScrollView 
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {/* Header Section */}
-        <View style={styles.header}>
-          {/* Logo */}
-          <FastImage
-            source={IMG_LOGO}
-            style={styles.logo}
-            resizeMode={FastImage.resizeMode.contain}
+      {/* Fixed Header Section */}
+      <View style={styles.header}>
+        {/* Logo */}
+        <FastImage
+          source={IMG_LOGO}
+          style={styles.logo}
+          resizeMode={FastImage.resizeMode.contain}
+        />
+
+        {/* Location Row */}
+        <View style={styles.locationRow}>
+          <TouchableOpacity 
+            style={styles.locationPicker}
+            onPress={handleLocationPress}
+            activeOpacity={0.8}
+          >
+            <FastImage
+              source={IMG_PIN}
+              style={styles.locationIcon}
+              resizeMode={FastImage.resizeMode.contain}
+            />
+            <Text style={styles.locationText}>Escolher morada</Text>
+          </TouchableOpacity>
+
+          <View style={styles.balanceContainer}>
+            <View style={styles.balanceDot} />
+            <Text style={styles.balanceText}>{userBalance}</Text>
+          </View>
+        </View>
+
+        {/* Search Input */}
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Pesquisar"
+            placeholderTextColor="#999"
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="search"
+            onSubmitEditing={() => console.log('Search:', searchQuery)}
           />
-
-          {/* Location Row */}
-          <View style={styles.locationRow}>
-            {/* Location Picker */}
-            <TouchableOpacity 
-              style={styles.locationPicker}
-              onPress={handleLocationPress}
-              activeOpacity={0.8}
-            >
-              <FastImage
-                source={IMG_PIN}
-                style={styles.locationIcon}
-                resizeMode={FastImage.resizeMode.contain}
-              />
-              <Text style={styles.locationText}>Escolher morada</Text>
-            </TouchableOpacity>
-
-            {/* Balance Display */}
-            <View style={styles.balanceContainer}>
-              <View style={styles.balanceDot} />
-              <Text style={styles.balanceText}>{userBalance}</Text>
-            </View>
-          </View>
-
-          {/* Search Input */}
-          <View style={styles.searchContainer}>
-            <TextInput
-              style={styles.searchInput}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder="Pesquisar"
-              placeholderTextColor="#999"
-              autoCapitalize="none"
-              autoCorrect={false}
-              returnKeyType="search"
-              onSubmitEditing={() => console.log('Search:', searchQuery)}
-            />
-          </View>
-
-          {/* Section Title */}
-          <Text style={styles.sectionTitle}>QUE TIPO DE SERVIÇO PROCURA?</Text>
         </View>
 
-        {/* Recent Places - Horizontal FlatList */}
-        {recentPlaces.length > 0 && (
-          <View style={styles.recentSection}>
-            <Text style={styles.recentTitle}>RECENTES</Text>
-            <FlatList
-              data={recentPlaces}
-              renderItem={renderRecentCard}
-              keyExtractor={(item) => item.id}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.recentListContent}
-            />
-          </View>
-        )}
+        {/* Section Title */}
+        <Text style={styles.sectionTitle}>QUE TIPO DE SERVIÇO PROCURA?</Text>
+      </View>
 
-        {/* Categories - Vertical List */}
-        <View style={styles.categoriesSection}>
-          {categories.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.card}
-              activeOpacity={0.9}
-              onPress={() => handleCategoryPress(item)}
-            >
-              <FastImage
-                source={item.image}
-                style={styles.cardImage}
-                resizeMode={FastImage.resizeMode.cover}
-              />
-              <View style={styles.cardAccentCircle} />
-              <View style={styles.cardLabelContainer}>
-                <View style={styles.cardLabelBackground} />
-                <Text style={styles.cardLabelText}>{item.title}</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
+      {/* Fixed Recent Places - Horizontal FlatList */}
+      {recentPlaces.length > 0 && (
+        <View style={styles.recentSection}>
+          <Text style={styles.recentTitle}>RECENTES</Text>
+          <FlatList
+            data={recentPlaces}
+            renderItem={renderRecentCard}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.recentListContent}
+          />
         </View>
-      </ScrollView>
+      )}
 
-      {/* Bottom Navigation - Using footer image */}
+      {/* Categories - Vertical FlatList (only this scrolls vertically) */}
+      <FlatList
+        data={categories}
+        renderItem={renderCategoryCard}
+        keyExtractor={(item) => item.id}
+        style={styles.categoriesList}
+        contentContainerStyle={styles.categoriesContent}
+        showsVerticalScrollIndicator={false}
+      />
+
+      {/* Bottom Navigation */}
       <View style={styles.bottomNavContainer}>
         <FastImage
           source={IMG_FOOTER}
@@ -290,7 +257,7 @@ export default function HomeScreen() {
 }
 
 const CARD_HEIGHT = SCREEN_HEIGHT * 0.18
-const RECENT_CARD_SIZE = SCREEN_WIDTH * 0.38
+const RECENT_CARD_SIZE = SCREEN_WIDTH * 0.35
 const FOOTER_HEIGHT = 80
 
 const styles = StyleSheet.create({
@@ -303,15 +270,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
 
-  scrollView: {
-    flex: 1,
-  },
-
-  scrollContent: {
-    paddingBottom: FOOTER_HEIGHT + 40,
-  },
-
-  // Header
+  // Header (fixed)
   header: {
     paddingTop: (StatusBar.currentHeight || 44) + 10,
     paddingHorizontal: 24,
@@ -394,12 +353,12 @@ const styles = StyleSheet.create({
     color: '#2B4066',
     fontSize: 22,
     fontWeight: '900',
-    marginBottom: 16,
+    marginBottom: 12,
   },
 
-  // Recent Section
+  // Recent Section (fixed)
   recentSection: {
-    marginBottom: 16,
+    marginBottom: 12,
   },
 
   recentTitle: {
@@ -407,12 +366,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '900',
     marginLeft: 24,
-    marginBottom: 12,
+    marginBottom: 10,
   },
 
   recentListContent: {
     paddingHorizontal: 24,
-    gap: 12,
   },
 
   recentCard: {
@@ -456,10 +414,14 @@ const styles = StyleSheet.create({
     textShadowRadius: 3,
   },
 
-  // Categories Section
-  categoriesSection: {
+  // Categories FlatList (scrollable)
+  categoriesList: {
+    flex: 1,
+  },
+
+  categoriesContent: {
     paddingHorizontal: 24,
-    gap: 12,
+    paddingBottom: FOOTER_HEIGHT + 40,
   },
 
   card: {
