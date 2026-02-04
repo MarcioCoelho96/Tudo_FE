@@ -5,7 +5,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
+  FlatList,
   Dimensions,
   StatusBar,
 } from 'react-native'
@@ -20,11 +20,13 @@ export default function HomeScreen() {
 
   // Assets
   const IMG_LOGO = require('../../assets/logo.png')
+  const IMG_BACKGROUND = require('../../assets/homepage_background.png')
+  const IMG_FOOTER = require('../../assets/footer.png')
   const IMG_CAFE = require('../../assets/images/cafe.jpg')
   const IMG_RESTAURANTE = require('../../assets/images/restaurante.jpg')
   const IMG_LAVANDARIA = require('../../assets/images/lavandaria.jpg')
 
-  // Category data
+  // Category data - can add more items here
   const categories = [
     {
       id: 'cafe',
@@ -44,18 +46,29 @@ export default function HomeScreen() {
       image: IMG_LAVANDARIA,
       route: 'lavandaria',
     },
+    // Add more categories as needed:
+    // {
+    //   id: 'padaria',
+    //   title: 'PADARIA',
+    //   image: IMG_PADARIA,
+    //   route: 'padaria',
+    // },
   ]
 
-  const renderCategoryCard = (category, index) => (
+  const handleCategoryPress = (category) => {
+    console.log(`Navigate to ${category.route}`)
+    // navigation.navigate(category.route)
+  }
+
+  const renderCategoryCard = ({ item }) => (
     <TouchableOpacity
-      key={category.id}
-      style={[styles.card, index === 0 && styles.cardFirst]}
+      style={styles.card}
       activeOpacity={0.9}
-      onPress={() => console.log(`Navigate to ${category.route}`)}
+      onPress={() => handleCategoryPress(item)}
     >
       {/* Card Background Image */}
       <FastImage
-        source={category.image}
+        source={item.image}
         style={styles.cardImage}
         resizeMode={FastImage.resizeMode.cover}
       />
@@ -66,7 +79,7 @@ export default function HomeScreen() {
       {/* Frosted Glass Label at bottom */}
       <View style={styles.cardLabelContainer}>
         <View style={styles.cardLabelBackground} />
-        <Text style={styles.cardLabelText}>{category.title}</Text>
+        <Text style={styles.cardLabelText}>{item.title}</Text>
       </View>
     </TouchableOpacity>
   )
@@ -75,8 +88,12 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
 
-      {/* White Background with curved top */}
-      <View style={styles.whiteBackground} />
+      {/* Background Image */}
+      <FastImage
+        source={IMG_BACKGROUND}
+        style={styles.backgroundImage}
+        resizeMode={FastImage.resizeMode.cover}
+      />
 
       {/* Header Section */}
       <View style={styles.header}>
@@ -87,119 +104,104 @@ export default function HomeScreen() {
           resizeMode={FastImage.resizeMode.contain}
         />
 
-        {/* Search Row */}
-        <View style={styles.searchRow}>
-          {/* Search Input */}
-          <View style={styles.searchContainer}>
-            <TextInput
-              style={styles.searchInput}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder="Pesquisar"
-              placeholderTextColor="#999"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-          </View>
-
-          {/* Search Button */}
-          <TouchableOpacity
-            style={styles.searchButton}
-            activeOpacity={0.85}
-            onPress={() => console.log('Execute search:', searchQuery)}
-          >
-            {/* Magnifying glass icon */}
-            <View style={styles.searchIconCircle} />
-            <View style={styles.searchIconHandle} />
-          </TouchableOpacity>
+        {/* Search Input - Full width, no button */}
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Pesquisar"
+            placeholderTextColor="#999"
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="search"
+            onSubmitEditing={() => console.log('Search:', searchQuery)}
+          />
         </View>
       </View>
 
-      {/* Categories List */}
-      <ScrollView
-        style={styles.categoriesContainer}
+      {/* Categories FlatList - Scrollable */}
+      <FlatList
+        data={categories}
+        renderItem={renderCategoryCard}
+        keyExtractor={(item) => item.id}
+        style={styles.categoriesList}
         contentContainerStyle={styles.categoriesContent}
         showsVerticalScrollIndicator={false}
-      >
-        {categories.map((category, index) => renderCategoryCard(category, index))}
-      </ScrollView>
+      />
 
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation - Using footer image */}
       <View style={styles.bottomNavContainer}>
-        {/* Curved background with notch */}
-        <View style={styles.bottomNavBar}>
-          {/* Left Button - Map Pin */}
+        {/* Footer Background Image */}
+        <FastImage
+          source={IMG_FOOTER}
+          style={styles.footerImage}
+          resizeMode={FastImage.resizeMode.contain}
+        />
+
+        {/* Navigation Buttons */}
+        <View style={styles.navButtonsContainer}>
+          {/* Left Button - Map */}
           <TouchableOpacity
             style={styles.navButton}
             activeOpacity={0.85}
             onPress={() => console.log('Navigate to map')}
           >
-            <View style={styles.navIconPin}>
-              <View style={styles.pinHead} />
-              <View style={styles.pinPoint} />
-            </View>
+            <FastImage
+              source={require('../../assets/icons/pin.png')}
+              style={styles.navIcon}
+              resizeMode={FastImage.resizeMode.contain}
+            />
           </TouchableOpacity>
 
-          {/* Spacer for center button */}
-          <View style={styles.navSpacer} />
+          {/* Center Button - Calendar/Agenda */}
+          <TouchableOpacity
+            style={styles.navCenterButton}
+            activeOpacity={0.9}
+            onPress={() => console.log('Navigate to agenda')}
+          >
+            <FastImage
+              source={require('../../assets/icons/calendar.png')}
+              style={styles.navCenterIcon}
+              resizeMode={FastImage.resizeMode.contain}
+            />
+          </TouchableOpacity>
 
-          {/* Right Button - File/Document */}
+          {/* Right Button - List/File */}
           <TouchableOpacity
             style={styles.navButton}
             activeOpacity={0.85}
             onPress={() => console.log('Navigate to list')}
           >
-            <View style={styles.navIconFile}>
-              <View style={styles.fileFold} />
-            </View>
+            <FastImage
+              source={require('../../assets/icons/file.png')}
+              style={styles.navIcon}
+              resizeMode={FastImage.resizeMode.contain}
+            />
           </TouchableOpacity>
         </View>
-
-        {/* Notch curve overlay */}
-        <View style={styles.notchCurve}>
-          <View style={styles.notchLeft} />
-          <View style={styles.notchCenter} />
-          <View style={styles.notchRight} />
-        </View>
-
-        {/* Center Floating Button - Calendar */}
-        <TouchableOpacity
-          style={styles.navCenterButton}
-          activeOpacity={0.9}
-          onPress={() => console.log('Navigate to agenda')}
-        >
-          <View style={styles.calendarIcon}>
-            <View style={styles.calendarTop} />
-            <View style={styles.calendarBody} />
-          </View>
-        </TouchableOpacity>
       </View>
     </View>
   )
 }
 
-const CARD_HEIGHT = SCREEN_HEIGHT * 0.19
-const NAV_HEIGHT = 60
-const NAV_CENTER_SIZE = 65
+const CARD_HEIGHT = SCREEN_HEIGHT * 0.18
+const FOOTER_HEIGHT = 80
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E8E8E8',
+    backgroundColor: '#F5F5F5',
   },
 
-  whiteBackground: {
+  backgroundImage: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#F5F5F5',
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
-    top: 20,
   },
 
   // Header
   header: {
     paddingTop: (StatusBar.currentHeight || 44) + 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     paddingBottom: 12,
   },
 
@@ -209,14 +211,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 
-  searchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-
   searchContainer: {
-    flex: 1,
     height: 52,
     backgroundColor: '#E8E8E8',
     borderRadius: 26,
@@ -231,45 +226,15 @@ const styles = StyleSheet.create({
     padding: 0,
   },
 
-  searchButton: {
-    width: 52,
-    height: 52,
-    backgroundColor: '#2B4066',
-    borderRadius: 26,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  searchIconCircle: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    borderWidth: 3,
-    borderColor: '#FFFFFF',
-    backgroundColor: 'transparent',
-    marginBottom: -4,
-    marginRight: 4,
-  },
-
-  searchIconHandle: {
-    width: 8,
-    height: 3,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 1.5,
-    transform: [{ rotate: '45deg' }],
-    marginLeft: 8,
-    marginTop: -2,
-  },
-
-  // Categories
-  categoriesContainer: {
+  // Categories FlatList
+  categoriesList: {
     flex: 1,
   },
 
   categoriesContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     paddingTop: 8,
-    paddingBottom: NAV_HEIGHT + 30,
+    paddingBottom: FOOTER_HEIGHT + 40,
     gap: 12,
   },
 
@@ -278,10 +243,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     overflow: 'hidden',
     backgroundColor: '#E6E6E6',
-  },
-
-  cardFirst: {
-    // First card can have special styling if needed
+    marginBottom: 12,
   },
 
   cardImage: {
@@ -331,21 +293,28 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: NAV_HEIGHT + 35,
+    height: FOOTER_HEIGHT + 20,
     alignItems: 'center',
+    justifyContent: 'flex-end',
   },
 
-  bottomNavBar: {
+  footerImage: {
+    position: 'absolute',
+    bottom: 0,
+    width: SCREEN_WIDTH,
+    height: FOOTER_HEIGHT,
+  },
+
+  navButtonsContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: NAV_HEIGHT,
-    backgroundColor: '#2B4066',
+    height: FOOTER_HEIGHT - 15,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 40,
+    paddingHorizontal: 50,
   },
 
   navButton: {
@@ -355,94 +324,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  // Pin icon
-  navIconPin: {
-    alignItems: 'center',
-  },
-
-  pinHead: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    borderWidth: 3,
-    borderColor: 'rgba(255,255,255,0.6)',
-    backgroundColor: 'transparent',
-  },
-
-  pinPoint: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: 6,
-    borderRightWidth: 6,
-    borderTopWidth: 10,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderTopColor: 'rgba(255,255,255,0.6)',
-    marginTop: -2,
-  },
-
-  // File icon
-  navIconFile: {
-    width: 20,
-    height: 26,
-    backgroundColor: 'rgba(255,255,255,0.6)',
-    borderRadius: 3,
-    position: 'relative',
-  },
-
-  fileFold: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: 8,
-    height: 8,
-    backgroundColor: '#2B4066',
-    borderBottomLeftRadius: 4,
-  },
-
-  navSpacer: {
-    width: NAV_CENTER_SIZE + 20,
-  },
-
-  // Notch curve (simplified)
-  notchCurve: {
-    position: 'absolute',
-    bottom: NAV_HEIGHT - 1,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    width: '100%',
-  },
-
-  notchLeft: {
-    width: 20,
-    height: 20,
-    backgroundColor: '#2B4066',
-    borderTopRightRadius: 20,
-  },
-
-  notchCenter: {
-    width: NAV_CENTER_SIZE + 16,
-    height: 35,
-    backgroundColor: 'transparent',
-  },
-
-  notchRight: {
-    width: 20,
-    height: 20,
-    backgroundColor: '#2B4066',
-    borderTopLeftRadius: 20,
+  navIcon: {
+    width: 28,
+    height: 28,
+    tintColor: '#FFFFFF',
   },
 
   navCenterButton: {
-    position: 'absolute',
-    bottom: NAV_HEIGHT - 15,
-    width: NAV_CENTER_SIZE,
-    height: NAV_CENTER_SIZE,
+    width: 60,
+    height: 60,
     backgroundColor: '#EB6300',
-    borderRadius: NAV_CENTER_SIZE / 2,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 30,
     shadowColor: '#000',
     shadowOpacity: 0.25,
     shadowRadius: 10,
@@ -450,27 +345,9 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
 
-  // Calendar icon
-  calendarIcon: {
-    width: 24,
-    height: 24,
-    alignItems: 'center',
-  },
-
-  calendarTop: {
-    width: 24,
-    height: 6,
-    backgroundColor: '#FFF',
-    borderTopLeftRadius: 3,
-    borderTopRightRadius: 3,
-  },
-
-  calendarBody: {
-    width: 24,
-    height: 16,
-    backgroundColor: '#FFF',
-    borderBottomLeftRadius: 3,
-    borderBottomRightRadius: 3,
-    marginTop: 2,
+  navCenterIcon: {
+    width: 28,
+    height: 28,
+    tintColor: '#FFFFFF',
   },
 })
