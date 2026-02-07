@@ -134,12 +134,24 @@ export default function HomeScreen() {
 
       {/* Fixed Header Section */}
       <View style={styles.header}>
-        {/* Logo */}
-        <FastImage
-          source={IMG_LOGO}
-          style={styles.logo}
-          resizeMode={FastImage.resizeMode.contain}
-        />
+        {/* Logo Row */}
+        <View style={styles.logoRow}>
+          <FastImage
+            source={IMG_LOGO}
+            style={styles.logo}
+            resizeMode={FastImage.resizeMode.contain}
+          />
+          
+          {/* Profile Icon */}
+          <TouchableOpacity
+            style={styles.profileButton}
+            activeOpacity={0.85}
+            onPress={() => console.log('Navigate to profile')}
+          >
+            <View style={styles.profileIconHead} />
+            <View style={styles.profileIconBody} />
+          </TouchableOpacity>
+        </View>
 
         {/* Location Row */}
         <View style={styles.locationRow}>
@@ -263,7 +275,7 @@ const FOOTER_HEIGHT = 80
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#2B3349',
   },
 
   backgroundImage: {
@@ -276,10 +288,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
 
+  logoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+
   logo: {
     width: 110,
     height: 36,
-    marginBottom: 16,
+  },
+
+  profileButton: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  profileIconHead: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#2B3349',
+    borderWidth: 2,
+    borderColor: '#2B3349',
+  },
+
+  profileIconBody: {
+    width: 28,
+    height: 14,
+    borderTopLeftRadius: 14,
+    borderTopRightRadius: 14,
+    backgroundColor: '#2B3349',
+    marginTop: -2,
   },
 
   // Location Row
