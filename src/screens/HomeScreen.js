@@ -49,7 +49,7 @@ export default function HomeScreen() {
     },
   ]
 
-  // Category data - can add more items here
+  // Category data
   const categories = [
     {
       id: 'cafe',
@@ -73,7 +73,6 @@ export default function HomeScreen() {
 
   const handleCategoryPress = (category) => {
     console.log(`Navigate to ${category.route}`)
-    // navigation.navigate(category.route)
   }
 
   const handleRecentPress = (place) => {
@@ -123,7 +122,22 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+
+      {/* Top Bar with Profile (in blue area) */}
+      <View style={styles.topBar}>
+        <View style={styles.topBarSpacer} />
+        
+        {/* Profile Icon - Top Right in Blue Area */}
+        <TouchableOpacity
+          style={styles.profileButton}
+          activeOpacity={0.85}
+          onPress={() => console.log('Navigate to profile')}
+        >
+          <View style={styles.profileIconHead} />
+          <View style={styles.profileIconBody} />
+        </TouchableOpacity>
+      </View>
 
       {/* Background Image */}
       <FastImage
@@ -132,91 +146,82 @@ export default function HomeScreen() {
         resizeMode={FastImage.resizeMode.cover}
       />
 
-      {/* Fixed Header Section */}
-      <View style={styles.header}>
-        {/* Logo Row */}
-        <View style={styles.logoRow}>
+      {/* Content Container */}
+      <View style={styles.contentContainer}>
+        {/* Header Section */}
+        <View style={styles.header}>
+          {/* Logo */}
           <FastImage
             source={IMG_LOGO}
             style={styles.logo}
             resizeMode={FastImage.resizeMode.contain}
           />
-          
-          {/* Profile Icon */}
-          <TouchableOpacity
-            style={styles.profileButton}
-            activeOpacity={0.85}
-            onPress={() => console.log('Navigate to profile')}
-          >
-            <View style={styles.profileIconHead} />
-            <View style={styles.profileIconBody} />
-          </TouchableOpacity>
-        </View>
 
-        {/* Location Row */}
-        <View style={styles.locationRow}>
-          <TouchableOpacity 
-            style={styles.locationPicker}
-            onPress={handleLocationPress}
-            activeOpacity={0.8}
-          >
-            <FastImage
-              source={IMG_PIN}
-              style={styles.locationIcon}
-              resizeMode={FastImage.resizeMode.contain}
-            />
-            <Text style={styles.locationText}>Escolher morada</Text>
-          </TouchableOpacity>
+          {/* Location Row */}
+          <View style={styles.locationRow}>
+            <TouchableOpacity 
+              style={styles.locationPicker}
+              onPress={handleLocationPress}
+              activeOpacity={0.8}
+            >
+              <FastImage
+                source={IMG_PIN}
+                style={styles.locationIcon}
+                resizeMode={FastImage.resizeMode.contain}
+              />
+              <Text style={styles.locationText}>Escolher morada</Text>
+            </TouchableOpacity>
 
-          <View style={styles.balanceContainer}>
-            <View style={styles.balanceDot} />
-            <Text style={styles.balanceText}>{userBalance}</Text>
+            <View style={styles.balanceContainer}>
+              <View style={styles.balanceDot} />
+              <Text style={styles.balanceText}>{userBalance}</Text>
+            </View>
           </View>
+
+          {/* Search Input */}
+          <View style={styles.searchContainer}>
+            <TextInput
+              style={styles.searchInput}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="Pesquisar"
+              placeholderTextColor="#999"
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="search"
+              onSubmitEditing={() => console.log('Search:', searchQuery)}
+            />
+          </View>
+
+          {/* Section Title */}
+          <Text style={styles.sectionTitle}>QUE TIPO DE SERVIÇO PROCURA?</Text>
         </View>
 
-        {/* Search Input */}
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Pesquisar"
-            placeholderTextColor="#999"
-            autoCapitalize="none"
-            autoCorrect={false}
-            returnKeyType="search"
-            onSubmitEditing={() => console.log('Search:', searchQuery)}
-          />
-        </View>
+        {/* Recent Places - Horizontal FlatList */}
+        {recentPlaces.length > 0 && (
+          <View style={styles.recentSection}>
+            <Text style={styles.recentTitle}>RECENTES</Text>
+            <FlatList
+              data={recentPlaces}
+              renderItem={renderRecentCard}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.recentListContent}
+            />
+          </View>
+        )}
 
-        {/* Section Title */}
-        <Text style={styles.sectionTitle}>QUE TIPO DE SERVIÇO PROCURA?</Text>
+        {/* Categories - Vertical FlatList */}
+        <FlatList
+          data={categories}
+          renderItem={renderCategoryCard}
+          keyExtractor={(item) => item.id}
+          style={styles.categoriesList}
+          contentContainerStyle={styles.categoriesContent}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
-
-      {/* Fixed Recent Places - Horizontal FlatList */}
-      {recentPlaces.length > 0 && (
-        <View style={styles.recentSection}>
-          <Text style={styles.recentTitle}>RECENTES</Text>
-          <FlatList
-            data={recentPlaces}
-            renderItem={renderRecentCard}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.recentListContent}
-          />
-        </View>
-      )}
-
-      {/* Categories - Vertical FlatList (only this scrolls vertically) */}
-      <FlatList
-        data={categories}
-        renderItem={renderCategoryCard}
-        keyExtractor={(item) => item.id}
-        style={styles.categoriesList}
-        contentContainerStyle={styles.categoriesContent}
-        showsVerticalScrollIndicator={false}
-      />
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNavContainer}>
@@ -269,8 +274,9 @@ export default function HomeScreen() {
 }
 
 const CARD_HEIGHT = SCREEN_HEIGHT * 0.18
-const RECENT_CARD_SIZE = SCREEN_WIDTH * 0.35
+const RECENT_CARD_SIZE = SCREEN_WIDTH * 0.28  // Smaller recent cards
 const FOOTER_HEIGHT = 80
+const TOP_BAR_HEIGHT = 50
 
 const styles = StyleSheet.create({
   container: {
@@ -278,51 +284,72 @@ const styles = StyleSheet.create({
     backgroundColor: '#2B3349',
   },
 
-  backgroundImage: {
-    ...StyleSheet.absoluteFillObject,
-  },
-
-  // Header (fixed)
-  header: {
-    paddingTop: (StatusBar.currentHeight || 44) + 10,
-    paddingHorizontal: 24,
-  },
-
-  logoRow: {
+  // Top Bar (in blue area)
+  topBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    paddingTop: (StatusBar.currentHeight || 44) + 5,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
+    justifyContent: 'flex-end',
+    zIndex: 100,
   },
 
-  logo: {
-    width: 110,
-    height: 36,
+  topBarSpacer: {
+    flex: 1,
   },
 
   profileButton: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   profileIconHead: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
     backgroundColor: '#2B3349',
-    borderWidth: 2,
-    borderColor: '#2B3349',
   },
 
   profileIconBody: {
-    width: 28,
-    height: 14,
-    borderTopLeftRadius: 14,
-    borderTopRightRadius: 14,
+    width: 24,
+    height: 12,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
     backgroundColor: '#2B3349',
     marginTop: -2,
+  },
+
+  // Background
+  backgroundImage: {
+    position: 'absolute',
+    top: TOP_BAR_HEIGHT,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+
+  // Content Container
+  contentContainer: {
+    flex: 1,
+    marginTop: TOP_BAR_HEIGHT + 10,
+  },
+
+  // Header
+  header: {
+    paddingHorizontal: 24,
+    paddingTop: 20,
+  },
+
+  logo: {
+    width: 110,
+    height: 36,
+    marginBottom: 16,
   },
 
   // Location Row
@@ -399,7 +426,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 
-  // Recent Section (fixed)
+  // Recent Section
   recentSection: {
     marginBottom: 12,
   },
@@ -419,10 +446,10 @@ const styles = StyleSheet.create({
   recentCard: {
     width: RECENT_CARD_SIZE,
     height: RECENT_CARD_SIZE,
-    borderRadius: 16,
+    borderRadius: 14,
     overflow: 'hidden',
     backgroundColor: '#E6E6E6',
-    marginRight: 12,
+    marginRight: 10,
   },
 
   recentCardImage: {
@@ -433,38 +460,38 @@ const styles = StyleSheet.create({
 
   recentAccentCircle: {
     position: 'absolute',
-    top: 10,
-    right: 10,
-    width: 35,
-    height: 35,
-    borderRadius: 18,
+    top: 8,
+    right: 8,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: '#EB6300',
   },
 
   recentLabelContainer: {
     position: 'absolute',
-    bottom: 12,
-    left: 12,
-    right: 12,
+    bottom: 10,
+    left: 10,
+    right: 10,
   },
 
   recentLabelText: {
     color: '#FFFFFF',
     fontWeight: '900',
-    fontSize: 14,
+    fontSize: 12,
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },
 
-  // Categories FlatList (scrollable)
+  // Categories FlatList
   categoriesList: {
     flex: 1,
   },
 
   categoriesContent: {
     paddingHorizontal: 24,
-    paddingBottom: FOOTER_HEIGHT + 40,
+    paddingBottom: FOOTER_HEIGHT + 60,  // More padding so cards don't go behind footer
   },
 
   card: {
