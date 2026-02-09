@@ -47,6 +47,11 @@ export default function HomeScreen() {
       title: 'RESTAURANTE\nBAR',
       image: IMG_CAFE,
     },
+    {
+      id: 'recent4',
+      title: 'cafe\nBAR',
+      image: IMG_CAFE,
+    },
   ]
 
   // Category data
@@ -273,7 +278,8 @@ export default function HomeScreen() {
   )
 }
 
-const CARD_HEIGHT = SCREEN_HEIGHT * 0.18
+const CARD_HEIGHT = SCREEN_HEIGHT * 0.21
+const CARD_WIDTH = SCREEN_WIDTH * 0.85
 const RECENT_CARD_SIZE = SCREEN_WIDTH * 0.28  // Smaller recent cards
 const FOOTER_HEIGHT = 80
 const TOP_BAR_HEIGHT = 50
@@ -490,13 +496,15 @@ const styles = StyleSheet.create({
   },
 
   categoriesContent: {
-    paddingHorizontal: 24,
-    paddingBottom: FOOTER_HEIGHT + 60,  // More padding so cards don't go behind footer
+    paddingHorizontal: 20,
+    paddingBottom: FOOTER_HEIGHT + 60,
   },
 
   card: {
     height: CARD_HEIGHT,
-    borderRadius: 20,
+    width: CARD_WIDTH,
+    borderRadius: 50,
+    marginLeft: 10,
     overflow: 'hidden',
     backgroundColor: '#E6E6E6',
     marginBottom: 12,
@@ -593,7 +601,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 80,
     shadowColor: '#000',
     shadowOpacity: 0.25,
     shadowRadius: 10,
