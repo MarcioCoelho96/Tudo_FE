@@ -78,6 +78,7 @@ export default function HomeScreen() {
 
   const handleCategoryPress = (category) => {
     console.log(`Navigate to ${category.route}`)
+    navigation.navigate('CategoryDetail', { category: category.route })
   }
 
   const handleRecentPress = (place) => {
