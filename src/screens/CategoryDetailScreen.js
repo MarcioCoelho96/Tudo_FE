@@ -30,27 +30,31 @@ export default function CategoryDetailScreen() {
   const IMG_HEADER = require('../../assets/images/restaurante.png')
   const IMG_BOTTOM_CARD = require('../../assets/bottom_card.png')
 
-  // Menu items data
+  // Menu items data with placeholder images
   const menuItems = [
     {
       id: 'frango',
       title: '1 Dose de Frango',
       description: 'Uma dose de frango acompanhado\ncom batata frita e arroz.',
+      image: { uri: 'https://picsum.photos/seed/frango/200/200' },
     },
     {
       id: 'peixe',
       title: 'Caldeirada de Peixe',
       description: 'Um cozido, cujos componentes\nbásicos são diversas variedades de\npeixe, batata, cebola, tomate e\npimentão.',
+      image: { uri: 'https://picsum.photos/seed/peixe/200/200' },
     },
     {
       id: 'arroz',
       title: 'Arroz de Cogumelos\ncom Omelete',
       description: 'Um cozido, cujos componentes\nbásicos são diversas variedades de\npeixe, batata, cebola, tomate e\npimentão.',
+      image: { uri: 'https://picsum.photos/seed/arroz/200/200' },
     },
     {
       id: 'bacalhau',
       title: 'Bacalhau à Brás',
       description: 'Bacalhau desfiado com batata\npalha, ovos, azeitonas e\nsalsa picada.',
+      image: { uri: 'https://picsum.photos/seed/bacalhau/200/200' },
     },
   ]
 
@@ -97,7 +101,11 @@ export default function CategoryDetailScreen() {
         {/* Right Content */}
         <View style={styles.itemRight}>
           {isSelected && <View style={styles.orangeDot} />}
-          <View style={styles.itemImagePlaceholder} />
+          <FastImage
+            source={item.image}
+            style={styles.itemImage}
+            resizeMode={FastImage.resizeMode.cover}
+          />
         </View>
 
         {/* Divider */}
@@ -381,7 +389,7 @@ const styles = StyleSheet.create({
     zIndex: 5,
   },
 
-  itemImagePlaceholder: {
+  itemImage: {
     width: ITEM_IMAGE_SIZE,
     height: ITEM_IMAGE_SIZE,
     borderRadius: 25,
