@@ -46,6 +46,11 @@ export default function CategoryDetailScreen() {
       title: 'Arroz de Cogumelos\ncom Omelete',
       description: 'Um cozido, cujos componentes\nbásicos são diversas variedades de\npeixe, batata, cebola, tomate e\npimentão.',
     },
+    {
+      id: 'bacalhau',
+      title: 'Bacalhau à Brás',
+      description: 'Bacalhau desfiado com batata\npalha, ovos, azeitonas e\nsalsa picada.',
+    },
   ]
 
   const tabs = ['Pratos', 'Bebidas', 'Sobremesas']
