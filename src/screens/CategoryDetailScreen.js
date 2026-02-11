@@ -28,32 +28,29 @@ export default function CategoryDetailScreen() {
 
   // Assets
   const IMG_HEADER = require('../../assets/images/restaurante.png')
+  const IMG_BOTTOM_CARD = require('../../assets/bottom_card.png')
 
-  // Menu items data with placeholder images
+  // Menu items data
   const menuItems = [
     {
       id: 'frango',
       title: '1 Dose de Frango',
       description: 'Uma dose de frango acompanhado\ncom batata frita e arroz.',
-      image: { uri: 'https://picsum.photos/seed/frango/200/200' },
     },
     {
       id: 'peixe',
       title: 'Caldeirada de Peixe',
       description: 'Um cozido, cujos componentes\nbásicos são diversas variedades de\npeixe, batata, cebola, tomate e\npimentão.',
-      image: { uri: 'https://picsum.photos/seed/peixe/200/200' },
     },
     {
       id: 'arroz',
       title: 'Arroz de Cogumelos\ncom Omelete',
       description: 'Um cozido, cujos componentes\nbásicos são diversas variedades de\npeixe, batata, cebola, tomate e\npimentão.',
-      image: { uri: 'https://picsum.photos/seed/arroz/200/200' },
     },
     {
       id: 'bacalhau',
       title: 'Bacalhau à Brás',
       description: 'Bacalhau desfiado com batata\npalha, ovos, azeitonas e\nsalsa picada.',
-      image: { uri: 'https://picsum.photos/seed/bacalhau/200/200' },
     },
   ]
 
@@ -77,6 +74,11 @@ export default function CategoryDetailScreen() {
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  const handleResend = () => {
+    console.log('Resend OTP')
+    // Call your resend SMS function here
+  }
+
   const renderMenuItem = ({ item, index }) => {
     const isSelected = selectedItems.includes(item.id)
 
@@ -95,11 +97,7 @@ export default function CategoryDetailScreen() {
         {/* Right Content */}
         <View style={styles.itemRight}>
           {isSelected && <View style={styles.orangeDot} />}
-          <FastImage
-            source={item.image}
-            style={styles.itemImage}
-            resizeMode={FastImage.resizeMode.cover}
-          />
+          <View style={styles.itemImagePlaceholder} />
         </View>
 
         {/* Divider */}
@@ -176,15 +174,6 @@ export default function CategoryDetailScreen() {
 
       {/* Footer Card */}
       <View style={styles.footerContainer}>
-        <View style={styles.footerCard}>
-          {/* Order Button */}
-          <TouchableOpacity
-            style={styles.orderButton}
-            onPress={handleOrder}
-            activeOpacity={0.9}
-          >
-            <Text style={styles.orderButtonText}>FAZER{'\n'}PEDIDO</Text>
-          </TouchableOpacity>
 
           {/* Footer Right */}
           <View style={styles.footerRight}>
@@ -194,14 +183,29 @@ export default function CategoryDetailScreen() {
                 {selectedItems.length} PRATOS{'\n'}SELECIONADOS
               </Text>
             </View>
+          </View>
 
-            {/* Hint Text */}
-            <Text style={styles.footerHint}>
+          {/* Bottom Section */}
+        <View style={styles.bottomSection}>
+          <View style={styles.bottomCardContainer}>
+            <FastImage
+              source={IMG_BOTTOM_CARD}
+              style={styles.bottomCardImage}
+              resizeMode={FastImage.resizeMode.contain}
+            />
+            <Text style={styles.helperText}>
               Quando tiver selecionado{'\n'}
               todos os pratos que deseja{'\n'}
               clique em FAZER PEDIDO.
             </Text>
           </View>
+
+          <TouchableOpacity
+            style={styles.resendButton}
+            onPress={handleResend}
+            activeOpacity={0.8}>
+            <Text style={styles.orderButtonText}>FAZER{'\n'}PEDIDO</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -377,7 +381,7 @@ const styles = StyleSheet.create({
     zIndex: 5,
   },
 
-  itemImage: {
+  itemImagePlaceholder: {
     width: ITEM_IMAGE_SIZE,
     height: ITEM_IMAGE_SIZE,
     borderRadius: 25,
@@ -394,11 +398,59 @@ const styles = StyleSheet.create({
   },
 
   // Footer
+  bottomSection: {
+    marginTop: 35,
+    position: 'relative',
+  },
+
+  resendButton: {
+    position: 'absolute',
+    top: -61,                 
+    left: 27,                 
+    width: 110,
+    height: 90,
+    borderRadius: 50,
+    backgroundColor: '#EB6300',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.20,
+    shadowRadius: 10,
+    elevation: 8,
+    zIndex: 10,
+  },
+
+  resendButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '900',
+    fontSize: 13,
+    lineHeight: 18,
+    textAlign: 'center',
+  },
+
+  bottomCardImage: {
+    position: 'absolute',
+    marginTop: -73,
+    marginLeft: 5,
+    width: 360,
+    height: 120,
+  },
+
+  helperText: {
+    color: '#2B3349',
+    fontWeight: '800',
+    fontSize: 13,
+    lineHeight: 15,
+    marginTop: -15,
+    marginLeft: 155,
+  },
+
   footerContainer: {
     position: 'absolute',
     left: 0,
-    right: 0,
-    bottom: 20,
+    right: 50,
+    bottom: 35,
     alignItems: 'center',
   },
 
@@ -436,12 +488,13 @@ const styles = StyleSheet.create({
 
   footerRight: {
     flex: 1,
-    marginLeft: 16,
+    marginLeft: 200,
   },
 
   selectedPill: {
-    width: '100%',
-    height: 48,
+    /* width: '100%', */
+    width: 180,
+    height: 45,
     backgroundColor: '#28324A',
     borderRadius: 24,
     justifyContent: 'center',
@@ -456,11 +509,4 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
 
-  footerHint: {
-    marginTop: 10,
-    color: '#28324A',
-    fontWeight: '800',
-    fontSize: 11,
-    lineHeight: 15,
-  },
 })
