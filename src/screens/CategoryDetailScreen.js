@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
 
   menuListContent: {
     paddingHorizontal: 20,
-    paddingBottom: FOOTER_HEIGHT + 40,
+    paddingBottom: FOOTER_HEIGHT + 100,
   },
 
   itemRow: {
