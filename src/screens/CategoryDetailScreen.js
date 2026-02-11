@@ -5,7 +5,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
+  FlatList,
   StatusBar,
   Dimensions,
 } from 'react-native'
@@ -68,14 +68,39 @@ export default function CategoryDetailScreen() {
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  const renderMenuItem = ({ item, index }) => {
+    const isSelected = selectedItems.includes(item.id)
+
+    return (
+      <TouchableOpacity
+        style={styles.itemRow}
+        onPress={() => toggleItemSelection(item.id)}
+        activeOpacity={0.8}
+      >
+        {/* Left Content */}
+        <View style={styles.itemLeft}>
+          <Text style={styles.itemTitle}>{item.title}</Text>
+          <Text style={styles.itemDescription}>{item.description}</Text>
+        </View>
+
+        {/* Right Content */}
+        <View style={styles.itemRight}>
+          {isSelected && <View style={styles.orangeDot} />}
+          <View style={styles.itemImagePlaceholder} />
+        </View>
+
+        {/* Divider */}
+        {index !== filteredItems.length - 1 && <View style={styles.divider} />}
+      </TouchableOpacity>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+      {/* Fixed Header Section */}
+      <View style={styles.fixedHeader}>
         {/* Header Image */}
         <View style={styles.headerContainer}>
           <FastImage
@@ -124,41 +149,17 @@ export default function CategoryDetailScreen() {
             </TouchableOpacity>
           ))}
         </View>
+      </View>
 
-        {/* Menu Items List */}
-        <View style={styles.listContainer}>
-          {filteredItems.map((item, index) => {
-            const isSelected = selectedItems.includes(item.id)
-
-            return (
-              <TouchableOpacity
-                key={item.id}
-                style={styles.itemRow}
-                onPress={() => toggleItemSelection(item.id)}
-                activeOpacity={0.8}
-              >
-                {/* Left Content */}
-                <View style={styles.itemLeft}>
-                  <Text style={styles.itemTitle}>{item.title}</Text>
-                  <Text style={styles.itemDescription}>{item.description}</Text>
-                </View>
-
-                {/* Right Content */}
-                <View style={styles.itemRight}>
-                  {isSelected && <View style={styles.orangeDot} />}
-                  <View style={styles.itemImagePlaceholder} />
-                </View>
-
-                {/* Divider */}
-                {index !== filteredItems.length - 1 && <View style={styles.divider} />}
-              </TouchableOpacity>
-            )
-          })}
-        </View>
-
-        {/* Bottom Spacer */}
-        <View style={styles.bottomSpacer} />
-      </ScrollView>
+      {/* Menu Items List - Only this scrolls */}
+      <FlatList
+        data={filteredItems}
+        renderItem={renderMenuItem}
+        keyExtractor={(item) => item.id}
+        style={styles.menuList}
+        contentContainerStyle={styles.menuListContent}
+        showsVerticalScrollIndicator={false}
+      />
 
       {/* Footer Card */}
       <View style={styles.footerContainer}>
@@ -194,7 +195,7 @@ export default function CategoryDetailScreen() {
   )
 }
 
-const HEADER_HEIGHT = SCREEN_HEIGHT * 0.26
+const HEADER_HEIGHT = SCREEN_HEIGHT * 0.22
 const ITEM_IMAGE_SIZE = SCREEN_WIDTH * 0.26
 const FOOTER_HEIGHT = 160
 
@@ -204,11 +205,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
 
-  scrollContent: {
-    paddingBottom: 20,
+  // Fixed Header (doesn't scroll)
+  fixedHeader: {
+    backgroundColor: '#FFFFFF',
   },
 
-  // Header
+  // Header Image
   headerContainer: {
     width: '100%',
     height: HEADER_HEIGHT,
@@ -226,10 +228,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 50,
     right: 50,
-    bottom: 20,
-    height: 55,
+    bottom: 15,
+    height: 50,
     backgroundColor: 'rgba(185, 185, 185, 0.65)',
-    borderRadius: 30,
+    borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -237,13 +239,13 @@ const styles = StyleSheet.create({
   headerOverlayText: {
     color: '#FFFFFF',
     fontWeight: '900',
-    fontSize: 22,
+    fontSize: 20,
     letterSpacing: 1,
   },
 
   // Search Row
   searchRow: {
-    marginTop: 16,
+    marginTop: 14,
     paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
@@ -252,9 +254,9 @@ const styles = StyleSheet.create({
 
   searchContainer: {
     flex: 1,
-    height: 50,
+    height: 48,
     backgroundColor: '#D9D9D9',
-    borderRadius: 25,
+    borderRadius: 24,
     justifyContent: 'center',
     paddingHorizontal: 20,
     marginRight: 12,
@@ -268,15 +270,16 @@ const styles = StyleSheet.create({
   },
 
   profileButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: '#28324A',
   },
 
   // Tabs
   tabsRow: {
-    marginTop: 14,
+    marginTop: 12,
+    marginBottom: 8,
     paddingHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -284,10 +287,10 @@ const styles = StyleSheet.create({
 
   tabPill: {
     flex: 1,
-    height: 38,
+    height: 36,
     marginHorizontal: 4,
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
@@ -301,17 +304,21 @@ const styles = StyleSheet.create({
   tabText: {
     color: '#28324A',
     fontWeight: '700',
-    fontSize: 14,
+    fontSize: 13,
   },
 
   tabTextActive: {
     fontWeight: '900',
   },
 
-  // List
-  listContainer: {
-    marginTop: 12,
+  // Menu List (scrollable)
+  menuList: {
+    flex: 1,
+  },
+
+  menuListContent: {
     paddingHorizontal: 20,
+    paddingBottom: FOOTER_HEIGHT + 40,
   },
 
   itemRow: {
@@ -373,10 +380,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#E6E6E6',
   },
 
-  bottomSpacer: {
-    height: FOOTER_HEIGHT + 40,
-  },
-
   // Footer
   footerContainer: {
     position: 'absolute',
@@ -425,9 +428,9 @@ const styles = StyleSheet.create({
 
   selectedPill: {
     width: '100%',
-    height: 50,
+    height: 48,
     backgroundColor: '#28324A',
-    borderRadius: 25,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -435,9 +438,9 @@ const styles = StyleSheet.create({
   selectedPillText: {
     color: '#FFFFFF',
     fontWeight: '900',
-    fontSize: 13,
+    fontSize: 12,
     textAlign: 'center',
-    lineHeight: 17,
+    lineHeight: 16,
   },
 
   footerHint: {
