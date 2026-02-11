@@ -5,6 +5,7 @@ import PhoneNumberScreen from './src/screens/PhoneNumberScreen'
 import OTPVerificationScreen from './src/screens/OTPVerificationScreen'
 import HomeScreen from './src/screens/HomeScreen'
 import CategoryDetailScreen from './src/screens/CategoryDetailScreen'
+import MyOrderScreen from './src/screens/MyOrderScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -20,6 +21,7 @@ export default function App() {
         <Stack.Screen name="OTPVerification" component={OTPVerificationScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="CategoryDetail" component={CategoryDetailScreen} />
+        <Stack.Screen name="MyOrder" component={MyOrderScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )

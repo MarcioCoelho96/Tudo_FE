@@ -78,9 +78,18 @@ export default function CategoryDetailScreen() {
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  const handleResend = () => {
-    console.log('Resend OTP')
-    // Call your resend SMS function here
+  const handleFazerPedido = () => {
+    // Get the selected menu items with full data
+    const selectedItemsData = menuItems
+      .filter((item) => selectedItems.includes(item.id))
+      .map((item) => ({
+        id: item.id,
+        titulo: item.title,
+        descricao: item.description,
+        image: item.image,
+      }))
+    
+    navigation.navigate('MyOrder', { itens: selectedItemsData })
   }
 
   const renderMenuItem = ({ item, index }) => {
@@ -210,7 +219,7 @@ export default function CategoryDetailScreen() {
 
           <TouchableOpacity
             style={styles.resendButton}
-            onPress={handleResend}
+            onPress={handleFazerPedido}
             activeOpacity={0.8}>
             <Text style={styles.orderButtonText}>FAZER{'\n'}PEDIDO</Text>
           </TouchableOpacity>
