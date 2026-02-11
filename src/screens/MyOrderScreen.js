@@ -17,8 +17,6 @@ export default function MyOrderScreen() {
   const navigation = useNavigation()
   const route = useRoute()
 
-  const [footerHeight, setFooterHeight] = useState(0)
-
   // Get selected items from previous screen or use defaults
   const pedidoItens = route?.params?.itens || [
     {
@@ -34,10 +32,6 @@ export default function MyOrderScreen() {
       image: { uri: 'https://picsum.photos/seed/arroz/200/200' },
     },
   ]
-
-  // Assets - using placeholder paths (update with your actual assets)
-  // const IMG_LOGO = require('../../assets/home38/logo.png')
-  // const IMG_PROFILE = require('../../assets/home38/icons/user.png')
 
   const pagar = () => {
     console.log('Paying for items:', pedidoItens)
@@ -90,9 +84,10 @@ export default function MyOrderScreen() {
       {/* Top-right navy shape */}
       <View style={styles.topRightNavy} />
 
-      {/* Logo placeholder */}
+      {/* Logo */}
       <View style={styles.logoContainer}>
-        <Text style={styles.logoText}>tudo</Text>
+        <Text style={styles.logoText}>tud</Text>
+        <Text style={styles.logoTextO}>o</Text>
         <View style={styles.logoDot} />
       </View>
 
@@ -101,10 +96,8 @@ export default function MyOrderScreen() {
         style={styles.profileCircle}
         onPress={() => console.log('Navigate to profile')}
       >
-        <View style={styles.profileIconPlaceholder}>
-          <View style={styles.profileIconHead} />
-          <View style={styles.profileIconBody} />
-        </View>
+        <View style={styles.profileIconHead} />
+        <View style={styles.profileIconBody} />
       </TouchableOpacity>
 
       {/* Title */}
@@ -117,17 +110,11 @@ export default function MyOrderScreen() {
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         style={styles.list}
-        contentContainerStyle={[
-          styles.listContent,
-          { paddingBottom: footerHeight + SCREEN_HEIGHT * 0.12 },
-        ]}
+        contentContainerStyle={styles.listContent}
       />
 
-      {/* Footer */}
-      <View
-        style={styles.footerWrap}
-        onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}
-      >
+      {/* Footer Card */}
+      <View style={styles.footerWrap}>
         <View style={styles.footerCard}>
           {/* Pay button */}
           <TouchableOpacity style={styles.pagarBtn} onPress={pagar}>
@@ -136,16 +123,20 @@ export default function MyOrderScreen() {
 
           {/* Right side */}
           <View style={styles.footerRight}>
+            {/* Action buttons row */}
             <View style={styles.actionsRow}>
-              <TouchableOpacity style={styles.actionPill} onPress={pedirMais}>
+              <TouchableOpacity style={styles.actionPillLeft} onPress={pedirMais}>
                 <Text style={styles.actionTxt}>PEDIR{'\n'}MAIS</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.actionPill} onPress={dividirConta}>
+              <View style={styles.actionDivider} />
+
+              <TouchableOpacity style={styles.actionPillRight} onPress={dividirConta}>
                 <Text style={styles.actionTxt}>DIVIDIR{'\n'}CONTA</Text>
               </TouchableOpacity>
             </View>
 
+            {/* Helper text */}
             <View style={styles.helperPill}>
               <Text style={styles.helperTxt}>
                 Quando tiver selecionado{'\n'}
@@ -157,19 +148,56 @@ export default function MyOrderScreen() {
         </View>
       </View>
 
-      {/* Bottom navy bar */}
-      <View style={styles.bottomBar} />
+      {/* Bottom Navigation Bar */}
+      <View style={styles.bottomNavContainer}>
+        <View style={styles.bottomBar} />
 
-      {/* Bottom white notch */}
-      <View style={styles.bottomNotch} />
+        {/* Nav Buttons */}
+        <View style={styles.navButtonsContainer}>
+          {/* Left - Pin/Location icon */}
+          <TouchableOpacity
+            style={styles.navButton}
+            onPress={() => console.log('Navigate to map')}
+          >
+            <View style={styles.pinIcon}>
+              <View style={styles.pinIconTop} />
+              <View style={styles.pinIconPoint} />
+            </View>
+          </TouchableOpacity>
+
+          {/* Center - Wallet button */}
+          <TouchableOpacity
+            style={styles.navCenterButton}
+            onPress={() => console.log('Navigate to wallet')}
+          >
+            <View style={styles.walletIcon}>
+              <View style={styles.walletBody} />
+              <View style={styles.walletFlap} />
+            </View>
+          </TouchableOpacity>
+
+          {/* Right - Document/Receipt icon */}
+          <TouchableOpacity
+            style={styles.navButton}
+            onPress={() => console.log('Navigate to receipts')}
+          >
+            <View style={styles.receiptIcon}>
+              <View style={styles.receiptBody} />
+              <View style={styles.receiptLine1} />
+              <View style={styles.receiptLine2} />
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   )
 }
 
-const HEADER_TOP = SCREEN_HEIGHT * 0.05
-const TOP_NAV_HEIGHT = SCREEN_HEIGHT * 0.16
-const FOOTER_BOTTOM = SCREEN_HEIGHT * 0.12
-const ITEM_IMAGE_SIZE = SCREEN_WIDTH * 0.28
+const HEADER_TOP = (StatusBar.currentHeight || 44) + 10
+const TOP_NAV_HEIGHT = SCREEN_HEIGHT * 0.14
+const FOOTER_HEIGHT = 180
+const BOTTOM_BAR_HEIGHT = SCREEN_HEIGHT * 0.08
+const ITEM_IMAGE_SIZE = SCREEN_WIDTH * 0.26
 
 const styles = StyleSheet.create({
   container: {
@@ -182,51 +210,59 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     right: 0,
-    bottom: SCREEN_HEIGHT * 0.10,
+    bottom: BOTTOM_BAR_HEIGHT,
     backgroundColor: '#FFFFFF',
-    borderBottomLeftRadius: SCREEN_HEIGHT * 0.06,
-    borderBottomRightRadius: SCREEN_HEIGHT * 0.06,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
   },
 
   topRightNavy: {
     position: 'absolute',
     right: 0,
     top: 0,
-    width: SCREEN_WIDTH * 0.55,
+    width: SCREEN_WIDTH * 0.50,
     height: TOP_NAV_HEIGHT,
     backgroundColor: '#28324A',
-    borderBottomLeftRadius: SCREEN_HEIGHT * 0.20,
+    borderBottomLeftRadius: SCREEN_HEIGHT * 0.14,
   },
 
-  // Logo (placeholder using text)
+  // Logo
   logoContainer: {
     position: 'absolute',
     left: SCREEN_WIDTH * 0.08,
     top: HEADER_TOP,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
 
   logoText: {
     color: '#28324A',
     fontWeight: '900',
-    fontSize: 32,
+    fontSize: 36,
+    fontStyle: 'italic',
+  },
+
+  logoTextO: {
+    color: '#28324A',
+    fontWeight: '900',
+    fontSize: 36,
     fontStyle: 'italic',
   },
 
   logoDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
     backgroundColor: '#EB6300',
-    marginLeft: 2,
-    marginTop: -12,
+    marginLeft: -2,
+    marginTop: 2,
   },
 
+  // Profile
   profileCircle: {
     position: 'absolute',
     right: SCREEN_WIDTH * 0.08,
-    top: HEADER_TOP - 4,
+    top: HEADER_TOP - 6,
     width: SCREEN_WIDTH * 0.14,
     height: SCREEN_WIDTH * 0.14,
     borderRadius: 999,
@@ -235,60 +271,58 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  profileIconPlaceholder: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
   profileIconHead: {
-    width: SCREEN_WIDTH * 0.05,
-    height: SCREEN_WIDTH * 0.05,
+    width: SCREEN_WIDTH * 0.045,
+    height: SCREEN_WIDTH * 0.045,
     borderRadius: 999,
     backgroundColor: '#9E9E9E',
     marginBottom: 2,
   },
 
   profileIconBody: {
-    width: SCREEN_WIDTH * 0.08,
-    height: SCREEN_WIDTH * 0.04,
+    width: SCREEN_WIDTH * 0.07,
+    height: SCREEN_WIDTH * 0.035,
     borderTopLeftRadius: 999,
     borderTopRightRadius: 999,
     backgroundColor: '#9E9E9E',
   },
 
+  // Title
   titulo: {
     position: 'absolute',
-    top: SCREEN_HEIGHT * 0.15,
+    top: SCREEN_HEIGHT * 0.14,
     left: 0,
     right: 0,
     textAlign: 'center',
     color: '#28324A',
     fontWeight: '900',
-    fontSize: 22,
+    fontSize: 24,
   },
 
+  // List
   list: {
     position: 'absolute',
     left: 0,
     right: 0,
-    top: SCREEN_HEIGHT * 0.20,
-    bottom: FOOTER_BOTTOM,
+    top: SCREEN_HEIGHT * 0.19,
+    bottom: FOOTER_HEIGHT + BOTTOM_BAR_HEIGHT,
   },
 
   listContent: {
     paddingHorizontal: SCREEN_WIDTH * 0.08,
-    paddingBottom: SCREEN_HEIGHT * 0.02,
+    paddingBottom: 20,
   },
 
   itemRow: {
     flexDirection: 'row',
-    paddingTop: SCREEN_HEIGHT * 0.022,
-    paddingBottom: SCREEN_HEIGHT * 0.022,
+    paddingVertical: SCREEN_HEIGHT * 0.02,
+    position: 'relative',
   },
 
   itemLeft: {
     flex: 1,
     paddingRight: 12,
+    justifyContent: 'center',
   },
 
   itemTitle: {
@@ -300,22 +334,21 @@ const styles = StyleSheet.create({
 
   itemDesc: {
     marginTop: 8,
-    color: '#28324A',
-    fontWeight: '700',
-    fontSize: 12,
-    lineHeight: 16,
-    opacity: 0.9,
+    color: '#6B7280',
+    fontWeight: '500',
+    fontSize: 13,
+    lineHeight: 18,
   },
 
   itemRight: {
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'flex-end',
   },
 
   itemImageContainer: {
     width: ITEM_IMAGE_SIZE,
     height: ITEM_IMAGE_SIZE,
-    borderRadius: 30,
+    borderRadius: 25,
     overflow: 'hidden',
   },
 
@@ -323,13 +356,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: '#D9D9D9',
-    borderRadius: 30,
+    borderRadius: 25,
   },
 
   itemImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 30,
+    borderRadius: 25,
   },
 
   divider: {
@@ -338,35 +371,37 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: 1,
-    backgroundColor: '#E6E6E6',
+    backgroundColor: '#E5E5E5',
   },
 
+  // Footer
   footerWrap: {
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: FOOTER_BOTTOM,
+    bottom: BOTTOM_BAR_HEIGHT + 15,
     alignItems: 'center',
+    paddingHorizontal: 20,
   },
 
   footerCard: {
-    width: SCREEN_WIDTH * 0.88,
+    width: '100%',
     backgroundColor: '#D9D9D9',
     borderRadius: 35,
-    paddingVertical: SCREEN_HEIGHT * 0.02,
-    paddingHorizontal: SCREEN_WIDTH * 0.04,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.16,
-    shadowRadius: 10,
-    elevation: 7,
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 8,
   },
 
   pagarBtn: {
-    width: SCREEN_WIDTH * 0.26,
-    height: SCREEN_WIDTH * 0.26,
+    width: SCREEN_WIDTH * 0.28,
+    height: SCREEN_WIDTH * 0.28,
     borderRadius: 999,
     backgroundColor: '#EB6300',
     justifyContent: 'center',
@@ -376,26 +411,40 @@ const styles = StyleSheet.create({
   pagarTxt: {
     color: '#FFFFFF',
     fontWeight: '900',
-    fontSize: 20,
+    fontSize: 22,
     letterSpacing: 1,
   },
 
   footerRight: {
     flex: 1,
-    marginLeft: SCREEN_WIDTH * 0.04,
+    marginLeft: 14,
   },
 
   actionsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: SCREEN_HEIGHT * 0.012,
+    backgroundColor: '#28324A',
+    borderRadius: 25,
+    marginBottom: 10,
+    overflow: 'hidden',
   },
 
-  actionPill: {
-    width: SCREEN_WIDTH * 0.22,
-    height: SCREEN_HEIGHT * 0.065,
-    backgroundColor: '#28324A',
-    borderRadius: 999,
+  actionPillLeft: {
+    flex: 1,
+    height: 55,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  actionDivider: {
+    width: 1,
+    height: 35,
+    backgroundColor: '#4A5568',
+    alignSelf: 'center',
+  },
+
+  actionPillRight: {
+    flex: 1,
+    height: 55,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -403,24 +452,33 @@ const styles = StyleSheet.create({
   actionTxt: {
     color: '#FFFFFF',
     fontWeight: '900',
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 13,
+    lineHeight: 17,
     textAlign: 'center',
   },
 
   helperPill: {
     width: '100%',
-    backgroundColor: '#CFCFCF',
-    borderRadius: 25,
-    paddingVertical: SCREEN_HEIGHT * 0.012,
-    paddingHorizontal: SCREEN_WIDTH * 0.035,
+    backgroundColor: '#C4C4C4',
+    borderRadius: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
   },
 
   helperTxt: {
     color: '#28324A',
-    fontWeight: '800',
+    fontWeight: '700',
     fontSize: 12,
     lineHeight: 16,
+  },
+
+  // Bottom Navigation
+  bottomNavContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: BOTTOM_BAR_HEIGHT + 40,
   },
 
   bottomBar: {
@@ -428,19 +486,130 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: SCREEN_HEIGHT * 0.10,
+    height: BOTTOM_BAR_HEIGHT,
     backgroundColor: '#28324A',
-    borderTopLeftRadius: SCREEN_HEIGHT * 0.06,
-    borderTopRightRadius: SCREEN_HEIGHT * 0.06,
+    borderTopLeftRadius: 50,
+    borderTopRightRadius: 50,
   },
 
-  bottomNotch: {
+  navButtonsContainer: {
     position: 'absolute',
-    left: SCREEN_WIDTH * 0.41,
-    bottom: SCREEN_HEIGHT * 0.062,
-    width: SCREEN_WIDTH * 0.18,
-    height: SCREEN_WIDTH * 0.18,
-    borderRadius: 999,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: BOTTOM_BAR_HEIGHT,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: SCREEN_WIDTH * 0.15,
+  },
+
+  navButton: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  navCenterButton: {
+    width: 60,
+    height: 60,
     backgroundColor: '#FFFFFF',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 50,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 8,
+  },
+
+  // Pin/Location Icon
+  pinIcon: {
+    alignItems: 'center',
+  },
+
+  pinIconTop: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+    backgroundColor: 'transparent',
+  },
+
+  pinIconPoint: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 5,
+    borderRightWidth: 5,
+    borderTopWidth: 8,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: '#FFFFFF',
+    marginTop: -2,
+  },
+
+  // Wallet Icon
+  walletIcon: {
+    width: 28,
+    height: 22,
+    justifyContent: 'flex-end',
+  },
+
+  walletBody: {
+    width: 28,
+    height: 18,
+    borderRadius: 4,
+    backgroundColor: '#EB6300',
+    borderWidth: 2,
+    borderColor: '#EB6300',
+  },
+
+  walletFlap: {
+    position: 'absolute',
+    top: 0,
+    left: 4,
+    right: 4,
+    height: 8,
+    borderTopLeftRadius: 3,
+    borderTopRightRadius: 3,
+    backgroundColor: '#EB6300',
+  },
+
+  // Receipt/Document Icon
+  receiptIcon: {
+    width: 20,
+    height: 26,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 6,
+  },
+
+  receiptBody: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 3,
+  },
+
+  receiptLine1: {
+    width: 12,
+    height: 2,
+    backgroundColor: '#28324A',
+    marginBottom: 4,
+  },
+
+  receiptLine2: {
+    width: 12,
+    height: 2,
+    backgroundColor: '#28324A',
   },
 })
