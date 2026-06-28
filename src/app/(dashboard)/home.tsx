@@ -1,10 +1,7 @@
-import {
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { colors } from "@/src/styles/global";
+import { Image, ImageBackground } from "expo-image";
+import React from "react";
+import { StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function HomeScreen() {
   return (
@@ -24,11 +21,17 @@ export default function HomeScreen() {
           activeOpacity={0.85}
           onPress={() => console.log("Navigate to profile")}
         >
-          <View style={styles.profileIconHead} />
-          <View style={styles.profileIconBody} />
+          <Image
+            source={require("../../../assets/images/userProfileIcon.png")}
+            style={{ width: 45, height: 64, marginTop: 7 }}
+          />
         </TouchableOpacity>
-        <Text>lol</Text>
       </View>
+      <ImageBackground
+        source={require("../../../assets/images/dashboardBackground.png")}
+        style={styles.backgroundImage}
+        contentFit="fill"
+      />
     </View>
   );
 }
@@ -36,7 +39,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#2B3349",
+    backgroundColor: colors.main,
   },
 
   // Top Bar (in blue area)
@@ -46,7 +49,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     paddingTop: (StatusBar.currentHeight || 44) + 5,
-    paddingHorizontal: 20,
+    paddingHorizontal: 40,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
@@ -55,20 +58,23 @@ const styles = StyleSheet.create({
 
   topBarSpacer: {
     flex: 1,
+    paddingLeft: 100,
   },
 
   profileButton: {
-    width: 40,
-    height: 40,
+    width: 54,
+    height: 54,
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 100,
+    backgroundColor: colors.gray,
   },
 
   profileIconHead: {
     width: 14,
     height: 14,
     borderRadius: 7,
-    backgroundColor: "#2B3349",
+    backgroundColor: colors.white,
   },
 
   profileIconBody: {
@@ -76,7 +82,14 @@ const styles = StyleSheet.create({
     height: 12,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
-    backgroundColor: "#2B3349",
+    backgroundColor: colors.white,
     marginTop: -2,
+  },
+  backgroundImage: {
+    position: "absolute",
+    top: 30,
+    left: 0,
+    right: 0,
+    bottom: -20,
   },
 });
