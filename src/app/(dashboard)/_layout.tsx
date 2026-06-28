@@ -1,14 +1,15 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Icon from "react-native-remix-icon";
+import { Image } from "react-native";
 import { CustomTabBar } from "../components/customTabBar";
 import HomeScreen from "./home";
 import ProfileScreen from "./profile";
+
 export type TabParamList = {
   home: undefined;
   profile: undefined;
   calendar: undefined;
 };
+
 export default function DashboardLayout() {
   const Tabs = createBottomTabNavigator<TabParamList>();
   return (
@@ -23,8 +24,15 @@ export default function DashboardLayout() {
         component={HomeScreen}
         options={{
           title: "Home UI",
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="home" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Image
+              source={require("../../../assets/images/pin.png")}
+              style={{
+                width: 35,
+                height: 35,
+                tintColor: color,
+              }}
+            />
           ),
         }}
       />
@@ -33,8 +41,15 @@ export default function DashboardLayout() {
         component={ProfileScreen}
         options={{
           title: "My Profile",
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="calendar-event-line" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Image
+              source={require("../../../assets/images/calendar.png")}
+              style={{
+                width: 35,
+                height: 35,
+                tintColor: color,
+              }}
+            />
           ),
         }}
       />
@@ -44,6 +59,16 @@ export default function DashboardLayout() {
         options={{
           title: "My Profile",
           headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <Image
+              source={require("../../../assets/images/file.png")}
+              style={{
+                width: 35,
+                height: 35,
+                tintColor: color,
+              }}
+            />
+          ),
         }}
       />
     </Tabs.Navigator>
