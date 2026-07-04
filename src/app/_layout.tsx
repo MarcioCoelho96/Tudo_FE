@@ -1,58 +1,9 @@
+import { AuthProvider, useAuth } from "@/context/authContext";
 import { Inter_900Black, useFonts } from "@expo-google-fonts/inter";
 import { Slot, SplashScreen, useRouter, useSegments } from "expo-router";
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { ActivityIndicator, View } from "react-native";
+import { useEffect } from "react";
 
-interface AuthContextType {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: () => void;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export function useAuth(): AuthContextType {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-}
-
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export function AuthProvider({ children }: AuthProviderProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const checkToken = async () => {
-      setIsAuthenticated(true);
-      setLoading(false);
-    };
-
-    checkToken();
-  }, []);
-
-  const login = () => setIsAuthenticated(true);
-  const logout = () => setIsAuthenticated(false);
-
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, isLoading }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
-
+// The navigation guard stays in layout since it orchestrates Router changes
 function NavigateGate() {
   const { isAuthenticated, isLoading } = useAuth();
   const segments = useSegments();
@@ -61,6 +12,7 @@ function NavigateGate() {
   useEffect(() => {
     if (isLoading) return;
 
+    // With src/app, the first segment might be undefined if at root, or '(auth)'
     const inAuthGroup = segments[0] === "(auth)";
 
     if (!isAuthenticated && !inAuthGroup) {
@@ -68,15 +20,7 @@ function NavigateGate() {
     } else if (isAuthenticated && inAuthGroup) {
       router.replace("/home");
     }
-  }, [isAuthenticated, segments, isLoading]);
-
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
+  }, [isAuthenticated, segments, isLoading, router]);
 
   return <Slot />;
 }

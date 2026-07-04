@@ -1,7 +1,7 @@
-import { colors } from "@/src/styles/global";
 import { ImageBackground } from "expo-image";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { colors } from "../../styles/global";
 
 interface ServiceCArdProps {
   category: string;

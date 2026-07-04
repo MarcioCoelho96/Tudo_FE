@@ -1,28 +1,15 @@
-// app/index.tsx
-import { Redirect } from "expo-router";
+import { colors } from "@/styles/global";
 import React from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
-import { useAuth } from "./_layout";
 
 export default function Index() {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  // Show a native loading spinner while the application resolves
-  // the user's token or session from storage.
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
-
-  // If authenticated, deep-link straight to the home route inside (dashboard).
-  // Otherwise, fallback safely to the authentication flow.
-  return isAuthenticated ? (
-    <Redirect href="/home" />
-  ) : (
-    <Redirect href="/(auth)/login" />
+  // The layout's NavigateGate will handle the redirection automatically
+  // once the authentication state resolves. This index route just acts
+  // as the initial visual canvas.
+  return (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color="#0000ff" />
+    </View>
   );
 }
 
@@ -31,6 +18,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#ffffff", // Match your app's background color palette
+    backgroundColor: colors.main, // Match your app's background color palette
   },
 });

@@ -1,4 +1,4 @@
-import { colors } from "@/src/styles/global";
+import { colors } from "@/styles/global";
 import { Image, ImageBackground } from "expo-image";
 import React from "react";
 import {

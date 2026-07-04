@@ -1,7 +1,7 @@
-import { colors } from "@/src/styles/global";
 import { Image } from "expo-image";
 import React, { useState } from "react";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { colors } from "../../styles/global";
 
 // Define the types for the component's props
 interface SearchBarProps {
@@ -10,7 +10,7 @@ interface SearchBarProps {
   onFilterResult: (filteredData: string[]) => void;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({
+const SearchBar: React.FC<SearchBarProps> = ({
   data,
   placeholder = "Insira aqui o serviço",
   onFilterResult,
