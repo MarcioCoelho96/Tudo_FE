@@ -11,8 +11,8 @@ import React, {
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: () => Promise<void>;
   logout: () => Promise<void>;
+  login: (phoneNumber: string, validationCode: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,6 +34,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
+    debugger;
     const checkToken = async () => {
       try {
         const token = await authService.getSessionToken();
@@ -47,11 +48,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     checkToken();
-  }, []);
+  }, [isAuthenticated]);
 
-  const login = async () => {
-    // You can pass an actual token here later from your API
-    await authService.saveSessionToken("your-secure-jwt-token");
+  const login = async (phoneNumber: string, validationCode: string) => {
+    const token = await authService.validateSmsCode(
+      phoneNumber,
+      validationCode,
+    );
+
+    // const token =
+    //   "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIrMzUxOTY2MTUzMTc4IiwiaXNzIjoidHVkbyIsImF1ZCI6InR1ZG8iLCJpYXQiOjE3ODM3OTc3MTQsImV4cCI6MTc4Mzc5OTUxNH0.NNPSyv7m7efstSNK9LZ_-DEGqYnkiymlIGuWwyebBMU";
+
+    await authService.saveSessionToken(token);
+
     setIsAuthenticated(true);
   };
 
@@ -61,7 +70,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ isAuthenticated, logout, login, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

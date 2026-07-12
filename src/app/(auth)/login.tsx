@@ -1,6 +1,9 @@
+import { useAuth } from "@/context/authContext";
+import { authService } from "@/services/authService";
 import { Image, ImageBackground } from "expo-image";
 import { useState } from "react";
 import {
+  ActivityIndicator,
   StyleSheet,
   Text,
   TextInput,
@@ -10,11 +13,19 @@ import {
 import OTPTextInput from "react-native-otp-textinput";
 import { colors } from "../../styles/global";
 
-export default function LoginScreen() {
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [countryCode, setCountryCode] = useState("+351");
+enum LoginStep {
+  EnterPhoneNumber,
+  EnterValidationCode,
+}
 
-  const [enterCode, setEnterCode] = useState(false);
+export default function LoginScreen() {
+  const { login } = useAuth();
+  const [phoneNumber, setPhoneNumber] = useState("966153178");
+  const [countryCode, setCountryCode] = useState("+351");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [step, setStep] = useState<LoginStep>(LoginStep.EnterPhoneNumber);
+  const [smsCode, setSmsCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const handlePhoneChange = (text: string) => {
     const cleaned = text.replace(/\D/g, "");
@@ -29,9 +40,46 @@ export default function LoginScreen() {
     setPhoneNumber(formatted.substring(0, 11));
   };
 
-  const handleContinue = (value: boolean) => {
-    setEnterCode(value);
+  const handleRequestSms = async () => {
+    const fullPhoneNumber = `${countryCode}${phoneNumber.replace(/\s/g, "")}`;
+
+    if (!fullPhoneNumber || fullPhoneNumber.length < 13) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await authService.requestSmsCode(fullPhoneNumber);
+      setStep(LoginStep.EnterValidationCode);
+      console.log("SMS code requested successfully");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const handleVerifySms = async () => {
+    const fullPhoneNumber = `${countryCode}${phoneNumber.replace(/\s/g, "")}`;
+    debugger;
+    if (!smsCode) {
+      setError("Por Favor insira o codigo");
+      return;
+    }
+
+    try {
+      setError(null);
+      setIsSubmitting(true);
+
+      await login(fullPhoneNumber, smsCode);
+    } catch (err: any) {
+      setError(err.message || "Codigo Invalido");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const isEnterPhoneStep = step === LoginStep.EnterPhoneNumber;
 
   const resources = {
     loginTitle: "INDIQUE-NOS O SEU",
@@ -44,20 +92,71 @@ export default function LoginScreen() {
       "Caso não tenhas recebido, clica em voltar a enviar.",
   };
 
-  const backgroundImage = enterCode
-    ? require("../../../assets/images/backgroundLoginTwo.svg")
-    : require("../../../assets/images/backgroundLogin.svg");
+  const backgroundImage = isEnterPhoneStep
+    ? require("../../../assets/images/backgroundLogin.svg")
+    : require("../../../assets/images/backgroundLoginTwo.svg");
 
   return (
     <ImageBackground
       source={backgroundImage}
       style={{
         ...styles.backgroundImage,
-        backgroundColor: enterCode ? colors.white : colors.loginBackground,
+        backgroundColor: isEnterPhoneStep
+          ? colors.loginBackground
+          : colors.white,
       }}
     >
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        {enterCode ? (
+        {isEnterPhoneStep ? (
+          <View>
+            <View style={{ paddingLeft: 10 }}>
+              <Text style={styles.title}>{resources.loginTitle}</Text>
+              <Text style={styles.title}>{resources.loginSubtitle}</Text>
+            </View>
+            <View style={styles.phoneContainer}>
+              <TextInput
+                style={styles.inputCode}
+                placeholder="+351"
+                value={countryCode}
+                onChangeText={setCountryCode}
+                maxLength={4}
+                keyboardType="number-pad"
+              />
+              <TextInput
+                style={styles.inputNumber}
+                placeholder="XXX XXX XXX"
+                value={phoneNumber}
+                onChangeText={handlePhoneChange}
+                maxLength={11}
+                keyboardType="number-pad"
+              />
+            </View>
+            <View>
+              <Image
+                source={require("../../../assets/images/Subtract.svg")}
+                style={{ width: 310, height: 78 }}
+              />
+              <TouchableOpacity
+                style={{
+                  ...styles.button,
+                  backgroundColor: isSubmitting ? colors.gray : colors.orange,
+                }}
+                onPress={handleRequestSms}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <ActivityIndicator color={colors.orange} size={"large"} />
+                ) : (
+                  <Text
+                    style={{ fontSize: 14, fontWeight: 900, color: "#fff" }}
+                  >
+                    {resources.buttonText}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
           <View>
             <ImageBackground
               source={require("../../../assets/images/smsLayout.svg")}
@@ -91,20 +190,37 @@ export default function LoginScreen() {
                 </Text>
                 <OTPTextInput
                   inputCount={6} // Number of circles
-                  tintColor="#f27100" // Color when focused (matches your orange)
+                  tintColor={colors.orange}
                   offTintColor="#e0e0e0" // Color when idle
                   textInputStyle={styles.otpInput}
                   keyboardType="numeric"
                   containerStyle={styles.otpContainer}
+                  handleTextChange={(text) => setSmsCode(text)}
+
+                  // onChangeText={(value) => {
+                  //   if (value.length === 6) {
+                  //     setSmsCode(value);
+                  //   }
+                  // }}
                 />
               </View>
-              <TouchableOpacity style={styles.buttonC}>
-                <Text
-                  style={{ fontSize: 14, fontWeight: 900, color: colors.main }}
-                  onPress={() => handleContinue(false)}
-                >
-                  {resources.buttonText}
-                </Text>
+              <TouchableOpacity
+                style={styles.buttonC}
+                onPress={handleVerifySms}
+              >
+                {isSubmitting ? (
+                  <ActivityIndicator color={colors.white} />
+                ) : (
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 900,
+                      color: colors.main,
+                    }}
+                  >
+                    {resources.buttonText}
+                  </Text>
+                )}
               </TouchableOpacity>
             </ImageBackground>
             <ImageBackground
@@ -124,7 +240,7 @@ export default function LoginScreen() {
                     color: colors.white,
                     textAlign: "center",
                   }}
-                  onPress={() => handleContinue(false)}
+                  onPress={handleRequestSms}
                 >
                   {resources.sendAgain}
                 </Text>
@@ -142,45 +258,6 @@ export default function LoginScreen() {
                 {resources.inCaseYouDidNotReceive}
               </Text>
             </ImageBackground>
-          </View>
-        ) : (
-          <View>
-            <View style={{ paddingLeft: 10 }}>
-              <Text style={styles.title}>{resources.loginTitle}</Text>
-              <Text style={styles.title}>{resources.loginSubtitle}</Text>
-            </View>
-            <View style={styles.phoneContainer}>
-              <TextInput
-                style={styles.inputCode}
-                placeholder="+351"
-                value={countryCode}
-                onChangeText={setCountryCode}
-                maxLength={4}
-                keyboardType="number-pad"
-              />
-              <TextInput
-                style={styles.inputNumber}
-                placeholder="XXX XXX XXX"
-                value={phoneNumber}
-                onChangeText={handlePhoneChange}
-                maxLength={11}
-                keyboardType="number-pad"
-              />
-            </View>
-            <View>
-              <Image
-                source={require("../../../assets/images/Subtract.svg")}
-                style={{ width: 310, height: 78 }}
-              />
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => handleContinue(true)}
-              >
-                <Text style={{ fontSize: 14, fontWeight: 900, color: "#fff" }}>
-                  {resources.buttonText}
-                </Text>
-              </TouchableOpacity>
-            </View>
           </View>
         )}
       </View>

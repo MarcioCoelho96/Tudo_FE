@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/authContext";
 import { colors } from "@/styles/global";
 import { Image, ImageBackground } from "expo-image";
 import React from "react";
@@ -13,6 +14,7 @@ import SearchBar from "../components/searchBar";
 import ServiceCard from "../components/servicesCard";
 
 export default function HomeScreen() {
+  const { login, logout } = useAuth();
   return (
     <View style={styles.container}>
       <StatusBar
@@ -33,7 +35,7 @@ export default function HomeScreen() {
         <TouchableOpacity
           style={styles.profileButton}
           activeOpacity={0.85}
-          onPress={() => console.log("Navigate to profile")}
+          onPress={() => logout()}
         >
           <Image
             source={require("../../../assets/images/userProfileIcon.png")}

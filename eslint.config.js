@@ -12,11 +12,13 @@ module.exports = defineConfig([
     files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
     settings: {
       "import/resolver": {
+        node: {
+          extensions: [".js", ".jsx", "ts", "tsx"],
+        },
         typescript: {
           alwaysTryTypes: true,
           project: "./tsconfig.json", // Explicitly points to your path mappings
         },
-        node: true,
       },
     },
   },
