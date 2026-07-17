@@ -1,58 +1,57 @@
-import { Image } from "expo-image";
+import { Image, ImageSource } from "expo-image";
 import React from "react";
 import {
-    FlatList,
-    ListRenderItem,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  ListRenderItem,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 export type ProductCategory = "Pratos" | "Bebidas" | "Sobremesas";
 
 export type Product = {
+  /*
+   * This ID should identify the order line,
+   * not only the product.
+   *
+   * Example:
+   * mushroom-rice-1
+   * mushroom-rice-2
+   */
   id: string;
   title: string;
   description: string;
   category: ProductCategory;
-
-  /*
-    This accepts both:
-
-    require("../../assets/image.png")
-
-    and:
-
-    { uri: "https://..." }
-  */
-  image: number | { uri: string };
+  image: ImageSource;
+  price?: number;
 };
 
 type ProductListProps = {
   products: Product[];
-  selectedProductIds: string[];
-  onProductPress: (product: Product) => void;
+  selectedProductIds?: string[];
+  onProductPress?: (product: Product) => void;
   emptyMessage?: string;
+  interactive?: boolean;
+  showSelectionIndicator?: boolean;
 };
 
 export default function ProductList({
   products,
-  selectedProductIds,
+  selectedProductIds = [],
   onProductPress,
   emptyMessage = "Nenhum produto encontrado.",
+  interactive = true,
+  showSelectionIndicator = true,
 }: ProductListProps) {
   const renderProduct: ListRenderItem<Product> = ({ item, index }) => {
     const isSelected = selectedProductIds.includes(item.id);
 
     const isLastProduct = index === products.length - 1;
 
-    return (
-      <TouchableOpacity
-        style={styles.productRow}
-        onPress={() => onProductPress(item)}
-        activeOpacity={0.8}
-      >
+    const productContent = (
+      <>
         <View style={styles.productTextContainer}>
           <Text style={styles.productTitle}>{item.title}</Text>
 
@@ -60,17 +59,33 @@ export default function ProductList({
         </View>
 
         <View style={styles.productImageContainer}>
-          {isSelected && <View style={styles.selectedDot} />}
+          {showSelectionIndicator && isSelected && (
+            <View style={styles.selectedIndicator} />
+          )}
 
           <Image
             source={item.image}
             style={styles.productImage}
             contentFit="cover"
-            transition={200}
+            transition={150}
           />
         </View>
 
         {!isLastProduct && <View style={styles.divider} />}
+      </>
+    );
+
+    if (!interactive) {
+      return <View style={styles.productRow}>{productContent}</View>;
+    }
+
+    return (
+      <TouchableOpacity
+        style={styles.productRow}
+        onPress={() => onProductPress?.(item)}
+        activeOpacity={0.8}
+      >
+        {productContent}
       </TouchableOpacity>
     );
   };
@@ -80,10 +95,11 @@ export default function ProductList({
       <FlatList
         data={products}
         renderItem={renderProduct}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
+        bounces={false}
         contentContainerStyle={[
           styles.listContent,
           products.length === 0 && styles.emptyListContent,
@@ -100,12 +116,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     minHeight: 0,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "transparent",
   },
 
   listContent: {
     paddingHorizontal: 20,
-    paddingBottom: 12,
+    paddingBottom: 8,
   },
 
   emptyListContent: {
@@ -123,28 +139,28 @@ const styles = StyleSheet.create({
   productRow: {
     position: "relative",
     flexDirection: "row",
-    paddingVertical: 16,
+    minHeight: 128,
+    paddingVertical: 14,
   },
 
   productTextContainer: {
     flex: 1,
-    paddingRight: 12,
+    paddingRight: 14,
   },
 
   productTitle: {
     color: "#28324A",
     fontSize: 18,
     fontWeight: "900",
-    lineHeight: 24,
+    lineHeight: 23,
   },
 
   productDescription: {
-    marginTop: 8,
+    marginTop: 14,
     color: "#28324A",
-    fontSize: 12,
-    fontWeight: "600",
-    lineHeight: 16,
-    opacity: 0.85,
+    fontSize: 11,
+    fontWeight: "500",
+    lineHeight: 14,
   },
 
   productImageContainer: {
@@ -155,18 +171,18 @@ const styles = StyleSheet.create({
   productImage: {
     width: 104,
     height: 104,
-    borderRadius: 25,
+    borderRadius: 28,
     backgroundColor: "#D9D9D9",
   },
 
-  selectedDot: {
+  selectedIndicator: {
     position: "absolute",
     left: -15,
     top: 5,
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: "#FF5A00",
+    backgroundColor: "#FF5200",
     zIndex: 5,
   },
 
@@ -176,6 +192,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: 1,
-    backgroundColor: "#E6E6E6",
+    backgroundColor: "#E5E5E5",
   },
 });
