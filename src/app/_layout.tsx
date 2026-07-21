@@ -1,3 +1,4 @@
+import { Paths } from "@/const/global";
 import { AuthProvider, useAuth } from "@/context/authContext";
 import { Inter_900Black, useFonts } from "@expo-google-fonts/inter";
 import { Slot, SplashScreen, useRouter, useSegments } from "expo-router";
@@ -16,9 +17,9 @@ function NavigateGate() {
     const inAuthGroup = segments[0] === "(auth)";
 
     if (!isAuthenticated && !inAuthGroup) {
-      router.replace("/(auth)/login");
+      router.replace(Paths.home);
     } else if (isAuthenticated && inAuthGroup) {
-      router.replace("/home");
+      router.replace(Paths.home);
     }
   }, [isAuthenticated, segments, isLoading, router]);
 
