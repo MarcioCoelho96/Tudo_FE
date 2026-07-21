@@ -1,4 +1,5 @@
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 
 import {
@@ -11,7 +12,7 @@ import {
   View,
 } from "react-native";
 
-import OrderFooter from "../components/PayButton";
+import PayButton from "../components/PayButton";
 
 import ProductList, {
   Product,
@@ -26,60 +27,76 @@ const TABS: ProductCategory[] = ["Pratos", "Bebidas", "Sobremesas"];
 
 const PRODUCTS: Product[] = [
   {
-    id: "frango",
+    id: "chicken-1",
     title: "Dose de Frango",
     description: "Uma dose de frango acompanhado\ncom batata frita e arroz.",
     category: "Pratos",
+    price: 15,
     image: {
-      uri: "https://picsum.photos/seed/frango/200/200",
+      uri: "https://picsum.photos/seed/chicken-1/200/200",
     },
   },
   {
-    id: "peixe",
+    id: "fish-stew-1",
     title: "Caldeirada de Peixe",
     description:
       "Um cozido, cujos componentes\nbásicos são diversas variedades de\npeixe, batata, cebola, tomate e\npimentão.",
     category: "Pratos",
+    price: 12,
     image: {
-      uri: "https://picsum.photos/seed/peixe/200/200",
+      uri: "https://picsum.photos/seed/fish-stew-1/200/200",
     },
   },
   {
-    id: "arroz",
+    id: "mushroom-rice-1",
     title: "Arroz de Cogumelos\ncom Omelete",
     description:
       "Um cozido, cujos componentes\nbásicos são diversas variedades de\npeixe, batata, cebola, tomate e\npimentão.",
     category: "Pratos",
+    price: 8,
     image: {
-      uri: "https://picsum.photos/seed/arroz/200/200",
+      uri: "https://picsum.photos/seed/mushroom-rice-1/200/200",
     },
   },
   {
-    id: "bacalhau",
+    id: "cod-1",
     title: "Bacalhau à Brás",
     description:
       "Bacalhau desfiado com batata\npalha, ovos, azeitonas e\nsalsa picada.",
     category: "Pratos",
+    price: 14,
     image: {
-      uri: "https://picsum.photos/seed/bacalhau/200/200",
+      uri: "https://picsum.photos/seed/cod-1/200/200",
     },
   },
   {
-    id: "agua",
+    id: "water-1",
     title: "Água Mineral",
     description: "Garrafa de água mineral.",
     category: "Bebidas",
+    price: 2,
     image: {
-      uri: "https://picsum.photos/seed/agua/200/200",
+      uri: "https://picsum.photos/seed/water-1/200/200",
     },
   },
   {
-    id: "mousse",
+    id: "beer-1",
+    title: "Cerveja Super Bock",
+    description: "Super Bock é uma marca de cerveja portuguesa.",
+    category: "Bebidas",
+    price: 3,
+    image: {
+      uri: "https://picsum.photos/seed/beer-1/200/200",
+    },
+  },
+  {
+    id: "mousse-1",
     title: "Mousse de Chocolate",
     description: "Mousse de chocolate caseira.",
     category: "Sobremesas",
+    price: 4,
     image: {
-      uri: "https://picsum.photos/seed/mousse/200/200",
+      uri: "https://picsum.photos/seed/mousse-1/200/200",
     },
   },
 ];
@@ -97,21 +114,25 @@ function normalizeText(value: unknown): string {
     .toLowerCase();
 }
 
-export default function RestaurantScreen() {
+export default function OrderScreen() {
+  const router = useRouter();
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const [activeTab, setActiveTab] = useState<ProductCategory>("Pratos");
 
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([
-    "frango",
-    "arroz",
+    "chicken-1",
+    "mushroom-rice-1",
   ]);
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = normalizeText(searchQuery);
 
     return PRODUCTS.filter((product) => {
-      if (product.category !== activeTab) {
+      const matchesCategory = product.category === activeTab;
+
+      if (!matchesCategory) {
         return false;
       }
 
@@ -150,19 +171,13 @@ export default function RestaurantScreen() {
 
     console.log("Selected products:", selectedProducts);
 
-    /*
-      Later you can navigate:
-
-      router.push({
-        pathname: "/myOrder",
-        params: {
-          products: JSON.stringify(
-            selectedProducts
-          ),
-        },
-      });
-    */
+    router.push("/OngoingOrder/OngoingOrder");
   };
+
+  const selectedLabel =
+    selectedProductIds.length === 1
+      ? "PRATO\nSELECIONADO"
+      : "PRATOS\nSELECIONADOS";
 
   return (
     <View style={styles.container}>
@@ -223,19 +238,32 @@ export default function RestaurantScreen() {
         </View>
       </View>
 
-      {/* Green component */}
-      <ProductList
-        products={filteredProducts}
-        selectedProductIds={selectedProductIds}
-        onProductPress={handleProductPress}
-        emptyMessage="Nenhum produto encontrado."
-      />
+      <View style={styles.listContainer}>
+        <ProductList
+          products={filteredProducts}
+          selectedProductIds={selectedProductIds}
+          onProductPress={handleProductPress}
+          interactive
+          showSelectionIndicator
+          emptyMessage="Nenhum produto encontrado."
+        />
+      </View>
 
-      {/* Red component */}
-      <OrderFooter
-        selectedCount={selectedProductIds.length}
-        onOrderPress={handleOrderPress}
-      />
+      <View style={styles.orderFooter}>
+        <PayButton
+          buttonText={"FAZER\nPEDIDO"}
+          cardText={
+            "Quando tiver selecionado\ntodos os pratos que deseja\nclique em FAZER PEDIDO."
+          }
+          onPress={handleOrderPress}
+        />
+
+        <View style={styles.selectedItemsPill}>
+          <Text style={styles.selectedItemsText}>
+            {selectedProductIds.length} {selectedLabel}
+          </Text>
+        </View>
+      </View>
     </View>
   );
 }
@@ -330,5 +358,38 @@ const styles = StyleSheet.create({
 
   activeTabText: {
     fontWeight: "900",
+  },
+
+  listContainer: {
+    flex: 1,
+    minHeight: 0,
+  },
+
+  orderFooter: {
+    position: "relative",
+    width: "100%",
+    height: 141,
+    backgroundColor: "#FFFFFF",
+  },
+
+  selectedItemsPill: {
+    position: "absolute",
+    top: 4,
+    right: 49,
+    width: 180,
+    height: 45,
+    borderRadius: 24,
+    backgroundColor: "#28324A",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 10,
+  },
+
+  selectedItemsText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "900",
+    lineHeight: 16,
+    textAlign: "center",
   },
 });
