@@ -12,12 +12,12 @@ import {
   View,
 } from "react-native";
 
-import PayButton from "../components/PayButton";
+import PayButton from "../PayButton";
 
 import ProductList, {
   Product,
   ProductCategory,
-} from "../components/ProductList";
+} from "../ProductList";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -171,7 +171,7 @@ export default function OrderScreen() {
 
     console.log("Selected products:", selectedProducts);
 
-    router.push("/OngoingOrder/OngoingOrder");
+    router.push("/components/ongoingOrder/OngoingOrder");
   };
 
   const selectedLabel =
@@ -190,7 +190,7 @@ export default function OrderScreen() {
       <View style={styles.header}>
         <View style={styles.headerImageContainer}>
           <Image
-            source={require("../../../assets/images/restaurante.png")}
+            source={require("../../../../assets/images/restaurante.png")}
             style={styles.headerImage}
             contentFit="cover"
           />
