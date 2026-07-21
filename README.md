@@ -1,80 +1,50 @@
-# Tudo_FE
+# Welcome to your Expo app 👋
 
-React Native mobile application for Tudo.
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Getting Started
+## Get started
 
-### Prerequisites
+1. Install dependencies
 
-- Node.js >= 18
-- React Native CLI
-- Xcode (for iOS) or Android Studio (for Android)
+   ```bash
+   npm install
+   ```
 
-### Installation
+2. Start the app
+
+   ```bash
+   npx expo start
+   ```
+
+In the output, you'll find options to open the app in a
+
+- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+
+You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+
+## Get a fresh project
+
+When you're ready, run:
 
 ```bash
-# Install dependencies
-npm install
-
-# For iOS, install pods
-cd ios && pod install && cd ..
+npm run reset-project
 ```
 
-### Running the App
+This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-```bash
-# Start Metro bundler
-npm start
+## Learn more
 
-# Run on iOS Simulator
-npm run ios
+To learn more about developing your project with Expo, look at the following resources:
 
-# Run on Android Emulator
-npm run android
-```
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
----
+## Join the community
 
-## Phone Number Input Screen
+Join our community of developers creating universal apps.
 
-Located at `src/screens/PhoneNumberScreen.js`
-
-### Features
-
-- **Dynamic Layout**: Uses flexbox instead of absolute positioning
-- **Country Code Selector**: Touchable element for selecting country codes
-- **Phone Number Input**: Text input for entering phone numbers
-- **Responsive Design**: Adapts to all screen sizes
-
-### Assets Required
-
-Place these in the `/assets` folder:
-- `background.png` - The dark blue background image
-- `logo_background.png` - The pattern/logo tiles
-
-After adding assets, update the screen file to enable them:
-
-```javascript
-// In src/screens/PhoneNumberScreen.js
-const IMG_BACKGROUND = require('../../assets/background.png')
-const IMG_LOGO_PATTERN = require('../../assets/logo_background.png')
-```
-
----
-
-## Project Structure
-
-```
-/workspace
-├── App.js                 # Main app entry with navigation
-├── index.js               # React Native entry point
-├── package.json           # Dependencies
-├── assets/                # Images and assets
-│   ├── background.png
-│   └── logo_background.png
-└── src/
-    └── screens/
-        ├── index.js
-        ├── PhoneNumberScreen.js
-        └── iphone_55.js
-```
+- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
+- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.

@@ -1,0 +1,76 @@
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Image } from "react-native";
+import { CustomTabBar } from "../components/customTabBar";
+import HomeScreen from "./home";
+import ProfileScreen from "./profile";
+
+export type TabParamList = {
+  home: undefined;
+  profile: undefined;
+  calendar: undefined;
+};
+
+export default function DashboardLayout() {
+  const Tabs = createBottomTabNavigator<TabParamList>();
+  return (
+    <Tabs.Navigator
+      tabBar={(props) => <CustomTabBar {...props} />}
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Tabs.Screen
+        name="home"
+        component={HomeScreen}
+        options={{
+          title: "Home UI",
+          tabBarIcon: ({ color }) => (
+            <Image
+              source={require("../../../assets/images/pin.png")}
+              style={{
+                width: 35,
+                height: 35,
+                tintColor: color,
+              }}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        component={ProfileScreen}
+        options={{
+          title: "My Profile",
+          tabBarIcon: ({ color }) => (
+            <Image
+              source={require("../../../assets/images/calendar.png")}
+              style={{
+                width: 35,
+                height: 35,
+                tintColor: color,
+              }}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="calendar"
+        component={ProfileScreen}
+        options={{
+          title: "My Profile",
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <Image
+              source={require("../../../assets/images/file.png")}
+              style={{
+                width: 35,
+                height: 35,
+                tintColor: color,
+              }}
+            />
+          ),
+        }}
+      />
+    </Tabs.Navigator>
+  );
+}
