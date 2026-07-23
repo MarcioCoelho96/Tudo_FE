@@ -1,4 +1,5 @@
 import { useAuth } from "@/context/authContext";
+import { useCategories } from "@/hooks/useCategories";
 import { colors } from "@/styles/global";
 import { Image, ImageBackground } from "expo-image";
 import React from "react";
@@ -15,6 +16,7 @@ import ServiceCard from "../components/servicesCard";
 
 export default function HomeScreen() {
   const { login, logout } = useAuth();
+  const { categories } = useCategories();
   return (
     <View style={styles.container}>
       <StatusBar
@@ -134,9 +136,9 @@ export default function HomeScreen() {
           gap: 21,
         }}
       >
-        <ServiceCard category="CAFÉ" />
-        <ServiceCard category="RESTAURANTE" />
-        <ServiceCard category="LIVRARIA" />
+        {categories.map((category) => {
+          return <ServiceCard key={category.key} category={category.label} />;
+        })}
       </ScrollView>
     </View>
   );
@@ -169,7 +171,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 100,
     backgroundColor: colors.gray,
-    marginBottom: 5,
+    marginTop: -20,
   },
 
   profileIconHead: {
