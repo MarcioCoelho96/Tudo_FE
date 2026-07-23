@@ -1,50 +1,17 @@
-import { useAuth } from "@/context/authContext";
 import { useCategories } from "@/hooks/useCategories";
 import { colors } from "@/styles/global";
 import { Image, ImageBackground } from "expo-image";
 import React from "react";
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { DashboardHeader } from "../components/dashboardHeader";
 import SearchBar from "../components/searchBar";
 import ServiceCard from "../components/servicesCard";
 
 export default function HomeScreen() {
-  const { login, logout } = useAuth();
   const { categories } = useCategories();
   return (
     <View style={styles.container}>
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle="light-content"
-      />
-
-      {/* Top Bar with Profile (in blue area) */}
-      <View style={styles.topBar}>
-        <View style={styles.topBarSpacer} />
-        {/* Profile Icon - Top Right in Blue Area */}
-
-        <Image
-          source={require("../../../assets/images/tudoIcon.png")}
-          style={{ width: 140, height: 64, marginRight: 90 }}
-        />
-        <TouchableOpacity
-          style={styles.profileButton}
-          activeOpacity={0.85}
-          onPress={() => logout()}
-        >
-          <Image
-            source={require("../../../assets/images/userProfileIcon.png")}
-            style={{ width: 45, height: 64, marginTop: 7 }}
-          />
-        </TouchableOpacity>
-      </View>
+      <DashboardHeader />
       <ImageBackground
         source={require("../../../assets/images/dashboardBackground.png")}
         style={styles.backgroundImage}
@@ -148,37 +115,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.main,
-  },
-
-  // Top Bar (in blue area)
-  topBar: {
-    position: "absolute",
-    paddingTop: (StatusBar.currentHeight || 44) + 5,
-    paddingHorizontal: 40,
-    flexDirection: "row",
-    alignItems: "center",
-    zIndex: 100,
-    justifyContent: "space-between",
-    width: "100%",
-  },
-
-  topBarSpacer: {},
-
-  profileButton: {
-    width: 54,
-    height: 54,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 100,
-    backgroundColor: colors.gray,
-    marginTop: -20,
-  },
-
-  profileIconHead: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: colors.white,
   },
 
   profileIconBody: {

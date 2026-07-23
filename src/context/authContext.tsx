@@ -34,7 +34,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
-    debugger;
     const checkToken = async () => {
       try {
         const token = await authService.getSessionToken();

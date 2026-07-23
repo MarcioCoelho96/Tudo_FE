@@ -54,7 +54,6 @@ export function CustomTabBar({
             }
           };
 
-          // Check if this is the center tab (e.g., the Calendar/Home tab)
           const isCenter = index === Math.floor(state.routes.length / 2);
 
           if (isCenter) {
