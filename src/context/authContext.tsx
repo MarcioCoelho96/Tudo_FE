@@ -37,7 +37,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const checkToken = async () => {
       try {
         const token = await authService.getSessionToken();
-        // If a secure token exists, authenticate the user immediately
+
         setIsAuthenticated(!!token);
       } catch (error) {
         console.error("Failed to read secure token", error);
