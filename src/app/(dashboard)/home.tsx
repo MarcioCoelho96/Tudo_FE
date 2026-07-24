@@ -1,8 +1,9 @@
 import { useCategories } from "@/hooks/useCategories";
 import { colors } from "@/styles/global";
-import { Image, ImageBackground } from "expo-image";
+import { Image } from "expo-image";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { BackgroundImage } from "../components/backgroundImage";
 import { DashboardHeader } from "../components/dashboardHeader";
 import SearchBar from "../components/searchBar";
 import ServiceCard from "../components/servicesCard";
@@ -12,12 +13,9 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <DashboardHeader />
-      <ImageBackground
+      <BackgroundImage
         source={require("../../../assets/images/dashboardBackground.png")}
-        style={styles.backgroundImage}
-        contentFit="fill"
       />
-
       <View
         style={{
           paddingTop: 100,
@@ -124,12 +122,5 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 12,
     backgroundColor: colors.white,
     marginTop: -2,
-  },
-  backgroundImage: {
-    position: "absolute",
-    top: 30,
-    left: 0,
-    right: 0,
-    bottom: -20,
   },
 });
