@@ -2,10 +2,12 @@ import { ImageBackground } from "expo-image";
 import { StyleSheet } from "react-native";
 
 interface BackgroundImageProps {
-  source: string | number;
+  source?: string | number;
 }
 
-export function BackgroundImage({ source }: BackgroundImageProps) {
+export function BackgroundImage({
+  source = require("../../../assets/images/dashboardBackground.png"),
+}: BackgroundImageProps) {
   return (
     <ImageBackground
       source={source}

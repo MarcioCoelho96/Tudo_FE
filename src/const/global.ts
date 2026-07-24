@@ -5,4 +5,5 @@ export enum Paths {
   login = "/(auth)/login",
   home = "/(dashboard)/home",
   profile = "/(dashboard)/profile",
+  location = "/(dashboard)/location",
 }

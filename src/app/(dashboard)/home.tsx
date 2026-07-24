@@ -13,9 +13,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <DashboardHeader />
-      <BackgroundImage
-        source={require("../../../assets/images/dashboardBackground.png")}
-      />
+      <BackgroundImage />
       <View
         style={{
           paddingTop: 100,
