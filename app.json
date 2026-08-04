@@ -19,7 +19,12 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBjG90ujn3mgNUXmGEGK6UyUy7Tyxp-8o8"
+        }
+      }
     },
     "web": {
       "output": "static",
@@ -39,6 +44,7 @@
           }
         }
       ],
+
       "expo-font",
       "expo-secure-store"
     ],

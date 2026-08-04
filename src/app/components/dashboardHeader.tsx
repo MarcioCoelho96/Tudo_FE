@@ -4,7 +4,7 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
 
-export function DashboardHeader() {
+export const DashboardHeader: React.FC = () => {
   const router = useRouter();
 
   const handleOpenProfile = () => {
@@ -35,7 +35,7 @@ export function DashboardHeader() {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   topBar: {

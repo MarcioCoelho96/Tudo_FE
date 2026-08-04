@@ -5,9 +5,9 @@ interface BackgroundImageProps {
   source?: string | number;
 }
 
-export function BackgroundImage({
+export const BackgroundImage: React.FC<BackgroundImageProps> = ({
   source = require("../../../assets/images/dashboardBackground.png"),
-}: BackgroundImageProps) {
+}) => {
   return (
     <ImageBackground
       source={source}
@@ -15,7 +15,7 @@ export function BackgroundImage({
       contentFit="fill"
     />
   );
-}
+};
 
 const styles = StyleSheet.create({
   backgroundImage: {
