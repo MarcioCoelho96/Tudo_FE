@@ -1,6 +1,8 @@
+import { Paths } from "@/const/global";
 import { useAuth } from "@/context/authContext";
 import { authService } from "@/services/authService";
 import { Image, ImageBackground } from "expo-image";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -19,6 +21,7 @@ enum LoginStep {
 }
 
 export default function LoginScreen() {
+  const { push } = useRouter();
   const { login } = useAuth();
   const [phoneNumber, setPhoneNumber] = useState("966153178");
   const [countryCode, setCountryCode] = useState("+351");
@@ -26,6 +29,10 @@ export default function LoginScreen() {
   const [step, setStep] = useState<LoginStep>(LoginStep.EnterPhoneNumber);
   const [smsCode, setSmsCode] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  const handleOnChangeAddress = () => {
+    push(Paths.location);
+  };
 
   const handlePhoneChange = (text: string) => {
     const cleaned = text.replace(/\D/g, "");

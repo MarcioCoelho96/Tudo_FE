@@ -15,7 +15,7 @@ function NavigateGate() {
     const inAuthGroup = segments[0] === "(auth)";
 
     if (!isAuthenticated && !inAuthGroup) {
-      router.replace(Paths.login);
+      router.replace(Paths.home);
     } else if (isAuthenticated && inAuthGroup) {
       router.replace(Paths.home);
     }

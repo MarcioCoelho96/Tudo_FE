@@ -1,15 +1,93 @@
+import { Paths } from "@/const/global";
 import { useCategories } from "@/hooks/useCategories";
+import { useUserStore } from "@/store/userStore/userStore.store";
 import { colors } from "@/styles/global";
 import { Image } from "expo-image";
-import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import * as Location from "expo-location";
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { BackgroundImage } from "../components/backgroundImage";
 import { DashboardHeader } from "../components/dashboardHeader";
 import SearchBar from "../components/searchBar";
 import ServiceCard from "../components/servicesCard";
 
 export default function HomeScreen() {
+  const router = useRouter();
   const { categories } = useCategories();
+  const setLocation = useUserStore((state) => state.setLocation);
+  const setAddress = useUserStore((state) => state.setAddress);
+
+  const address = useUserStore((state) => state.address);
+
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function getCurrentLocation() {
+      // 1. Request foreground location permission
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      // 2. Fetch current GPS position
+      let userLocation = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+
+      const currentCoords = {
+        latitude: userLocation.coords.latitude,
+        longitude: userLocation.coords.longitude,
+      };
+
+      // 3. Format into a MapView Region
+      setLocation({
+        latitude: userLocation.coords.latitude,
+        longitude: userLocation.coords.longitude,
+        latitudeDelta: 0.01, // Zoom level (smaller = closer)
+        longitudeDelta: 0.01,
+      });
+
+      let geocode = await Location.reverseGeocodeAsync(currentCoords);
+
+      if (geocode.length > 0) {
+        const firstResult = geocode[0];
+        setAddress({
+          street: firstResult.street ?? "",
+          streetNumber: firstResult.streetNumber ?? "",
+          city: firstResult.city ?? firstResult.subregion ?? "",
+          region: firstResult.region ?? "",
+          formattedAddress: `${firstResult.streetNumber ? firstResult.streetNumber + " " : ""}${firstResult.street || ""}, ${firstResult.city || ""}`,
+        });
+      }
+    }
+
+    getCurrentLocation();
+  }, []);
+
+  const handleChangeAddress = () => {
+    router.push(Paths.location);
+  };
+
+  if (!location) {
+    return (
+      <View style={styles.centered}>
+        {errorMsg ? (
+          <Text style={styles.errorText}>{errorMsg}</Text>
+        ) : (
+          <ActivityIndicator size="large" color={colors.main} />
+        )}
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <DashboardHeader />
@@ -26,25 +104,30 @@ export default function HomeScreen() {
             alignItems: "center",
           }}
         >
-          <Image
-            source={require("../../../assets/images/locationIcon.png")}
-            style={{ width: 36, height: 36 }}
-            contentFit="fill"
-          />
-          <Text
-            style={{
-              paddingLeft: 9,
-              paddingRight: 9,
-              fontWeight: 900,
-              fontSize: 14,
-              width: 170,
-              color: colors.gray,
-            }}
-            ellipsizeMode="tail"
-            numberOfLines={1}
+          <TouchableOpacity
+            style={{ flexDirection: "row", alignItems: "center" }}
+            onPress={handleChangeAddress}
           >
-            Rua Nova da Telha, nº261, 482
-          </Text>
+            <Image
+              source={require("../../../assets/images/locationIcon.png")}
+              style={{ width: 36, height: 36 }}
+              contentFit="fill"
+            />
+            <Text
+              style={{
+                paddingLeft: 9,
+                paddingRight: 9,
+                fontWeight: 900,
+                fontSize: 14,
+                width: 170,
+                color: colors.gray,
+              }}
+              ellipsizeMode="tail"
+              numberOfLines={1}
+            >
+              {address?.formattedAddress}
+            </Text>
+          </TouchableOpacity>
           <View
             style={{
               width: 122,
@@ -99,6 +182,9 @@ export default function HomeScreen() {
           gap: 21,
         }}
       >
+        <ServiceCard category="Testes" />
+        <ServiceCard category="Testes" />
+        <ServiceCard category="Testes" />
         {categories.map((category) => {
           return <ServiceCard key={category.key} category={category.label} />;
         })}
@@ -120,5 +206,15 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 12,
     backgroundColor: colors.white,
     marginTop: -2,
+  },
+
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
   },
 });

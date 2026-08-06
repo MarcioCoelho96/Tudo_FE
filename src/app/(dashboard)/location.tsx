@@ -1,8 +1,12 @@
 import { colors } from "@/styles/global";
 import { Image } from "expo-image";
 
+import { useUserStore } from "@/store/userStore/userStore.store";
+import { AddressData } from "@/store/userStore/userStore.types";
+import { Ionicons } from "@expo/vector-icons";
 import * as Location from "expo-location";
-import { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -11,23 +15,28 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
 import { BackgroundImage } from "../components/backgroundImage";
 import { DashboardHeader } from "../components/dashboardHeader";
 import ServiceCard from "../components/servicesCard";
 
-interface AddressData {
-  street?: string;
-  streetNumber?: string;
-  city?: string;
-  region?: string;
-  formattedAddress?: string;
+interface LocationData {
+  location: Region | null;
+  address: AddressData | null;
 }
 
 export default function LocationScreen() {
-  const [location, setLocation] = useState<Region | null>(null);
-  const [address, setAddress] = useState<AddressData | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const { back } = useRouter();
+  const location = useUserStore((state) => state.location);
+  const address = useUserStore((state) => state.address);
+
+  const setLocation = useUserStore((state) => state.setLocation);
+  const setAddress = useUserStore((state) => state.setAddress);
+
+  const [selectedAddress, setSelectedAddress] = useState<LocationData | null>(
+    null,
+  );
+  const [loadingAddress, setLoadingAddress] = useState<boolean>(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const resources = {
@@ -37,60 +46,56 @@ export default function LocationScreen() {
     buttonText: "Continuar",
   };
 
-  useEffect(() => {
-    async function getCurrentLocation() {
-      // 1. Request foreground location permission
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
+  const handleBack = () => {
+    back();
+  };
 
-      // 2. Fetch current GPS position
-      let userLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
+  const handleRegionChangeComplete = async (newRegion: Region) => {
+    setLoadingAddress(true);
+
+    try {
+      // Reverse geocode the center coordinates of the map
+      const geocode = await Location.reverseGeocodeAsync({
+        latitude: newRegion.latitude,
+        longitude: newRegion.longitude,
       });
-
-      const currentCoords = {
-        latitude: userLocation.coords.latitude,
-        longitude: userLocation.coords.longitude,
-      };
-
-      // 3. Format into a MapView Region
-      setLocation({
-        latitude: userLocation.coords.latitude,
-        longitude: userLocation.coords.longitude,
-        latitudeDelta: 0.01, // Zoom level (smaller = closer)
-        longitudeDelta: 0.01,
-      });
-
-      let geocode = await Location.reverseGeocodeAsync(currentCoords);
 
       if (geocode.length > 0) {
-        const firstResult = geocode[0];
-        setAddress({
-          street: firstResult.street ?? "",
-          streetNumber: firstResult.streetNumber ?? "",
-          city: firstResult.city ?? firstResult.subregion ?? "",
-          region: firstResult.region ?? "",
-          formattedAddress: `${firstResult.streetNumber ? firstResult.streetNumber + " " : ""}${firstResult.street || ""}, ${firstResult.city || ""}`,
+        const item = geocode[0];
+
+        setSelectedAddress({
+          location: {
+            latitude: newRegion.longitude,
+            longitude: newRegion.latitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          },
+          address: {
+            street: item.street ?? "",
+            streetNumber: item.streetNumber ?? "",
+            city: item.city ?? item.subregion ?? "",
+            region: item.region ?? "",
+            formattedAddress: `${item.streetNumber ? item.streetNumber + " " : ""}${item.street || ""}, ${item.city || ""}`,
+          },
         });
       }
+    } catch (error) {
+      console.error("Failed to geocode location:", error);
+    } finally {
+      setLoadingAddress(false);
     }
+  };
 
-    getCurrentLocation();
-  }, []);
+  const handleContinue = () => {
+    if (selectedAddress?.location && selectedAddress.address) {
+      setLocation(selectedAddress?.location);
+      setAddress(selectedAddress.address);
+      back();
+    }
+  };
 
   if (!location) {
-    return (
-      <View style={styles.centered}>
-        {errorMsg ? (
-          <Text style={styles.errorText}>{errorMsg}</Text>
-        ) : (
-          <ActivityIndicator size="large" color="#0000ff" />
-        )}
-      </View>
-    );
+    return;
   }
   return (
     <View style={styles.container}>
@@ -109,7 +114,11 @@ export default function LocationScreen() {
             gap: 24,
           }}
         >
-          <TouchableOpacity style={styles.profileButton} activeOpacity={0.85}>
+          <TouchableOpacity
+            style={styles.profileButton}
+            activeOpacity={0.85}
+            onPress={handleBack}
+          >
             <Image
               source={require("../../../assets/images/navBackIcon.png")}
               style={{ width: 24, height: 24 }}
@@ -130,16 +139,14 @@ export default function LocationScreen() {
               <MapView
                 style={styles.map}
                 provider={PROVIDER_GOOGLE}
-                initialRegion={location}
-                showsUserLocation={true}
-              >
-                <Marker
-                  coordinate={{
-                    latitude: location.latitude,
-                    longitude: location.longitude,
-                  }}
-                />
-              </MapView>
+                initialRegion={location && location}
+                onRegionChangeComplete={handleRegionChangeComplete}
+              />
+
+              <View style={styles.centerPinContainer} pointerEvents="none">
+                <Ionicons name="location" size={40} color="#FF3B30" />
+                <View style={styles.pinDot} />
+              </View>
             </View>
             <View style={styles.location}>
               <Text
@@ -154,7 +161,7 @@ export default function LocationScreen() {
               </Text>
 
               <Text style={{ fontSize: 12, marginTop: 5 }}>
-                {address?.formattedAddress}
+                {selectedAddress?.address?.formattedAddress}
               </Text>
             </View>
             <View>
@@ -167,6 +174,7 @@ export default function LocationScreen() {
                   ...styles.button,
                   backgroundColor: isSubmitting ? colors.orange : colors.main,
                 }}
+                onPress={handleContinue}
               >
                 {isSubmitting ? (
                   <ActivityIndicator color={colors.orange} size={"large"} />
@@ -245,5 +253,25 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+  },
+
+  centerPinContainer: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    // Shifts the pin up slightly so the bottom tip points to exact center
+    marginTop: -20,
+  },
+  pinDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#000",
+    opacity: 0.3,
+    marginTop: -4,
   },
 });
