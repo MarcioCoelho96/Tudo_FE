@@ -10,12 +10,13 @@ function NavigateGate() {
   const router = useRouter();
 
   useEffect(() => {
+    debugger;
     if (isLoading) return;
 
     const inAuthGroup = segments[0] === "(auth)";
 
     if (!isAuthenticated && !inAuthGroup) {
-      router.replace(Paths.home);
+      router.replace(Paths.login);
     } else if (isAuthenticated && inAuthGroup) {
       router.replace(Paths.home);
     }

@@ -47,7 +47,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     checkToken();
-  }, [isAuthenticated]);
+  }, []);
 
   const login = async (phoneNumber: string, validationCode: string) => {
     const token = await authService.validateSmsCode(

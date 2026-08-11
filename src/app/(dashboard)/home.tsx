@@ -1,5 +1,7 @@
 import { Paths } from "@/const/global";
+import { useAuth } from "@/context/authContext";
 import { useCategories } from "@/hooks/useCategories";
+import { useEstablishmentsNearby } from "@/hooks/useEstablishmentsNearby";
 import { useUserStore } from "@/store/userStore/userStore.store";
 import { colors } from "@/styles/global";
 import { Image } from "expo-image";
@@ -22,10 +24,17 @@ import ServiceCard from "../components/servicesCard";
 export default function HomeScreen() {
   const router = useRouter();
   const { categories } = useCategories();
+  const { logout } = useAuth();
+
   const setLocation = useUserStore((state) => state.setLocation);
   const setAddress = useUserStore((state) => state.setAddress);
 
   const address = useUserStore((state) => state.address);
+
+  const { establishments, fetchEstablishmentsNearby } =
+    useEstablishmentsNearby();
+
+  console.log("here", establishments);
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -46,27 +55,26 @@ export default function HomeScreen() {
       const currentCoords = {
         latitude: userLocation.coords.latitude,
         longitude: userLocation.coords.longitude,
+        latitudeDelta: 0.01, // Zoom level (smaller = closer)
+        longitudeDelta: 0.01,
       };
 
       // 3. Format into a MapView Region
-      setLocation({
-        latitude: userLocation.coords.latitude,
-        longitude: userLocation.coords.longitude,
-        latitudeDelta: 0.01, // Zoom level (smaller = closer)
-        longitudeDelta: 0.01,
-      });
+      setLocation(currentCoords);
 
       let geocode = await Location.reverseGeocodeAsync(currentCoords);
 
       if (geocode.length > 0) {
         const firstResult = geocode[0];
-        setAddress({
+        const address = {
           street: firstResult.street ?? "",
           streetNumber: firstResult.streetNumber ?? "",
           city: firstResult.city ?? firstResult.subregion ?? "",
           region: firstResult.region ?? "",
           formattedAddress: `${firstResult.streetNumber ? firstResult.streetNumber + " " : ""}${firstResult.street || ""}, ${firstResult.city || ""}`,
-        });
+        };
+        setAddress(address);
+        fetchEstablishmentsNearby(address, currentCoords);
       }
     }
 
@@ -182,9 +190,6 @@ export default function HomeScreen() {
           gap: 21,
         }}
       >
-        <ServiceCard category="Testes" />
-        <ServiceCard category="Testes" />
-        <ServiceCard category="Testes" />
         {categories.map((category) => {
           return <ServiceCard key={category.key} category={category.label} />;
         })}
