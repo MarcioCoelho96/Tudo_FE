@@ -2,12 +2,15 @@ import { ImageBackground } from "expo-image";
 import { StyleSheet } from "react-native";
 
 interface BackgroundImageProps {
-  source?: string | number;
+  isDefaultBg?: boolean;
 }
 
 export const BackgroundImage: React.FC<BackgroundImageProps> = ({
-  source = require("../../../assets/images/dashboardBackground.png"),
+  isDefaultBg = true,
 }) => {
+  const source = isDefaultBg
+    ? require("../../../assets/images/dashboardBackground.png")
+    : require("../../../assets/images/profileBackground.png");
   return (
     <ImageBackground
       source={source}
@@ -20,9 +23,9 @@ export const BackgroundImage: React.FC<BackgroundImageProps> = ({
 const styles = StyleSheet.create({
   backgroundImage: {
     position: "absolute",
-    top: 30,
-    left: 0,
-    right: 0,
+    top: 35,
+    left: -5,
+    right: -5,
     bottom: -20,
   },
 });

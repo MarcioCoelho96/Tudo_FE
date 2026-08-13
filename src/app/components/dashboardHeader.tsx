@@ -40,7 +40,7 @@ export const DashboardHeader: React.FC = () => {
 const styles = StyleSheet.create({
   topBar: {
     position: "absolute",
-    paddingTop: (StatusBar.currentHeight || 44) + 5,
+    paddingTop: (StatusBar.currentHeight || 45) + 15,
     paddingHorizontal: 40,
     flexDirection: "row",
     alignItems: "center",
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 100,
     backgroundColor: colors.gray,
-    marginTop: -20,
+    marginTop: -25,
   },
 });
 

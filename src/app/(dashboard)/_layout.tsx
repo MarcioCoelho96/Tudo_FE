@@ -60,7 +60,7 @@ export default function DashboardLayout() {
         options={{
           title: "My Profile",
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <Image
               source={require("../../../assets/images/file.png")}
               style={{

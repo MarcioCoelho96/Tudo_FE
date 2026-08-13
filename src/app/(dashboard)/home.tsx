@@ -1,5 +1,4 @@
 import { Paths } from "@/const/global";
-import { useAuth } from "@/context/authContext";
 import { useCategories } from "@/hooks/useCategories";
 import { useEstablishmentsNearby } from "@/hooks/useEstablishmentsNearby";
 import { useUserStore } from "@/store/userStore/userStore.store";
@@ -24,7 +23,6 @@ import ServiceCard from "../components/servicesCard";
 export default function HomeScreen() {
   const router = useRouter();
   const { categories } = useCategories();
-  const { logout } = useAuth();
 
   const setLocation = useUserStore((state) => state.setLocation);
   const setAddress = useUserStore((state) => state.setAddress);
@@ -55,7 +53,7 @@ export default function HomeScreen() {
       const currentCoords = {
         latitude: userLocation.coords.latitude,
         longitude: userLocation.coords.longitude,
-        latitudeDelta: 0.01, // Zoom level (smaller = closer)
+        latitudeDelta: 0.01,
         longitudeDelta: 0.01,
       };
 
@@ -102,7 +100,7 @@ export default function HomeScreen() {
       <BackgroundImage />
       <View
         style={{
-          paddingTop: 100,
+          paddingTop: 120,
           paddingLeft: 20,
         }}
       >

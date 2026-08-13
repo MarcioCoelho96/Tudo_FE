@@ -79,7 +79,7 @@ export default function LoginScreen() {
     }
   };
 
-  const isEnterPhoneStep = step === LoginStep.EnterPhoneNumber;
+  const isEnterPhoneStep = step === LoginStep.EnterValidationCode;
 
   const resources = {
     loginTitle: "INDIQUE-NOS O SEU",
