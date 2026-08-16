@@ -32,20 +32,21 @@ When you're ready, run:
 ```bash
 npm run reset-project
 ```
-
+```text 
 Tod_FE/
-├── assets/
-| └── images/ # Where we will add the images that compose the project
-├── src/ # Primary source code  
-│ ├── app/ # Screens and components that compose the FE
-| | ├── (auth)/ # Login Pages
-| | ├── (dashboard)/ # After Login pages
-| | ├── components/ # Reusable UI components (buttons, navbar)
-│ ├── const/ # Unchanged const
-| ├── context/ # Hook used for the login
-| ├── hooks/ # General hooks
-| ├── services/ # Services used to get data from the API
-| ├── store/ # Data storage center
-| └── styles/ # Global styles that needs to be used by the project
-├── .env.example # Template for required environment variables
+├── assets/                
+| └── images/              # Where we will add the images that compose the project
+├── src/                   # Primary source code  
+│ ├── app/                 # Screens and components that compose the FE
+| | ├── (auth)/            # Login Pages
+| | ├── (dashboard)/       # After Login pages
+| | ├── components/        # Reusable UI components (buttons, navbar)
+│ ├── const/               # Unchanged const
+| ├── context/             # Hook used for the login
+| ├── hooks/               # General hooks
+| ├── services/            # Services used to get data from the API
+| ├── store/               # Data storage center
+| └── styles/              # Global styles that need to be used by the project
+├── .env                   # Template for required environment variables
 └── README.md
+```
