@@ -29,7 +29,7 @@ You can start developing by editing the files inside the **app** directory. This
 Software needed:
 
  1. Node v24.15.0
- 2. Nmp v11.12.1
+ 2. Npm v11.12.1
 ```
 
 ```bash
