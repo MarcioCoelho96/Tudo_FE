@@ -34,11 +34,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
-    debugger;
     const checkToken = async () => {
       try {
         const token = await authService.getSessionToken();
-        // If a secure token exists, authenticate the user immediately
+
         setIsAuthenticated(!!token);
       } catch (error) {
         console.error("Failed to read secure token", error);
@@ -48,16 +47,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     checkToken();
-  }, [isAuthenticated]);
+  }, []);
 
   const login = async (phoneNumber: string, validationCode: string) => {
     const token = await authService.validateSmsCode(
       phoneNumber,
       validationCode,
     );
-
-    // const token =
-    //   "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIrMzUxOTY2MTUzMTc4IiwiaXNzIjoidHVkbyIsImF1ZCI6InR1ZG8iLCJpYXQiOjE3ODM3OTc3MTQsImV4cCI6MTc4Mzc5OTUxNH0.NNPSyv7m7efstSNK9LZ_-DEGqYnkiymlIGuWwyebBMU";
 
     await authService.saveSessionToken(token);
 

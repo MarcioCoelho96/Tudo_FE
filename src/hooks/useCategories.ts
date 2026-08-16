@@ -10,7 +10,6 @@ interface UseCategoriesReturn {
 }
 
 export const useCategories = (): UseCategoriesReturn => {
-  // Pass <Category[]> to useState so TS knows exactly what objects live inside the array
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);

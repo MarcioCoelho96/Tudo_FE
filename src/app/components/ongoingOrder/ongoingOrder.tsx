@@ -4,10 +4,10 @@ import React, { useMemo, useState } from "react";
 
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-import PayButton from "../components/PayButton";
-import ScreenBackground from "../components/screenBackground";
+import PayButton from "../PayButton";
+import ScreenBackground from "../screenBackground";
 
-import ProductList, { Product } from "../components/ProductList";
+import ProductList, { Product } from "../ProductList";
 
 const ORDER_PRODUCTS: Product[] = [
   {
@@ -108,7 +108,7 @@ export default function OngoingOrderScreen() {
     allProductIds.every((id) => selectedProductIds.includes(id));
 
   const handleOrderMore = () => {
-    router.replace("/Order/order");
+    router.replace("/components/order/order");
   };
 
   const handleProfilePress = () => {
@@ -169,7 +169,7 @@ export default function OngoingOrderScreen() {
       <View style={styles.contentContainer}>
         <View style={styles.header}>
           <Image
-            source={require("../../../assets/images/logo.png")}
+            source={require("../../../../assets/images/logo.png")}
             style={styles.logo}
             contentFit="contain"
           />
@@ -180,7 +180,7 @@ export default function OngoingOrderScreen() {
             activeOpacity={0.8}
           >
             <Image
-              source={require("../../../assets/images/profileButton.png")}
+              source={require("../../../../assets/images/profileButton.png")}
               style={styles.profileImage}
               contentFit="contain"
             />

@@ -1,57 +1,106 @@
-import { useAuth } from "@/context/authContext";
+import { Paths } from "@/const/global";
+import { useCategories } from "@/hooks/useCategories";
+import { useEstablishmentsNearby } from "@/hooks/useEstablishmentsNearby";
+import { useUserStore } from "@/store/userStore/userStore.store";
 import { colors } from "@/styles/global";
-import { Image, ImageBackground } from "expo-image";
-import React from "react";
+import { Image } from "expo-image";
+import * as Location from "expo-location";
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { BackgroundImage } from "../components/backgroundImage";
+import { DashboardHeader } from "../components/dashboardHeader";
 import SearchBar from "../components/searchBar";
 import ServiceCard from "../components/servicesCard";
 
 export default function HomeScreen() {
-  const { login, logout } = useAuth();
+  const router = useRouter();
+  const { categories } = useCategories();
+
+  const setLocation = useUserStore((state) => state.setLocation);
+  const setAddress = useUserStore((state) => state.setAddress);
+
+  const address = useUserStore((state) => state.address);
+
+  const { establishments, fetchEstablishmentsNearby } =
+    useEstablishmentsNearby();
+
+  console.log("here", establishments);
+
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function getCurrentLocation() {
+      // 1. Request foreground location permission
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      // 2. Fetch current GPS position
+      let userLocation = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+
+      const currentCoords = {
+        latitude: userLocation.coords.latitude,
+        longitude: userLocation.coords.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      };
+
+      // 3. Format into a MapView Region
+      setLocation(currentCoords);
+
+      let geocode = await Location.reverseGeocodeAsync(currentCoords);
+
+      if (geocode.length > 0) {
+        const firstResult = geocode[0];
+        const address = {
+          street: firstResult.street ?? "",
+          streetNumber: firstResult.streetNumber ?? "",
+          city: firstResult.city ?? firstResult.subregion ?? "",
+          region: firstResult.region ?? "",
+          formattedAddress: `${firstResult.streetNumber ? firstResult.streetNumber + " " : ""}${firstResult.street || ""}, ${firstResult.city || ""}`,
+        };
+        setAddress(address);
+        fetchEstablishmentsNearby(address, currentCoords);
+      }
+    }
+
+    getCurrentLocation();
+  }, []);
+
+  const handleChangeAddress = () => {
+    router.push(Paths.location);
+  };
+
+  if (!location) {
+    return (
+      <View style={styles.centered}>
+        {errorMsg ? (
+          <Text style={styles.errorText}>{errorMsg}</Text>
+        ) : (
+          <ActivityIndicator size="large" color={colors.main} />
+        )}
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle="light-content"
-      />
-
-      {/* Top Bar with Profile (in blue area) */}
-      <View style={styles.topBar}>
-        <View style={styles.topBarSpacer} />
-        {/* Profile Icon - Top Right in Blue Area */}
-
-        <Image
-          source={require("../../../assets/images/tudoIcon.png")}
-          style={{ width: 140, height: 64, marginRight: 90 }}
-        />
-        <TouchableOpacity
-          style={styles.profileButton}
-          activeOpacity={0.85}
-          onPress={() => logout()}
-        >
-          <Image
-            source={require("../../../assets/images/userProfileIcon.png")}
-            style={{ width: 45, height: 64, marginTop: 7 }}
-          />
-        </TouchableOpacity>
-      </View>
-      <ImageBackground
-        source={require("../../../assets/images/dashboardBackground.png")}
-        style={styles.backgroundImage}
-        contentFit="fill"
-      />
-
+      <DashboardHeader />
+      <BackgroundImage />
       <View
         style={{
-          paddingTop: 100,
+          paddingTop: 120,
           paddingLeft: 20,
         }}
       >
@@ -61,25 +110,30 @@ export default function HomeScreen() {
             alignItems: "center",
           }}
         >
-          <Image
-            source={require("../../../assets/images/locationIcon.png")}
-            style={{ width: 36, height: 36 }}
-            contentFit="fill"
-          />
-          <Text
-            style={{
-              paddingLeft: 9,
-              paddingRight: 9,
-              fontWeight: 900,
-              fontSize: 14,
-              width: 170,
-              color: colors.gray,
-            }}
-            ellipsizeMode="tail"
-            numberOfLines={1}
+          <TouchableOpacity
+            style={{ flexDirection: "row", alignItems: "center" }}
+            onPress={handleChangeAddress}
           >
-            Rua Nova da Telha, nº261, 482
-          </Text>
+            <Image
+              source={require("../../../assets/images/locationIcon.png")}
+              style={{ width: 36, height: 36 }}
+              contentFit="fill"
+            />
+            <Text
+              style={{
+                paddingLeft: 9,
+                paddingRight: 9,
+                fontWeight: 900,
+                fontSize: 14,
+                width: 170,
+                color: colors.gray,
+              }}
+              ellipsizeMode="tail"
+              numberOfLines={1}
+            >
+              {address?.formattedAddress}
+            </Text>
+          </TouchableOpacity>
           <View
             style={{
               width: 122,
@@ -134,9 +188,9 @@ export default function HomeScreen() {
           gap: 21,
         }}
       >
-        <ServiceCard category="CAFÉ" />
-        <ServiceCard category="RESTAURANTE" />
-        <ServiceCard category="LIVRARIA" />
+        {categories.map((category) => {
+          return <ServiceCard key={category.key} category={category.label} />;
+        })}
       </ScrollView>
     </View>
   );
@@ -148,37 +202,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.main,
   },
 
-  // Top Bar (in blue area)
-  topBar: {
-    position: "absolute",
-    paddingTop: (StatusBar.currentHeight || 44) + 5,
-    paddingHorizontal: 40,
-    flexDirection: "row",
-    alignItems: "center",
-    zIndex: 100,
-    justifyContent: "space-between",
-    width: "100%",
-  },
-
-  topBarSpacer: {},
-
-  profileButton: {
-    width: 54,
-    height: 54,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 100,
-    backgroundColor: colors.gray,
-    marginBottom: 5,
-  },
-
-  profileIconHead: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: colors.white,
-  },
-
   profileIconBody: {
     width: 24,
     height: 12,
@@ -187,11 +210,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     marginTop: -2,
   },
-  backgroundImage: {
-    position: "absolute",
-    top: 30,
-    left: 0,
-    right: 0,
-    bottom: -20,
+
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
   },
 });

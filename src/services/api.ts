@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/const/global";
 import axios, {
   AxiosError,
   AxiosInstance,
@@ -19,7 +20,7 @@ interface FailedRequestQueueItem {
 }
 
 const api: AxiosInstance = create({
-  baseURL: "https://tudo.bestrytech.com",
+  baseURL: API_BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
 

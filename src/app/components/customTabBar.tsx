@@ -1,30 +1,38 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import React from "react";
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
 
 const { width } = Dimensions.get("window");
+const BASE_TAB_HEIGHT = 70;
+const CUTOUT_RADIUS = 38;
 
 export function CustomTabBar({
   state,
   descriptors,
   navigation,
 }: BottomTabBarProps) {
+  const insets = useSafeAreaInsets();
+
+  const totalHeight = BASE_TAB_HEIGHT + insets.bottom;
   return (
-    <View style={styles.container}>
+    <View
+      style={[styles.container, { paddingBottom: Math.max(insets.bottom, 16) }]}
+    >
       {/* 1. Curved Background Shape */}
-      <Svg width={width} height={70} style={styles.svgBackground}>
+      <Svg width={width} height={totalHeight} style={styles.svgBackground}>
         <Path
           d={`
-      M 0 0 
-      L ${width / 2 - 38} 0 
-      A 38 38 0 0 0 ${width / 2 + 38} 0
-      L ${width} 0 
-      L ${width} 70 
-      L 0 70 
-      Z
-    `}
-          fill="#232C43" // Your dark navy background color
+          M 0 0 
+          L ${width / 2 - CUTOUT_RADIUS} 0 
+          A ${CUTOUT_RADIUS} ${CUTOUT_RADIUS} 0 0 0 ${width / 2 + CUTOUT_RADIUS} 0
+          L ${width} 0 
+          L ${width} ${totalHeight} 
+          L 0 ${totalHeight} 
+          Z
+        `}
+          fill="#232C43"
         />
       </Svg>
 
@@ -46,7 +54,6 @@ export function CustomTabBar({
             }
           };
 
-          // Check if this is the center tab (e.g., the Calendar/Home tab)
           const isCenter = index === Math.floor(state.routes.length / 2);
 
           if (isCenter) {
@@ -109,7 +116,7 @@ const styles = StyleSheet.create({
     height: 70,
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
   },
   tabButton: {
     flex: 1,

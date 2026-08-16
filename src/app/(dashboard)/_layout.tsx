@@ -2,12 +2,13 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Image } from "react-native";
 import { CustomTabBar } from "../components/customTabBar";
 import HomeScreen from "./home";
+import LocationScreen from "./location";
 import ProfileScreen from "./profile";
 
 export type TabParamList = {
   home: undefined;
   profile: undefined;
-  calendar: undefined;
+  location: undefined;
 };
 
 export default function DashboardLayout() {
@@ -54,12 +55,12 @@ export default function DashboardLayout() {
         }}
       />
       <Tabs.Screen
-        name="calendar"
-        component={ProfileScreen}
+        name="location"
+        component={LocationScreen}
         options={{
           title: "My Profile",
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <Image
               source={require("../../../assets/images/file.png")}
               style={{

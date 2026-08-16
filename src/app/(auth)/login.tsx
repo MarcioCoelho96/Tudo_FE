@@ -23,7 +23,8 @@ export default function LoginScreen() {
   const [phoneNumber, setPhoneNumber] = useState("966153178");
   const [countryCode, setCountryCode] = useState("+351");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [step, setStep] = useState<LoginStep>(LoginStep.EnterPhoneNumber);
+  const [isValidating, setIsValidating] = useState(false);
+  const [step, setStep] = useState<LoginStep>(LoginStep.EnterValidationCode);
   const [smsCode, setSmsCode] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -61,7 +62,7 @@ export default function LoginScreen() {
 
   const handleVerifySms = async () => {
     const fullPhoneNumber = `${countryCode}${phoneNumber.replace(/\s/g, "")}`;
-    debugger;
+
     if (!smsCode) {
       setError("Por Favor insira o codigo");
       return;
@@ -69,17 +70,16 @@ export default function LoginScreen() {
 
     try {
       setError(null);
-      setIsSubmitting(true);
-
+      setIsValidating(true);
       await login(fullPhoneNumber, smsCode);
     } catch (err: any) {
       setError(err.message || "Codigo Invalido");
     } finally {
-      setIsSubmitting(false);
+      setIsValidating(false);
     }
   };
 
-  const isEnterPhoneStep = step === LoginStep.EnterPhoneNumber;
+  const isEnterPhoneStep = step === LoginStep.EnterValidationCode;
 
   const resources = {
     loginTitle: "INDIQUE-NOS O SEU",
@@ -148,7 +148,7 @@ export default function LoginScreen() {
                   <ActivityIndicator color={colors.orange} size={"large"} />
                 ) : (
                   <Text
-                    style={{ fontSize: 14, fontWeight: 900, color: "#fff" }}
+                    style={{ fontSize: 14, fontWeight: "900", color: "#fff" }}
                   >
                     {resources.buttonText}
                   </Text>
@@ -182,7 +182,7 @@ export default function LoginScreen() {
                 <Text
                   style={{
                     fontSize: 20,
-                    fontWeight: 900,
+                    fontWeight: "900",
                     color: colors.main,
                   }}
                 >
@@ -196,25 +196,32 @@ export default function LoginScreen() {
                   keyboardType="numeric"
                   containerStyle={styles.otpContainer}
                   handleTextChange={(text) => setSmsCode(text)}
-
-                  // onChangeText={(value) => {
-                  //   if (value.length === 6) {
-                  //     setSmsCode(value);
-                  //   }
-                  // }}
                 />
+                {error && (
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "900",
+                      color: colors.main,
+                      alignContent: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {error}
+                  </Text>
+                )}
               </View>
               <TouchableOpacity
                 style={styles.buttonC}
                 onPress={handleVerifySms}
               >
-                {isSubmitting ? (
+                {isValidating ? (
                   <ActivityIndicator color={colors.white} />
                 ) : (
                   <Text
                     style={{
                       fontSize: 14,
-                      fontWeight: 900,
+                      fontWeight: "900",
                       color: colors.main,
                     }}
                   >
@@ -232,18 +239,28 @@ export default function LoginScreen() {
               }}
               contentFit="contain"
             >
-              <TouchableOpacity style={styles.buttonB}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 900,
-                    color: colors.white,
-                    textAlign: "center",
-                  }}
-                  onPress={handleRequestSms}
-                >
-                  {resources.sendAgain}
-                </Text>
+              <TouchableOpacity
+                style={{
+                  ...styles.buttonB,
+                  backgroundColor: isSubmitting ? colors.white : colors.orange,
+                }}
+                onPress={handleRequestSms}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <ActivityIndicator color={colors.orange} size={"large"} />
+                ) : (
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "900",
+                      color: colors.white,
+                      textAlign: "center",
+                    }}
+                  >
+                    {resources.sendAgain}
+                  </Text>
+                )}
               </TouchableOpacity>
               <Text
                 style={{
@@ -251,7 +268,7 @@ export default function LoginScreen() {
                   paddingLeft: 140,
                   paddingRight: 20,
                   fontSize: 14,
-                  fontWeight: 900,
+                  fontWeight: "900",
                   color: colors.main,
                 }}
               >
@@ -281,7 +298,7 @@ const styles = StyleSheet.create({
     width: 258,
     textTransform: "uppercase",
     fontSize: 22,
-    fontWeight: 900,
+    fontWeight: "900",
     fontFamily: "Inter-Black",
     includeFontPadding: false,
     color: colors.white,
@@ -299,7 +316,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingHorizontal: 10,
     marginVertical: 10,
-    fontWeight: 500,
+    fontWeight: "500",
     fontSize: 22,
     textAlign: "center",
   },
@@ -311,7 +328,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingHorizontal: 10,
     marginVertical: 10,
-    fontWeight: 500,
+    fontWeight: "500",
     fontSize: 22,
   },
   button: {
@@ -326,6 +343,7 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    zIndex: 10,
   },
   buttonC: {
     top: 270,
@@ -344,7 +362,7 @@ const styles = StyleSheet.create({
     top: 10,
     left: 10,
     position: "absolute",
-    backgroundColor: colors.orange,
+    backgroundColor: colors.white,
     borderRadius: 50,
     elevation: 3,
     width: 115,
@@ -352,6 +370,7 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    zIndex: 10,
   },
   otpContainer: {
     width: "100%",
