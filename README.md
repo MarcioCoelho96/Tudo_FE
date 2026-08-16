@@ -33,18 +33,19 @@ When you're ready, run:
 npm run reset-project
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Tod_FE/
+├── assets/
+| └── images/ # Where we will add the images that compose the project
+├── src/ # Primary source code  
+│ ├── app/ # Screens and components that compose the FE
+| | ├── (auth)/ # Login Pages
+| | ├── (dashboard)/ # After Login pages
+| | ├── components/ # Reusable UI components (buttons, navbar)
+│ ├── const/ # Unchanged const
+| ├── context/ # Hook used for the login
+| ├── hooks/ # General hooks
+| ├── services/ # Services used to get data from the API
+| ├── store/ # Data storage center
+| └── styles/ # Global styles that needs to be used by the project
+├── .env.example # Template for required environment variables
+└── README.md
