@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
 
   backgroundImage: {
     position: "absolute",
-    top: 27,
+    top: 40,
     left: -10,
     right: -10,
     bottom: -20,
