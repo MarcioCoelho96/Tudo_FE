@@ -22,17 +22,26 @@ const TABS: ProductCategory[] = ["Pratos", "Bebidas", "Sobremesas"];
 const PRODUCTS: Product[] = [
   {
     id: "chicken-1",
-    title: "Dose de Frango",
+    title: "1 Dose de Frango",
     description: "Uma dose de frango acompanhado\ncom batata frita e arroz.",
     category: "Pratos",
     price: 15,
     image: {    },
   },
   {
+    id: "caldeira-de-peixe-1",
+    title: "Caldeira de Peixe",
+    description:
+      "Um cozido, cujos componentes\nbásicos são diversas variedades de\npeixe, batata, cebola, tomate e\npimentão.",
+    category: "Pratos",
+    price: 8,
+    image: {    },
+  },
+{
     id: "mushroom-rice-1",
     title: "Arroz de Cogumelos\ncom Omelete",
     description:
-      "Um cozido, cujos componentes\nbásicos são diversas variedades de\npeixe, batata, cebola, tomate e\npimentão.",
+      "Prato de arroz cozinhado com cogumelos, cebola e azeite, acompanhado com uma omelete.",
     category: "Pratos",
     price: 8,
     image: {    },
@@ -297,13 +306,13 @@ const styles = StyleSheet.create({
   },
 
   logo: {
-    width: 150,
-    height: 50,
+    width: 105,
+    height: 42,
   },
 
   profileButton: {
-    width: 50,
-    height: 50,
+    width: 30,
+    height: 30,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -315,7 +324,7 @@ const styles = StyleSheet.create({
 
   restaurantImageContainer: {
     width: "100%",
-    height: 100,
+    height: 150,
     marginTop: 6,
   },
 
@@ -331,7 +340,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: 50,
-    borderRadius: 30,
+    borderRadius: 33,
     backgroundColor: "rgba(185,185,185,0.65)",
     justifyContent: "center",
     alignItems: "center",
@@ -356,7 +365,7 @@ const styles = StyleSheet.create({
     height: 48,
     paddingHorizontal: 20,
     borderRadius: 24,
-    backgroundColor: "#EDEDED",
+    backgroundColor: "#D9D9D9",
     color: "#1E1E1E",
     fontSize: 13,
     fontWeight: "500",
@@ -379,13 +388,17 @@ const styles = StyleSheet.create({
   tabsRow: {
     marginTop: 16,
     flexDirection: "row",
-    gap: 8,
+    gap: 1,
+    borderRadius: 18,
+    backgroundColor: "#D9D9D9",
   },
 
   tabButton: {
     flex: 1,
     height: 36,
     borderRadius: 18,
+    marginVertical: 3,
+    marginHorizontal: 3,
     backgroundColor: "#F2F2F2",
     justifyContent: "center",
     alignItems: "center",
@@ -445,7 +458,7 @@ const styles = StyleSheet.create({
         translateX: -25,
       },
       {
-        scale: 0.90,
+        scale: 0.95,
       },
     ],
   },

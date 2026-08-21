@@ -2,9 +2,10 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Image } from "react-native";
 import { CustomTabBar } from "../components/customTabBar";
 import HomeScreen from "./home";
-import LocationScreen from "./location";
+//import LocationScreen from "./location";
 import ProfileScreen from "./profile";
 import RestaurantSelectionScreen from "./restaurant-selection";
+
 
 export type TabParamList = {
   home: undefined;
