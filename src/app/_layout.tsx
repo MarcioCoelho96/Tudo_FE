@@ -1,8 +1,10 @@
 import { Paths } from "@/const/global";
 import { AuthProvider, useAuth } from "@/context/authContext";
 import { Inter_900Black, useFonts } from "@expo-google-fonts/inter";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { Slot, SplashScreen, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 function NavigateGate() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -42,7 +44,11 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <NavigateGate />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <BottomSheetModalProvider>
+          <NavigateGate />
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
     </AuthProvider>
   );
 }
