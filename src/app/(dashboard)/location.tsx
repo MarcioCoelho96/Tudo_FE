@@ -110,7 +110,7 @@ export default function LocationScreen() {
         <View
           style={{
             paddingTop: 50,
-            paddingLeft: 20,
+            justifyContent: "center",
             gap: 24,
           }}
         >
@@ -223,6 +223,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: colors.gray,
     marginTop: -20,
+    marginLeft: 20,
   },
   centered: {
     flex: 1,
@@ -263,7 +264,6 @@ const styles = StyleSheet.create({
     right: 0,
     justifyContent: "center",
     alignItems: "center",
-    // Shifts the pin up slightly so the bottom tip points to exact center
     marginTop: -20,
   },
   pinDot: {

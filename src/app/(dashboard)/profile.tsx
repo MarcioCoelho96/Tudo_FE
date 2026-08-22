@@ -38,6 +38,7 @@ export default function ProfileScreen() {
             subtitle={
               "Rua Nova da Telha, nº261 -Silvares São Martinho, Fafe, Braga, Portugal"
             }
+            lastRow={true}
           />
         </View>
       </View>
@@ -48,14 +49,15 @@ export default function ProfileScreen() {
 interface RowBlockProps {
   title: string;
   subtitle: string;
+  lastRow?: boolean;
 }
 
-const RowBlock: React.FC<RowBlockProps> = ({ title, subtitle }) => {
+const RowBlock: React.FC<RowBlockProps> = ({ title, subtitle, lastRow }) => {
   return (
     <>
       <Text style={styles.titleText}>{title}</Text>
       <Text style={styles.infoText}>{subtitle}</Text>
-      <View style={{ height: 1, backgroundColor: colors.gray }} />
+      {!lastRow && <View style={{ height: 1, backgroundColor: colors.gray }} />}
     </>
   );
 };
@@ -66,15 +68,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   profileInfo: {
-    paddingTop: 20,
-    paddingLeft: 20,
-    paddingRight: 20,
+    padding: 20,
     marginTop: 140,
     marginLeft: 20,
+    marginRight: 20,
     borderRadius: 50,
-    width: 345,
-    height: 560,
+    width: "auto",
+    height: "auto",
     backgroundColor: colors.white,
+    justifyContent: "center",
   },
   titleText: {
     fontWeight: 900,
