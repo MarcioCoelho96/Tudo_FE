@@ -4,8 +4,8 @@ import { CustomTabBar } from "../components/customTabBar";
 import HomeScreen from "./home";
 //import LocationScreen from "./location";
 import ProfileScreen from "./profile";
-import RestaurantSelectionScreen from "./restaurant-selection";
-
+//import RestaurantSelectionScreen from "./restaurant-selection";
+import OrderSummaryScreen from "./order-summary";
 
 export type TabParamList = {
   home: undefined;
@@ -60,7 +60,7 @@ export default function DashboardLayout() {
       <Tabs.Screen
         name="location"
         // Original -> LocationScreen
-        component={RestaurantSelectionScreen}
+        component={OrderSummaryScreen}
         options={{
           title: "My Profile",
           headerShown: false,

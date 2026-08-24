@@ -3,17 +3,17 @@ import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 
 import {
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 import PayButton from "../components/PayButton";
 import ProductList, {
-    Product,
-    ProductCategory,
+  Product,
+  ProductCategory,
 } from "../components/ProductList";
 import ScreenBackground from "../components/screenBackground";
 
@@ -37,14 +37,14 @@ const PRODUCTS: Product[] = [
     price: 8,
     image: {    },
   },
-{
+  {
     id: "mushroom-rice-1",
     title: "Arroz de Cogumelos\ncom Omelete",
     description:
       "Prato de arroz cozinhado com cogumelos, cebola e azeite, acompanhado com uma omelete.",
     category: "Pratos",
     price: 8,
-    image: {    },
+    image: {},
   },
   {
     id: "beer-1",
@@ -60,7 +60,7 @@ const PRODUCTS: Product[] = [
     description: "33cl",
     category: "Bebidas",
     price: 2,
-    image: {    },
+    image: {},
   },
   {
     id: "lemonade-1",
@@ -77,7 +77,7 @@ const PRODUCTS: Product[] = [
     description: "Mousse de chocolate caseira.",
     category: "Sobremesas",
     price: 4,
-    image: {    },
+    image: {},
   },
 ];
 
@@ -146,11 +146,18 @@ export default function RestaurantSelectionScreen() {
     });
   }, [activeTab, searchQuery]);
 
+  const activeCategorySelectedCount = useMemo(() => {
+    return PRODUCTS.filter(
+      (product) =>
+        product.category === activeTab && selectedProductIds.includes(product.id)
+    ).length;
+  }, [activeTab, selectedProductIds]);
+
   const selectedLabel = useMemo(() => {
     const labels = CATEGORY_LABELS[activeTab];
 
-    return selectedProductIds.length === 1 ? labels.singular : labels.plural;
-  }, [activeTab, selectedProductIds.length]);
+    return activeCategorySelectedCount === 1 ? labels.singular : labels.plural;
+  }, [activeTab, activeCategorySelectedCount]);
 
   const handleProfilePress = () => {
     router.push("/profile");
@@ -272,7 +279,7 @@ export default function RestaurantSelectionScreen() {
         <View style={styles.footer}>
           <View style={styles.selectedItemsPill}>
             <Text style={styles.selectedItemsText}>
-              {selectedProductIds.length} {selectedLabel}
+              {activeCategorySelectedCount} {selectedLabel}
             </Text>
           </View>
 
@@ -306,8 +313,9 @@ const styles = StyleSheet.create({
   },
 
   logo: {
-    width: 105,
-    height: 42,
+    width: 150,
+    height: 40,
+    right: 10,
   },
 
   profileButton: {
@@ -318,8 +326,9 @@ const styles = StyleSheet.create({
   },
 
   profileImage: {
-    width: 54,
-    height: 54,
+    width: 50,
+    height: 50,
+    right: 20,
   },
 
   restaurantImageContainer: {
