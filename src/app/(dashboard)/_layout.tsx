@@ -122,12 +122,7 @@ export default function DashboardLayout() {
         enablePanDownToClose
         backgroundStyle={{ backgroundColor: "transparent" }}
         handleIndicatorStyle={{ backgroundColor: "#CBD5E0" }}
-        handleStyle={{ display: "none" }}
-        style={{
-          backgroundColor: "transparent",
-          elevation: 0,
-          shadowOpacity: 0,
-        }}
+        handleComponent={null}
       >
         <CalendarScreen />
       </BottomSheet>
