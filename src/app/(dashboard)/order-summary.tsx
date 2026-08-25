@@ -1,11 +1,14 @@
-import { Image } from "expo-image";
+import { colors } from "@/styles/global";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+import PayButton from "../components/PayButton";
 import ProductList, { Product } from "../components/ProductList";
-import ScreenBackground from "../components/screenBackground";
+import { DashboardHeader } from "../components/dashboardHeader";
+//import ScreenBackground from "../components/screenBackground";
+import { BackgroundImage } from "../components/backgroundImage";
 
 type PaymentScope = "select" | "all";
 
@@ -107,28 +110,11 @@ export default function OrderSummaryScreen() {
   };
 
   return (
-    <ScreenBackground>
-      <View style={styles.contentContainer}>
-        <View style={styles.header}>
-          <Image
-            source={require("../../../assets/images/logo.png")}
-            style={styles.logo}
-            contentFit="contain"
-          />
+    <View style={styles.contentContainer}>
+      <DashboardHeader />
+      <BackgroundImage />
 
-          <TouchableOpacity
-            style={styles.profileButton}
-            onPress={handleProfilePress}
-            activeOpacity={0.8}
-          >
-            <Image
-              source={require("../../../assets/images/profileButton.png")}
-              style={styles.profileImage}
-              contentFit="contain"
-            />
-          </TouchableOpacity>
-        </View>
-
+      <View style={styles.screenContent}>
         <View style={styles.titleSection}>
           <View>
             <Text style={styles.tableText}>MESA 12</Text>
@@ -163,12 +149,6 @@ export default function OrderSummaryScreen() {
         </View>
 
         <View style={styles.footer}>
-          <Image
-            source={require("../../../assets/images/bottom_card.png")}
-            style={styles.footerBackground}
-            contentFit="fill"
-          />
-
           <View style={styles.scopeToggle}>
             <TouchableOpacity
               style={[
@@ -193,56 +173,29 @@ export default function OrderSummaryScreen() {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity
-            style={styles.payButton}
-            onPress={handlePayPress}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.payButtonText}>PAGAR</Text>
-          </TouchableOpacity>
-
-          <Text style={styles.payHelperText}>
-            Tem a opção de pagar a conta ou dividir, escolha a sua opção.
-          </Text>
+          <View style={styles.payButtonWrapper}>
+            <PayButton
+              buttonText="PAGAR"
+              cardText="Tem a opção de pagar a conta ou dividir, escolha a sua opção."
+              onPress={handlePayPress}
+            />
+          </View>
         </View>
       </View>
-    </ScreenBackground>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
-    marginTop: 55,
-    marginHorizontal: 5,
-    paddingHorizontal: 5,
+    backgroundColor: colors.main,
   },
 
-  header: {
-    height: 50,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    zIndex: 10,
-  },
-
-  logo: {
-    width: 150,
-    height: 40,
-    left: 20,
-  },
-
-  profileButton: {
-    width: 30,
-    height: 30,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  profileImage: {
-    width: 50,
-    height: 50,
-    right: 50,
+  screenContent: {
+    flex: 1,
+    paddingTop: 120,
+    paddingHorizontal: 30,
   },
 
   titleSection: {
@@ -253,14 +206,14 @@ const styles = StyleSheet.create({
   },
 
   tableText: {
-    color: "#28324A",
+    color: "#2B3349",
     fontSize: 13,
     fontWeight: "500",
     left: 50,
   },
 
   title: {
-    color: "#2E3852",
+    color: "#2B3349",
     fontSize: 24,
     fontWeight: "900",
     lineHeight: 27,
@@ -269,10 +222,10 @@ const styles = StyleSheet.create({
   orderMoreButton: {
     height: 30,
     paddingHorizontal: 22,
-    marginTop: 10,
+    marginTop: 2,
     borderRadius: 20,
-    left: 142,
-    backgroundColor: "#223C63",
+    marginLeft: 220,
+    backgroundColor: "#2B3349",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -291,57 +244,48 @@ const styles = StyleSheet.create({
 
   totalSection: {
     borderTopWidth: 1,
-    borderTopColor: "#FFFFFF",
+    borderTopColor: "#D8D8D8",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
 
   totalLabel: {
-    color: "#303A53",
+    color: "#2B3349",
     fontSize: 18,
     fontWeight: "900",
-    left: 20,
+    left: 10,
+    top: -30,
   },
 
   totalValue: {
-    color: "#303A53",
+    color: "#2B3349",
     fontSize: 18,
     fontWeight: "900",
     right: 20,
+    top: -30,
   },
 
   footer: {
-    marginTop: 30,
     height: 200,
-    position: "relative",
-  },
-
-  footerBackground: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 80,
-    width: "100%",
-    height: 140,
   },
 
   scopeToggle: {
     position: "absolute",
-    bottom: 180,
-    right: 6,
+    top: -20,
+    right: 10,
+    height: 70,
+    borderRadius: 40,
     flexDirection: "row",
-    height: 44,
-    borderRadius: 22,
     overflow: "hidden",
-    zIndex: 5,
+    zIndex: 10,
   },
 
   scopeOption: {
-    minWidth: 100,
+    minWidth: 40,
     height: "100%",
-    paddingHorizontal: 16,
-    backgroundColor: "#2E3852",
+    paddingHorizontal: 18,
+    backgroundColor: "#2B3349",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -352,39 +296,20 @@ const styles = StyleSheet.create({
 
   scopeOptionText: {
     color: "#FFFFFF",
-    fontSize: 11,
-    fontWeight: "900",
-  },
-
-  payButton: {
-    position: "absolute",
-    left: 15,
-    bottom: 100,
-    width: 150,
-    height: 110,
-    borderRadius: 55,
-    backgroundColor: "#EB6300",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 6,
-
-    elevation: 7,
-  },
-
-  payButtonText: {
-    color: "#FFFFFF",
-    fontSize: 15,
-    fontWeight: "900",
-  },
-
-  payHelperText: {
-    position: "absolute",
-    left: 170,
-    right: 20,
-    top: 55,
-    color: "#28324A",
     fontSize: 13,
-    fontWeight: "800",
-    lineHeight: 16,
+    fontWeight: "900",
+  },
+
+  payButtonWrapper: {
+    width: "100%",
+    height: 150,
+    transform: [
+      {
+        translateX: -25,
+      },
+      {
+        scale: 0.95,
+      },
+    ],
   },
 });

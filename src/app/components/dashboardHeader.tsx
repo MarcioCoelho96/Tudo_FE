@@ -20,7 +20,7 @@ export const DashboardHeader: React.FC = () => {
       <View style={styles.topBar}>
         <Image
           source={require("../../../assets/images/tudoIcon.png")}
-          style={{ width: 140, height: 64, marginRight: 90 }}
+          style={{ width: 170, height: 65, right: 20, bottom: 25 }}
         />
         <TouchableOpacity
           style={styles.profileButton}
@@ -29,7 +29,7 @@ export const DashboardHeader: React.FC = () => {
         >
           <Image
             source={require("../../../assets/images/userProfileIcon.png")}
-            style={{ width: 45, height: 64, marginTop: 7 }}
+            style={{ width: 45, height: 60, marginTop: 7 }}
           />
         </TouchableOpacity>
       </View>
@@ -50,13 +50,14 @@ const styles = StyleSheet.create({
   },
 
   profileButton: {
-    width: 54,
-    height: 54,
+    width: 50,
+    height: 50,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 100,
     backgroundColor: colors.gray,
-    marginTop: -25,
+    marginTop: -45,
+    marginRight: 10,
   },
 });
 

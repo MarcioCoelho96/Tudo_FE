@@ -1,7 +1,6 @@
+import { colors } from "@/styles/global";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
-
 import {
   StyleSheet,
   Text,
@@ -15,7 +14,8 @@ import ProductList, {
   Product,
   ProductCategory,
 } from "../components/ProductList";
-import ScreenBackground from "../components/screenBackground";
+import { BackgroundImage } from "../components/backgroundImage";
+import { DashboardHeader } from "../components/dashboardHeader";
 
 const TABS: ProductCategory[] = ["Pratos", "Bebidas", "Sobremesas"];
 
@@ -26,7 +26,7 @@ const PRODUCTS: Product[] = [
     description: "Uma dose de frango acompanhado\ncom batata frita e arroz.",
     category: "Pratos",
     price: 15,
-    image: {    },
+    image: {},
   },
   {
     id: "caldeira-de-peixe-1",
@@ -35,7 +35,7 @@ const PRODUCTS: Product[] = [
       "Um cozido, cujos componentes\nbásicos são diversas variedades de\npeixe, batata, cebola, tomate e\npimentão.",
     category: "Pratos",
     price: 8,
-    image: {    },
+    image: {},
   },
   {
     id: "mushroom-rice-1",
@@ -52,7 +52,7 @@ const PRODUCTS: Product[] = [
     description: "Super Bock é uma marca de cerveja portuguesa.",
     category: "Bebidas",
     price: 3,
-    image: {    },
+    image: {},
   },
   {
     id: "water-1",
@@ -69,7 +69,7 @@ const PRODUCTS: Product[] = [
       "Limonada feita à base de água, sumo\nde limão, açúcar e folhas de menta.",
     category: "Bebidas",
     price: 2,
-    image: {    },
+    image: {},
   },
   {
     id: "mousse-1",
@@ -86,16 +86,16 @@ const CATEGORY_LABELS: Record<
   { singular: string; plural: string }
 > = {
   Pratos: {
-    singular: "PRATO SELECIONADO",
-    plural: "PRATOS SELECIONADOS",
+    singular: "PRATO\nSELECIONADO",
+    plural: "PRATOS\nSELECIONADOS",
   },
   Bebidas: {
-    singular: "BEBIDA SELECIONADA",
-    plural: "BEBIDAS SELECIONADAS",
+    singular: "BEBIDA\nSELECIONADA",
+    plural: "BEBIDAS\nSELECIONADAS",
   },
   Sobremesas: {
-    singular: "SOBREMESA SELECIONADA",
-    plural: "SOBREMESAS SELECIONADAS",
+    singular: "SOBREMESA\nSELECIONADA",
+    plural: "SOBREMESAS\nSELECIONADAS",
   },
 };
 
@@ -113,8 +113,6 @@ function normalizeText(value: unknown): string {
 }
 
 export default function RestaurantSelectionScreen() {
-  const router = useRouter();
-
   const [searchQuery, setSearchQuery] = useState("");
 
   const [activeTab, setActiveTab] = useState<ProductCategory>("Bebidas");
@@ -159,10 +157,6 @@ export default function RestaurantSelectionScreen() {
     return activeCategorySelectedCount === 1 ? labels.singular : labels.plural;
   }, [activeTab, activeCategorySelectedCount]);
 
-  const handleProfilePress = () => {
-    router.push("/profile");
-  };
-
   const handleTabPress = (tab: ProductCategory) => {
     setActiveTab(tab);
     setSearchQuery("");
@@ -189,28 +183,11 @@ export default function RestaurantSelectionScreen() {
   };
 
   return (
-    <ScreenBackground>
-      <View style={styles.contentContainer}>
-        <View style={styles.header}>
-          <Image
-            source={require("../../../assets/images/logo.png")}
-            style={styles.logo}
-            contentFit="contain"
-          />
+    <View style={styles.contentContainer}>
+      <DashboardHeader />
+      <BackgroundImage />
 
-          <TouchableOpacity
-            style={styles.profileButton}
-            onPress={handleProfilePress}
-            activeOpacity={0.8}
-          >
-            <Image
-              source={require("../../../assets/images/profileButton.png")}
-              style={styles.profileImage}
-              contentFit="contain"
-            />
-          </TouchableOpacity>
-        </View>
-
+      <View style={styles.screenContent}>
         <View style={styles.restaurantImageContainer}>
           <Image
             source={require("../../../assets/images/restaurante.png")}
@@ -251,7 +228,10 @@ export default function RestaurantSelectionScreen() {
             return (
               <TouchableOpacity
                 key={tab}
-                style={[styles.tabButton, isActive && styles.activeTabButton]}
+                style={[
+                  styles.tabButton,
+                  isActive && styles.activeTabButton,
+                ]}
                 onPress={() => handleTabPress(tab)}
                 activeOpacity={0.8}
               >
@@ -292,55 +272,32 @@ export default function RestaurantSelectionScreen() {
           </View>
         </View>
       </View>
-    </ScreenBackground>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
-    marginTop: 55,
-    marginHorizontal: 18,
-    paddingHorizontal: 20,
+    backgroundColor: colors.main,
   },
 
-  header: {
-    height: 70,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    zIndex: 10,
-  },
-
-  logo: {
-    width: 150,
-    height: 40,
-    right: 10,
-  },
-
-  profileButton: {
-    width: 30,
-    height: 30,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  profileImage: {
-    width: 50,
-    height: 50,
-    right: 20,
+  screenContent: {
+    flex: 1,
+    paddingTop: 110,
+    paddingHorizontal: 30,
   },
 
   restaurantImageContainer: {
     width: "100%",
-    height: 150,
-    marginTop: 6,
+    height: 125,
+    marginTop: 15,
   },
 
   restaurantImage: {
     width: "100%",
     height: "100%",
-    borderRadius: 30,
+    borderRadius: 40,
   },
 
   restaurantOverlay: {
@@ -348,8 +305,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: 50,
-    borderRadius: 33,
+    height: 75,
+    borderRadius: 100,
     backgroundColor: "rgba(185,185,185,0.65)",
     justifyContent: "center",
     alignItems: "center",
@@ -357,13 +314,13 @@ const styles = StyleSheet.create({
 
   restaurantOverlayText: {
     color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "900",
+    fontSize: 25,
+    fontWeight: "700",
     letterSpacing: 1,
   },
 
   searchRow: {
-    marginTop: 16,
+    marginTop: 15,
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
@@ -395,19 +352,19 @@ const styles = StyleSheet.create({
   },
 
   tabsRow: {
-    marginTop: 16,
+    marginTop: 15,
     flexDirection: "row",
     gap: 1,
-    borderRadius: 18,
+    borderRadius: 20,
     backgroundColor: "#D9D9D9",
   },
 
   tabButton: {
     flex: 1,
     height: 36,
-    borderRadius: 18,
+    borderRadius: 20,
     marginVertical: 3,
-    marginHorizontal: 3,
+    marginHorizontal: 2,
     backgroundColor: "#F2F2F2",
     justifyContent: "center",
     alignItems: "center",
@@ -430,31 +387,30 @@ const styles = StyleSheet.create({
 
   listContainer: {
     flex: 1,
-    minHeight: 0,
-    marginTop: 6,
+    minHeight: 20,
+    marginTop: 1,
   },
 
   footer: {
-    height: 250,
+    height: 200,
   },
 
   selectedItemsPill: {
     position: "absolute",
-    top: 0,
-    right: 4,
-    minWidth: 150,
-    height: 45,
-    paddingHorizontal: 16,
-    borderRadius: 22,
+    top: -10,
+    right: 10,
+    height: 60,
+    paddingHorizontal: 50,
+    borderRadius: 40,
     backgroundColor: "#2E3852",
-    justifyContent: "center",
+    flexDirection: "row",
     alignItems: "center",
     zIndex: 10,
   },
 
   selectedItemsText: {
-    color: "#FFFFFF",
-    fontSize: 11,
+    color: "#ffffff",
+    fontSize: 13,
     fontWeight: "900",
     textAlign: "center",
   },
@@ -472,3 +428,4 @@ const styles = StyleSheet.create({
     ],
   },
 });
+

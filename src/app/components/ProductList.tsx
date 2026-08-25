@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   },
 
   listContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 6,
     paddingBottom: 8,
   },
 
