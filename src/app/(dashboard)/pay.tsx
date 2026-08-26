@@ -1,8 +1,6 @@
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
-  Alert,
-  Image,
   ImageSourcePropType,
   StyleSheet,
   Text,
@@ -11,7 +9,9 @@ import {
 } from "react-native";
 
 import { colors } from "@/styles/global";
+import { Image } from "expo-image";
 import PayButton from "../components/PayButton";
+import PaymentModal from "../components/payment-modal";
 import { BackgroundImage } from "../components/backgroundImage";
 import { DashboardHeader } from "../components/dashboardHeader";
 
@@ -51,22 +51,22 @@ const PAYMENT_OPTIONS: PaymentOption[] = [
   {
     id: "mbway",
     label: "Pagamento com MB Way",
-    icon: require("../../../assets/images/image 1.1.png"),
+    icon: require("../../../assets/images/image 1.1.svg"),
   },
   {
     id: "multibanco",
     label: "Pagamento com Multibanco",
-    icon: require("../../../assets/images/credit-card.png"),
+    icon: require("../../../assets/images/credit-card.svg"),
   },
   {
     id: "counter",
     label: "Pagamento ao Balcão",
-    icon: require("../../../assets/images/cash-coin.png"),
+    icon: require("../../../assets/images/cash-coin.svg"),
   },
   {
     id: "reference",
     label: "Pagamento com Referência Multibanco",
-    icon: require("../../../assets/images/card-text.png"),
+    icon: require("../../../assets/images/card-text.svg"),
   },
 ];
 
@@ -78,6 +78,7 @@ function formatCurrency(value: number): string {
 }
 
 export default function PaymentScreen() {
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const router = useRouter();
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
@@ -103,32 +104,16 @@ export default function PaymentScreen() {
   };
 
   const handleFinalizePayment = () => {
-    const selectedOption = PAYMENT_OPTIONS.find(
-      (option) => option.id === selectedPaymentMethod,
-    );
+    setIsModalVisible(true);
+  };
 
-    Alert.alert(
-      "Confirmar pagamento",
-      `Método: ${
-        selectedOption?.label.replace("\n", " ") ?? selectedPaymentMethod
-      }\nTotal: ${formatCurrency(totalToPay)}€`,
-      [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "Confirmar",
-          onPress: () => {
-            console.log("Payment confirmed:", {
-              paymentMethod: selectedPaymentMethod,
-              products: SELECTED_PRODUCTS,
-              total: totalToPay,
-            });
-          },
-        },
-      ],
-    );
+  const handleConfirmModal = () => {
+    setIsModalVisible(false);
+    console.log("Payment confirmed:", {
+      paymentMethod: selectedPaymentMethod,
+      products: SELECTED_PRODUCTS,
+      total: totalToPay,
+    });
   };
 
   return (
@@ -180,7 +165,7 @@ export default function PaymentScreen() {
                   <Image
                     source={option.icon}
                     style={styles.paymentIcon}
-                    resizeMode="contain"
+                    contentFit="contain"
                   />
 
                   <Text style={styles.paymentOptionLabel}>{option.label}</Text>
@@ -234,6 +219,12 @@ export default function PaymentScreen() {
           </View>
         </View>
       </View>
+
+      <PaymentModal
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        onConfirm={handleConfirmModal}
+      />
     </View>
   );
 }
@@ -252,7 +243,7 @@ const styles = StyleSheet.create({
 
   titleSection: {
     alignItems: "center",
-    marginTop: 4,
+    marginTop: 5,
   },
 
   tableText: {
@@ -270,11 +261,11 @@ const styles = StyleSheet.create({
 
   productsSection: {
     marginTop: 12,
-    paddingHorizontal: 4,
+    paddingHorizontal: 5,
   },
 
   productRow: {
-    minHeight: 46,
+    minHeight: 40,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -297,7 +288,7 @@ const styles = StyleSheet.create({
 
   totalSection: {
     minHeight: 48,
-    marginTop: 6,
+    marginTop: 5,
     borderTopWidth: 1,
     borderTopColor: "#D8D8D8",
     flexDirection: "row",
@@ -318,7 +309,7 @@ const styles = StyleSheet.create({
   },
 
   paymentTitleSection: {
-    marginTop: 6,
+    marginTop: 5,
   },
 
   paymentTitle: {
@@ -328,20 +319,20 @@ const styles = StyleSheet.create({
   },
 
   paymentDescription: {
-    marginTop: 2,
+    marginTop: 5,
     color: "#303A53",
     fontSize: 15,
     fontWeight: "400",
   },
 
   optionsSection: {
-    marginTop: 12,
+    marginTop: 10,
     gap: 8,
   },
-  
+
   paymentOption: {
     width: "100%",
-    minHeight: 70,
+    minHeight: 20,
     paddingLeft: 16,
     paddingRight: 6,
     borderRadius: 30,
@@ -372,11 +363,12 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     lineHeight: 15,
   },
-  
+
   toggleTrack: {
     width: 80,
-    height: 50,
-    paddingHorizontal: 4,
+    height: 45,
+    marginVertical: 5,
+    paddingHorizontal: 5,
     borderRadius: 30,
     backgroundColor: "#D8D8D8",
     justifyContent: "center",
@@ -388,30 +380,29 @@ const styles = StyleSheet.create({
   },
 
   toggleThumb: {
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     borderRadius: 30,
     backgroundColor: "#2E3852",
   },
 
   toggleThumbSelected: {
-    backgroundColor: "#F86400",
+    backgroundColor: colors.orange,
   },
 
   footer: {
-    height: 200,
+    height: 150,
   },
 
   footerActions: {
-    position: "absolute",
-    top: -10,
-    right: 10,
+    top: 30,
     height: 60,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     borderRadius: 40,
     backgroundColor: "#2E3852",
     flexDirection: "row",
     alignItems: "center",
+    alignSelf: "flex-end",
     zIndex: 10,
   },
 
@@ -436,14 +427,5 @@ const styles = StyleSheet.create({
 
   payButtonWrapper: {
     width: "100%",
-    height: 150,
-    transform: [
-      {
-        translateX: -25,
-      },
-      {
-        scale: 0.95,
-      },
-    ],
   },
 });

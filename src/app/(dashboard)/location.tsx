@@ -9,7 +9,6 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -25,20 +24,37 @@ interface LocationData {
   address: AddressData | null;
 }
 
+const DEFAULT_REGION: Region = {
+  latitude: 41.1579,
+  longitude: -8.6291,
+  latitudeDelta: 0.01,
+  longitudeDelta: 0.01,
+};
+
 export default function LocationScreen() {
   const { back } = useRouter();
-  const location = useUserStore((state) => state.location);
-  const address = useUserStore((state) => state.address);
+  const storeLocation = useUserStore((state) => state.location);
+  const storeAddress = useUserStore((state) => state.address);
 
   const setLocation = useUserStore((state) => state.setLocation);
   const setAddress = useUserStore((state) => state.setAddress);
 
-  const [selectedAddress, setSelectedAddress] = useState<LocationData | null>(
-    null,
-  );
-  const [loadingAddress, setLoadingAddress] = useState<boolean>(false);
+  const initialRegion = storeLocation || DEFAULT_REGION;
 
+  const [selectedAddress, setSelectedAddress] = useState<LocationData | null>({
+    location: initialRegion,
+    address: storeAddress || {
+      street: "Rua Nova da Telha",
+      streetNumber: "261",
+      city: "Porto",
+      region: "Porto",
+      formattedAddress: "Rua Nova da Telha, nº261, Porto",
+    },
+  });
+
+  const [loadingAddress, setLoadingAddress] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const resources = {
     locationText:
       "Indique-nos a sua localização para lhe indicarmos os serviços mais próximos de si.",
@@ -54,7 +70,6 @@ export default function LocationScreen() {
     setLoadingAddress(true);
 
     try {
-      // Reverse geocode the center coordinates of the map
       const geocode = await Location.reverseGeocodeAsync({
         latitude: newRegion.latitude,
         longitude: newRegion.longitude,
@@ -65,8 +80,8 @@ export default function LocationScreen() {
 
         setSelectedAddress({
           location: {
-            latitude: newRegion.longitude,
-            longitude: newRegion.latitude,
+            latitude: newRegion.latitude,
+            longitude: newRegion.longitude,
             latitudeDelta: 0.01,
             longitudeDelta: 0.01,
           },
@@ -88,110 +103,86 @@ export default function LocationScreen() {
 
   const handleContinue = () => {
     if (selectedAddress?.location && selectedAddress.address) {
-      setLocation(selectedAddress?.location);
+      setLocation(selectedAddress.location);
       setAddress(selectedAddress.address);
       back();
     }
   };
 
-  if (!location) {
-    return;
-  }
   return (
     <View style={styles.container}>
       <DashboardHeader />
       <BackgroundImage />
-      <View
-        style={{
-          paddingTop: 100,
-          paddingBottom: 150,
-        }}
-      >
-        <View
-          style={{
-            paddingTop: 50,
-            paddingLeft: 20,
-            gap: 24,
-          }}
+
+      <View style={styles.mainContent}>
+        <TouchableOpacity
+          style={styles.profileButton}
+          activeOpacity={0.85}
+          onPress={handleBack}
         >
-          <TouchableOpacity
-            style={styles.profileButton}
-            activeOpacity={0.85}
-            onPress={handleBack}
-          >
-            <Image
-              source={require("../../../assets/images/navBackIcon.png")}
-              style={{ width: 24, height: 24 }}
+          <Image
+            source={require("../../../assets/images/navBackIcon.png")}
+            style={{ width: 24, height: 24 }}
+          />
+        </TouchableOpacity>
+
+        <View style={styles.elementsContainer}>
+          <ServiceCard category="RESTAURANTE" />
+
+          {/* Texto alinhado à esquerda */}
+          <Text style={styles.instructionText}>
+            {resources.locationText}
+          </Text>
+
+          <View style={styles.mapCard}>
+            <MapView
+              style={styles.map}
+              provider={PROVIDER_GOOGLE}
+              initialRegion={initialRegion}
+              onRegionChangeComplete={handleRegionChangeComplete}
             />
-          </TouchableOpacity>
-          <ScrollView
-            contentContainerStyle={{
-              paddingLeft: 20,
-              paddingBottom: 100,
-              gap: 24,
-            }}
-          >
-            <ServiceCard category="RESTAURANTE" />
-            <Text style={{ fontSize: 14.5, fontWeight: 700, width: 240 }}>
-              {resources.locationText}
+
+            <View style={styles.centerPinContainer} pointerEvents="none">
+              <Ionicons name="location" size={40} color="#EB6300" />
+              <View style={styles.pinDot} />
+            </View>
+          </View>
+
+          <View style={styles.location}>
+            <Text style={styles.locationTitle}>
+              {resources.myLocationText}
             </Text>
-            <View style={styles.mapCard}>
-              <MapView
-                style={styles.map}
-                provider={PROVIDER_GOOGLE}
-                initialRegion={location && location}
-                onRegionChangeComplete={handleRegionChangeComplete}
-              />
 
-              <View style={styles.centerPinContainer} pointerEvents="none">
-                <Ionicons name="location" size={40} color="#FF3B30" />
-                <View style={styles.pinDot} />
-              </View>
-            </View>
-            <View style={styles.location}>
-              <Text
-                style={{
-                  fontSize: 14.5,
-                  fontWeight: 700,
-                  width: 240,
-                  marginTop: -10,
-                }}
-              >
-                {resources.myLocationText}
-              </Text>
+            {/* Morada sem azul e sem sublinhado */}
+            <Text style={styles.locationAddress}>
+              {selectedAddress?.address?.formattedAddress ||
+                "A carregar localização..."}
+            </Text>
+          </View>
 
-              <Text style={{ fontSize: 12, marginTop: 5 }}>
-                {selectedAddress?.address?.formattedAddress}
-              </Text>
-            </View>
-            <View>
-              <Image
-                source={require("../../../assets/images/Subtract.svg")}
-                style={{ width: 310, height: 78 }}
-              />
-              <TouchableOpacity
-                style={{
-                  ...styles.button,
-                  backgroundColor: isSubmitting ? colors.orange : colors.main,
-                }}
-                onPress={handleContinue}
-              >
-                {isSubmitting ? (
-                  <ActivityIndicator color={colors.orange} size={"large"} />
-                ) : (
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 900,
-                      color: colors.white,
-                    }}
-                  >
-                    {resources.buttonText}
-                  </Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
+          {/* Contentor do botão com sombra */}
+          <View style={styles.bottomWrapper}>
+            <Image
+              source={require("../../../assets/images/Subtract.svg")}
+              style={styles.subtractImage}
+              tintColor={colors.white}
+            />
+            <TouchableOpacity
+              style={[
+                styles.button,
+                { backgroundColor: isSubmitting ? colors.orange : colors.main },
+              ]}
+              onPress={handleContinue}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator color={colors.white} size={"small"} />
+              ) : (
+                <Text style={styles.buttonText}>
+                  {resources.buttonText}
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>
@@ -203,45 +194,83 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.main,
   },
+
+  mainContent: {
+    paddingTop: 110,
+    paddingHorizontal: 20,
+    alignItems: "center",
+  },
+
+  elementsContainer: {
+    width: "100%",
+    alignItems: "center",
+    gap: 10,
+  },
+
+  instructionText: {
+    fontSize: 14,
+    fontWeight: "700",
+    width: 320,
+    textAlign: "left",
+  },
+
   mapCard: {
-    borderRadius: 40,
+    borderRadius: 35,
     overflow: "hidden",
     width: 320,
-    height: 157,
-    shadowColor: colors.gray,
-    elevation: 5,
+    height: 140,
+    elevation: 6, // Sombra do mapa
   },
+
   map: {
     width: 320,
-    height: 157,
+    height: 140,
   },
+
   profileButton: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 100,
-    backgroundColor: colors.gray,
-    marginTop: -20,
+    alignSelf: "flex-start",
+    marginBottom: 5,
   },
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 16,
-  },
+
   location: {
-    flex: 1,
-    borderRadius: 50,
+    borderRadius: 30,
     width: 320,
-    height: 68,
-    backgroundColor: colors.gray,
-    paddingLeft: 34,
-    gap: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: colors.white,
+    gap: 2,
+    justifyContent: "center", // <- Aqui estava o erro (tinha um ponto a mais)
   },
+
+  locationTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    width: 240,
+  },
+
+  locationAddress: {
+    fontSize: 12,
+    color: "#0d58e4",
+    fontWeight: "500",
+  },
+
+  bottomWrapper: {
+    marginTop: 5,
+    width: 310,
+    height: 70,
+    elevation: 6, 
+  },
+
+  subtractImage: {
+    width: "100%",
+    height: "100%",
+  },
+
   button: {
     top: 10,
     left: 165,
@@ -250,9 +279,14 @@ const styles = StyleSheet.create({
     elevation: 3,
     width: 130,
     height: 50,
-    display: "flex",
     alignItems: "center",
     justifyContent: "center",
+  },
+
+  buttonText: {
+    fontSize: 14,
+    fontWeight: "900",
+    color: colors.white,
   },
 
   centerPinContainer: {
@@ -263,9 +297,9 @@ const styles = StyleSheet.create({
     right: 0,
     justifyContent: "center",
     alignItems: "center",
-    // Shifts the pin up slightly so the bottom tip points to exact center
-    marginTop: -20,
+    marginTop: -15,
   },
+
   pinDot: {
     width: 6,
     height: 6,

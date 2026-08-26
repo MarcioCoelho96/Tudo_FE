@@ -28,8 +28,8 @@ export const DashboardHeader: React.FC = () => {
           onPress={handleOpenProfile}
         >
           <Image
-            source={require("../../../assets/images/userProfileIcon.png")}
-            style={{ width: 45, height: 60, marginTop: 7 }}
+            source={require("../../../assets/images/userProfileIcon_1.svg")}
+            style={{ width: 45, height: 45, marginTop: 7 }}
           />
         </TouchableOpacity>
       </View>

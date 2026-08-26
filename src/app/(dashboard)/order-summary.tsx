@@ -1,14 +1,13 @@
 import { colors } from "@/styles/global";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
-
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import PayButton from "../components/PayButton";
 import ProductList, { Product } from "../components/ProductList";
-import { DashboardHeader } from "../components/dashboardHeader";
-//import ScreenBackground from "../components/screenBackground";
 import { BackgroundImage } from "../components/backgroundImage";
+import { DashboardHeader } from "../components/dashboardHeader";
 
 type PaymentScope = "select" | "all";
 
@@ -55,9 +54,9 @@ function formatCurrency(value: number): string {
 
 export default function OrderSummaryScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const [paymentScope, setPaymentScope] = useState<PaymentScope>("all");
-
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
 
   const totalLabel = useMemo(() => {
@@ -75,10 +74,6 @@ export default function OrderSummaryScreen() {
 
     return formatCurrency(total);
   }, [paymentScope, selectedProductIds]);
-
-  const handleProfilePress = () => {
-    router.push("/profile");
-  };
 
   const handleOrderMorePress = () => {
     router.push("/restaurant-selection");
@@ -114,11 +109,15 @@ export default function OrderSummaryScreen() {
       <DashboardHeader />
       <BackgroundImage />
 
-      <View style={styles.screenContent}>
+      <View
+        style={[
+          styles.screenContent,
+          { paddingTop: insets.top + 60, paddingBottom: insets.bottom + 10 },
+        ]}
+      >
         <View style={styles.titleSection}>
-          <View>
+          <View style={styles.titleTextWrapper}>
             <Text style={styles.tableText}>MESA 12</Text>
-
             <Text style={styles.title}>O MEU PEDIDO</Text>
           </View>
 
@@ -144,7 +143,6 @@ export default function OrderSummaryScreen() {
 
         <View style={styles.totalSection}>
           <Text style={styles.totalLabel}>TOTAL</Text>
-
           <Text style={styles.totalValue}>{totalLabel}</Text>
         </View>
 
@@ -194,40 +192,41 @@ const styles = StyleSheet.create({
 
   screenContent: {
     flex: 1,
-    paddingTop: 120,
     paddingHorizontal: 30,
   },
 
   titleSection: {
-    flexDirection: "column",
     alignItems: "center",
-    justifyContent: "center",
-    
+    marginBottom: 5,
+  },
+
+  titleTextWrapper: {
+    alignItems: "center",
   },
 
   tableText: {
     color: "#2B3349",
     fontSize: 13,
     fontWeight: "500",
-    left: 50,
   },
 
   title: {
     color: "#2B3349",
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "900",
-    lineHeight: 27,
+    lineHeight: 26,
   },
 
   orderMoreButton: {
+    alignSelf: "flex-end",
     height: 30,
-    paddingHorizontal: 22,
-    marginTop: 2,
+    paddingHorizontal: 20,
     borderRadius: 20,
-    marginLeft: 220,
     backgroundColor: "#2B3349",
     justifyContent: "center",
     alignItems: "center",
+    marginTop: 5,
+    marginRight: 5,
   },
 
   orderMoreText: {
@@ -243,55 +242,51 @@ const styles = StyleSheet.create({
   },
 
   totalSection: {
-    borderTopWidth: 1,
+    borderTopWidth: 0,
     borderTopColor: "#D8D8D8",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginBottom: -30,
+    marginTop: 5,
+    top: 0,
   },
 
   totalLabel: {
     color: "#2B3349",
     fontSize: 18,
     fontWeight: "900",
-    left: 10,
-    top: -30,
   },
 
   totalValue: {
     color: "#2B3349",
     fontSize: 18,
     fontWeight: "900",
-    right: 20,
-    top: -30,
   },
 
   footer: {
-    height: 200,
+    height: 150,
   },
 
   scopeToggle: {
-    position: "absolute",
-    top: -20,
-    right: 10,
-    height: 70,
+    alignSelf: "flex-end",
+    height: 80,
     borderRadius: 40,
     flexDirection: "row",
     overflow: "hidden",
+    top: 35,
     zIndex: 10,
   },
 
   scopeOption: {
-    minWidth: 40,
-    height: "100%",
-    paddingHorizontal: 18,
-    backgroundColor: "#2B3349",
+    paddingHorizontal: 10,
+    backgroundColor: colors.main,
     justifyContent: "center",
     alignItems: "center",
   },
 
   scopeOptionActive: {
-    backgroundColor: "#EB6300",
+    backgroundColor: colors.orange,
   },
 
   scopeOptionText: {
@@ -302,14 +297,5 @@ const styles = StyleSheet.create({
 
   payButtonWrapper: {
     width: "100%",
-    height: 150,
-    transform: [
-      {
-        translateX: -25,
-      },
-      {
-        scale: 0.95,
-      },
-    ],
   },
 });

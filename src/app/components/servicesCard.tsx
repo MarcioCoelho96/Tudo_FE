@@ -3,15 +3,26 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { colors } from "../../styles/global";
 
-interface ServiceCArdProps {
+interface ServiceCardProps {
   category: string;
 }
 
-const ServiceCard: React.FC<ServiceCArdProps> = ({ category }) => {
+// Mapeamento dinâmico de categorias para as imagens
+const CATEGORY_IMAGES: Record<string, any> = {
+  CAFÉ: require("../../../assets/images/cafeImage.jpg"),
+  RESTAURANTE: require("../../../assets/images/restaurante.png"),
+  LAVANDARIA: require("../../../assets/images/laundromat-worker.jpg"),
+};
+
+const ServiceCard: React.FC<ServiceCardProps> = ({ category }) => {
+  // Procura a imagem correspondente à categoria em maiúsculas (com fallback para a imagem do CAFÉ)
+  const imageSource =
+    CATEGORY_IMAGES[category?.toUpperCase()] || CATEGORY_IMAGES["CAFÉ"];
+
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require("../../../assets/images/cafeImage.jpg")}
+        source={imageSource}
         style={{
           flex: 1,
           borderRadius: 50,
@@ -19,7 +30,6 @@ const ServiceCard: React.FC<ServiceCArdProps> = ({ category }) => {
           justifyContent: "flex-end",
           paddingRight: 15,
           paddingTop: 15,
-          //alignItems: "center",
         }}
         contentFit="fill"
       >
@@ -48,7 +58,7 @@ const ServiceCard: React.FC<ServiceCArdProps> = ({ category }) => {
           <Text
             style={{
               fontSize: 24,
-              fontWeight: 700,
+              fontWeight: "700",
               color: colors.white,
             }}
           >

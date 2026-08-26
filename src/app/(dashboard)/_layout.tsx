@@ -1,12 +1,14 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Image } from "react-native";
+import { Image } from "expo-image";
 import { CustomTabBar } from "../components/customTabBar";
-import HomeScreen from "./home";
-//import LocationScreen from "./location";
-import ProfileScreen from "./profile";
-import RestaurantSelectionScreen from "./restaurant-selection";
-import OrderSummaryScreen from "./order-summary";
-import PaymentScreen from "./pay";
+import HomeScreen from "./home";                                      //h1/h2-------
+import LocationScreen from "./location";                              //h3
+import ProfileScreen from "./profile";                                //I123
+import PaymentsScreen from "./pay";                                   //3-----------
+import RestaurantSearchScreen from "./restaurant-search"              //h4
+import OrderSummaryScreen from "./order-summary"                      //2-----------
+import RestaurantSelectionScreen from "./restaurant-selection"        //1-----------
+// payment-model.tsx ---------------------------------------------------4-----------
 
 export type TabParamList = {
   home: undefined;
@@ -26,12 +28,12 @@ export default function DashboardLayout() {
     >
       <Tabs.Screen
         name="home"
-        component={HomeScreen}
+        component={LocationScreen}
         options={{
           title: "Home UI",
           tabBarIcon: ({ color }) => (
             <Image
-              source={require("../../../assets/images/pin.png")}
+              source={require("../../../assets/images/pin-angle-fill.svg")}
               style={{
                 width: 35,
                 height: 35,
@@ -48,7 +50,7 @@ export default function DashboardLayout() {
           title: "My Profile",
           tabBarIcon: ({ color }) => (
             <Image
-              source={require("../../../assets/images/calendar.png")}
+              source={require("../../../assets/images/calendar-event-fill.svg")}
               style={{
                 width: 35,
                 height: 35,
@@ -61,13 +63,13 @@ export default function DashboardLayout() {
       <Tabs.Screen
         name="location"
         // Original -> LocationScreen
-        component={OrderSummaryScreen}
+        component={RestaurantSelectionScreen}
         options={{
           title: "My Profile",
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <Image
-              source={require("../../../assets/images/file.png")}
+              source={require("../../../assets/images/file-earmark-ruled-fill.svg")}
               style={{
                 width: 35,
                 height: 35,

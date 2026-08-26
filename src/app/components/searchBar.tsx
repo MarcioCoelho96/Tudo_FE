@@ -3,29 +3,32 @@ import React, { useState } from "react";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import { colors } from "../../styles/global";
 
-// Define the types for the component's props
+// Define os tipos para as props do componente
 interface SearchBarProps {
   data: string[];
-  placeholder?: string; // The '?' makes it optional
+  placeholder?: string;
   onFilterResult: (filteredData: string[]) => void;
+  onFocus?: () => void; 
+  onBlur?: () => void;  
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
   data,
   placeholder = "Insira aqui o serviço",
   onFilterResult,
+  onFocus,
+  onBlur,
 }) => {
   const [query, setQuery] = useState<string>("");
 
   const handleSearch = (text: string): void => {
     setQuery(text);
 
-    // Filter the passed-in array string variable
-    const filtered = data.filter((item: string) =>
-      item.toLowerCase().includes(text.toLowerCase()),
+    // Filtra o array passado evitando erros de array nulo
+    const filtered = (data || []).filter((item: string) =>
+      item.toLowerCase().includes(text.toLowerCase())
     );
 
-    // Explicitly pass the filtered array back up to the parent component
     onFilterResult(filtered);
   };
 
@@ -34,7 +37,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
       <TextInput
         style={styles.input}
         placeholder={placeholder}
+        placeholderTextColor="#888888"
         value={query}
+        onChangeText={handleSearch} 
+        onFocus={onFocus}           
+        onBlur={onBlur}             
         clearButtonMode="while-editing"
       />
       <TouchableOpacity
@@ -43,7 +50,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         onPress={() => handleSearch(query)}
       >
         <Image
-          source={require("../../../assets/images/searchIcon.png")}
+          source={require("../../../assets/images/search.svg")}
           style={{ width: 28, height: 28 }}
         />
       </TouchableOpacity>
@@ -56,18 +63,20 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     display: "flex",
     flexDirection: "row",
-    gap: 45,
+    gap: 20,
   },
+
   input: {
-    width: 213,
-    height: 58,
+    width: 250,
+    height: 60,
     borderRadius: 50,
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
     backgroundColor: colors.gray,
   },
+
   profileButton: {
-    width: 54,
-    height: 54,
+    width: 60,
+    height: 60,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 100,
