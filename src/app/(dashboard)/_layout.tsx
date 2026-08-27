@@ -9,6 +9,7 @@ import RestaurantSearchScreen from "./restaurant-search"              //h4
 import OrderSummaryScreen from "./order-summary"                      //2-----------
 import RestaurantSelectionScreen from "./restaurant-selection"        //1-----------
 // payment-model.tsx ---------------------------------------------------4-----------
+import FileScreen from "./file"
 
 export type TabParamList = {
   home: undefined;
@@ -45,7 +46,7 @@ export default function DashboardLayout() {
       />
       <Tabs.Screen
         name="profile"
-        component={ProfileScreen}
+        component={HomeScreen}
         options={{
           title: "My Profile",
           tabBarIcon: ({ color }) => (
@@ -63,7 +64,7 @@ export default function DashboardLayout() {
       <Tabs.Screen
         name="location"
         // Original -> LocationScreen
-        component={RestaurantSelectionScreen}
+        component={FileScreen}
         options={{
           title: "My Profile",
           headerShown: false,

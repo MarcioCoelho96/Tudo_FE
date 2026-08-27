@@ -10,6 +10,7 @@ export const DashboardHeader: React.FC = () => {
   const handleOpenProfile = () => {
     router.push(Paths.profile);
   };
+  
   return (
     <View>
       <StatusBar

@@ -397,14 +397,14 @@ const styles = StyleSheet.create({
 
   selectedItemsPill: {
     position: "absolute",
-    top: -10,
-    right: 10,
     height: 60,
     paddingHorizontal: 50,
+    marginVertical: -25,
     borderRadius: 40,
-    backgroundColor: "#2E3852",
+    backgroundColor: colors.main,
     flexDirection: "row",
     alignItems: "center",
+    alignSelf: "flex-end",
     zIndex: 10,
   },
 
@@ -417,15 +417,6 @@ const styles = StyleSheet.create({
 
   payButtonWrapper: {
     width: "100%",
-    height: 150,
-    transform: [
-      {
-        translateX: -25,
-      },
-      {
-        scale: 0.95,
-      },
-    ],
   },
 });
 
