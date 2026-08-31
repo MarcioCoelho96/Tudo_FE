@@ -1,14 +1,10 @@
 import { Paths } from "@/const/global";
-import { useCategories } from "@/hooks/useCategories";
-import { useEstablishmentsNearby } from "@/hooks/useEstablishmentsNearby";
 import { useUserStore } from "@/store/userStore/userStore.store";
 import { colors } from "@/styles/global";
 import { Image } from "expo-image";
-import * as Location from "expo-location";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,101 +14,52 @@ import {
 import { BackgroundImage } from "../components/backgroundImage";
 import { DashboardHeader } from "../components/dashboardHeader";
 import SearchBar from "../components/searchBar";
-import ServiceCard from "../components/servicesCard";
+
+const CATEGORIES = [
+  {
+    id: "1",
+    label: "CAFÉ",
+    image: require("../../../assets/images/cafeImage.jpg"),
+  },
+  {
+    id: "2",
+    label: "RESTAURANTE",
+    image: require("../../../assets/images/restaurante.png"),
+  },
+  {
+    id: "3",
+    label: "LAVANDARIA",
+    image: require("../../../assets/images/laundromat-worker.jpg"),
+  },
+];
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { categories } = useCategories();
-
-  const setLocation = useUserStore((state) => state.setLocation);
-  const setAddress = useUserStore((state) => state.setAddress);
-
   const address = useUserStore((state) => state.address);
 
-  const { establishments, fetchEstablishmentsNearby } =
-    useEstablishmentsNearby();
-
-  console.log("here", establishments);
-
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function getCurrentLocation() {
-      // 1. Request foreground location permission
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-
-      // 2. Fetch current GPS position
-      let userLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
-      });
-
-      const currentCoords = {
-        latitude: userLocation.coords.latitude,
-        longitude: userLocation.coords.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-      };
-
-      // 3. Format into a MapView Region
-      setLocation(currentCoords);
-
-      let geocode = await Location.reverseGeocodeAsync(currentCoords);
-
-      if (geocode.length > 0) {
-        const firstResult = geocode[0];
-        const address = {
-          street: firstResult.street ?? "",
-          streetNumber: firstResult.streetNumber ?? "",
-          city: firstResult.city ?? firstResult.subregion ?? "",
-          region: firstResult.region ?? "",
-          formattedAddress: `${firstResult.streetNumber ? firstResult.streetNumber + " " : ""}${firstResult.street || ""}, ${firstResult.city || ""}`,
-        };
-        setAddress(address);
-        fetchEstablishmentsNearby(address, currentCoords);
-      }
-    }
-
-    getCurrentLocation();
-  }, []);
+  const [isSearching, setIsSearching] = useState(false);
 
   const handleChangeAddress = () => {
     router.push(Paths.location);
   };
 
-  if (!location) {
-    return (
-      <View style={styles.centered}>
-        {errorMsg ? (
-          <Text style={styles.errorText}>{errorMsg}</Text>
-        ) : (
-          <ActivityIndicator size="large" color={colors.main} />
-        )}
-      </View>
-    );
-  }
+  // Mantém apenas a função sem lógica de router para o toque fazer a animação de opacidade
+  const handleCategoryPress = () => {};
+
+  const displayAddress =
+    address?.formattedAddress || "Rua Nova da Telha, nº261, 482...";
+
   return (
     <View style={styles.container}>
       <DashboardHeader />
       <BackgroundImage />
-      <View
-        style={{
-          paddingTop: 120,
-          paddingLeft: 20,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
+
+      <View style={styles.headerRowContainer}>
+        <View style={styles.headerRow}>
           <TouchableOpacity
-            style={{ flexDirection: "row", alignItems: "center" }}
+            style={styles.addressButton}
             onPress={handleChangeAddress}
+            activeOpacity={0.7}
           >
             <Image
               source={require("../../../assets/images/locationIcon.png")}
@@ -120,77 +67,61 @@ export default function HomeScreen() {
               contentFit="fill"
             />
             <Text
-              style={{
-                paddingLeft: 9,
-                paddingRight: 9,
-                fontWeight: 900,
-                fontSize: 14,
-                width: 170,
-                color: colors.gray,
-              }}
+              style={styles.addressText}
               ellipsizeMode="tail"
               numberOfLines={1}
             >
-              {address?.formattedAddress}
+              {isSearching ? "Escolher morada" : displayAddress}
             </Text>
           </TouchableOpacity>
-          <View
-            style={{
-              width: 122,
-              height: 68,
-              borderRadius: 50,
-              backgroundColor: colors.lightBlue,
-              alignItems: "center",
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <View
-              style={{
-                width: 5,
-                height: 5,
-                backgroundColor: colors.orange,
-                borderRadius: 100,
-                marginRight: 5,
-                marginBottom: 5,
-              }}
-            ></View>
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: 900,
-                color: colors.white,
-              }}
-            >
-              34,30 €
-            </Text>
+
+          <View style={styles.balanceBadge}>
+            <View style={styles.orangeDot} />
+            <Text style={styles.balanceText}>34,30 €</Text>
           </View>
         </View>
       </View>
-      <View
-        style={{
-          paddingLeft: 20,
-          paddingTop: 10,
-        }}
-      >
+
+      {/* Barra de Pesquisa */}
+      <View style={styles.searchBarWrapper}>
         <SearchBar
           data={[]}
-          onFilterResult={() => {
-            return;
-          }}
+          onFilterResult={() => {}}
+          onFocus={() => setIsSearching(true)}
+          onBlur={() => setIsSearching(false)}
         />
       </View>
+
+      {isSearching && (
+        <Text style={styles.searchSectionTitle}>
+          QUE TIPO DE SERVIÇO PROCURA?
+        </Text>
+      )}
+
       <ScrollView
-        contentContainerStyle={{
-          paddingLeft: 20,
-          paddingTop: 10,
-          paddingBottom: 110,
-          gap: 21,
-        }}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
       >
-        {categories.map((category) => {
-          return <ServiceCard key={category.key} category={category.label} />;
-        })}
+        {CATEGORIES.map((item) => (
+          <TouchableOpacity
+            key={item.id}
+            onPress={handleCategoryPress}
+            activeOpacity={0.9}
+            style={styles.cardContainer}
+          >
+            <Image
+              source={item.image}
+              style={StyleSheet.absoluteFillObject}
+              contentFit="cover"
+            />
+
+            <View style={styles.orangeCircle} />
+
+            <View style={styles.textOverlay}>
+              <Text style={styles.cardText}>{item.label}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
     </View>
   );
@@ -202,22 +133,117 @@ const styles = StyleSheet.create({
     backgroundColor: colors.main,
   },
 
-  profileIconBody: {
-    width: 24,
-    height: 12,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    backgroundColor: colors.white,
-    marginTop: -2,
+  headerRowContainer: {
+    paddingTop: 120,
+    paddingLeft: 20,
+    paddingRight: 20,
   },
 
-  centered: {
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
+  addressButton: {
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
+  },
+
+  addressText: {
+    paddingLeft: 9,
+    paddingRight: 9,
+    fontWeight: "900",
+    fontSize: 14,
+    maxWidth: 170,
+    color: colors.gray,
+  },
+
+  balanceBadge: {
+    width: 110,
+    height: 55,
+    borderRadius: 50,
+    backgroundColor: colors.lightBlue,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+
+  orangeDot: {
+    width: 6,
+    height: 6,
+    backgroundColor: colors.orange,
+    borderRadius: 100,
+    marginRight: 6,
+    marginBottom: 4,
+  },
+
+  balanceText: {
+    fontSize: 18,
+    fontWeight: "900",
+    color: colors.white,
+  },
+
+  searchBarWrapper: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 10,
+  },
+
+  searchSectionTitle: {
+    fontSize: 15,
+    fontWeight: "900",
+    color: colors.main,
+    marginTop: 15,
+    marginLeft: 20,
+    marginBottom: 5,
+  },
+
+  scrollContent: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 10,
+    paddingBottom: 160,
+    gap: 20,
+  },
+
+  cardContainer: {
+    width: 360,
+    height: 170,
+    borderRadius: 50,
+    overflow: "hidden",
+    position: "relative",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    alignSelf: "center",
+  },
+
+  orangeCircle: {
+    position: "absolute",
+    top: 15,
+    right: 15,
+    width: 55,
+    height: 55,
+    borderRadius: 30,
+    backgroundColor: colors.orange || "#E25822",
+    zIndex: 2,
+  },
+
+  textOverlay: {
+    width: 360,
+    height: 70,
+    backgroundColor: "rgba(255, 255, 255, 0.45)",
+    borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
+    zIndex: 2,
   },
-  errorText: {
-    color: "red",
-    fontSize: 16,
+
+  cardText: {
+    fontSize: 22,
+    fontWeight: "900",
+    color: "#FFFFFF",
+    letterSpacing: 1.2,
   },
 });
