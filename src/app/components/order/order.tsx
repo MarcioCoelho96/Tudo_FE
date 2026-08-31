@@ -14,10 +14,7 @@ import {
 
 import PayButton from "../PayButton";
 
-import ProductList, {
-  Product,
-  ProductCategory,
-} from "../ProductList";
+import ProductList, { Product, ProductCategory } from "../ProductList";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -171,7 +168,7 @@ export default function OrderScreen() {
 
     console.log("Selected products:", selectedProducts);
 
-    router.push("/components/ongoingOrder/OngoingOrder");
+    //router.push("components/ongoingOrder/OngoingOrder");
   };
 
   const selectedLabel =

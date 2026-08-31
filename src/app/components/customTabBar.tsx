@@ -105,6 +105,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: width,
+    zIndex: 99,
+    elevation: 10,
     backgroundColor: "transparent",
   },
   svgBackground: {

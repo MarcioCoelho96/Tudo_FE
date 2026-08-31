@@ -113,26 +113,30 @@ export default function LocationScreen() {
     <View style={styles.container}>
       <DashboardHeader />
       <BackgroundImage />
-
-      <View style={styles.mainContent}>
-        <TouchableOpacity
-          style={styles.profileButton}
-          activeOpacity={0.85}
-          onPress={handleBack}
+      <View
+        style={{
+          paddingTop: 100,
+          paddingBottom: 150,
+        }}
+      >
+        <View
+          style={{
+            paddingTop: 50,
+            justifyContent: "center",
+            gap: 24,
+          }}
         >
           <Image
             source={require("../../../assets/images/navBackIcon.png")}
             style={{ width: 24, height: 24 }}
           />
-        </TouchableOpacity>
+        </View>
 
         <View style={styles.elementsContainer}>
           <ServiceCard category="RESTAURANTE" />
 
           {/* Texto alinhado à esquerda */}
-          <Text style={styles.instructionText}>
-            {resources.locationText}
-          </Text>
+          <Text style={styles.instructionText}>{resources.locationText}</Text>
 
           <View style={styles.mapCard}>
             <MapView
@@ -149,9 +153,7 @@ export default function LocationScreen() {
           </View>
 
           <View style={styles.location}>
-            <Text style={styles.locationTitle}>
-              {resources.myLocationText}
-            </Text>
+            <Text style={styles.locationTitle}>{resources.myLocationText}</Text>
 
             {/* Morada sem azul e sem sublinhado */}
             <Text style={styles.locationAddress}>
@@ -177,9 +179,7 @@ export default function LocationScreen() {
               {isSubmitting ? (
                 <ActivityIndicator color={colors.white} size={"small"} />
               ) : (
-                <Text style={styles.buttonText}>
-                  {resources.buttonText}
-                </Text>
+                <Text style={styles.buttonText}>{resources.buttonText}</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -233,8 +233,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 100,
-    alignSelf: "flex-start",
-    marginBottom: 5,
+    backgroundColor: colors.gray,
+    marginTop: -20,
+    marginLeft: 20,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
   },
 
   location: {
@@ -263,7 +273,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     width: 310,
     height: 70,
-    elevation: 6, 
+    elevation: 6,
   },
 
   subtractImage: {
@@ -297,7 +307,7 @@ const styles = StyleSheet.create({
     right: 0,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: -15,
+    marginTop: -20,
   },
 
   pinDot: {

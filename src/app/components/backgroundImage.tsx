@@ -14,7 +14,11 @@ export const BackgroundImage: React.FC<BackgroundImageProps> = ({
   return (
     <ImageBackground
       source={source}
-      style={styles.backgroundImage}
+      style={{
+        ...styles.backgroundImage,
+        top: isDefaultBg ? 45 : 25,
+        bottom: isDefaultBg ? -20 : -290,
+      }}
       contentFit="fill"
     />
   );
@@ -23,10 +27,8 @@ export const BackgroundImage: React.FC<BackgroundImageProps> = ({
 const styles = StyleSheet.create({
   backgroundImage: {
     position: "absolute",
-    top: 35,
     left: -5,
     right: -5,
-    bottom: -20,
   },
 });
 
