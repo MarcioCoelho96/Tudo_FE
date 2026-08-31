@@ -1,23 +1,26 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
+import {
+  ImageSourcePropType,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
+import { colors } from "@/styles/global";
+import { Image } from "expo-image";
 import PayButton from "../components/PayButton";
-import ScreenBackground from "../components/screenBackground";
+import PaymentModal from "../components/payment-modal";
+import { BackgroundImage } from "../components/backgroundImage";
+import { DashboardHeader } from "../components/dashboardHeader";
 
 type PaymentMethod = "mbway" | "multibanco" | "counter" | "reference";
 
 type PaymentOption = {
   id: PaymentMethod;
   label: string;
-  icon:
-    | "cellphone"
-    | "credit-card-outline"
-    | "cash-register"
-    | "card-text-outline";
+  icon: ImageSourcePropType;
 };
 
 type SelectedProduct = {
@@ -48,30 +51,34 @@ const PAYMENT_OPTIONS: PaymentOption[] = [
   {
     id: "mbway",
     label: "Pagamento com MB Way",
-    icon: "cellphone",
+    icon: require("../../../assets/images/image 1.1.svg"),
   },
   {
     id: "multibanco",
     label: "Pagamento com Multibanco",
-    icon: "credit-card-outline",
+    icon: require("../../../assets/images/credit-card.svg"),
   },
   {
     id: "counter",
     label: "Pagamento ao Balcão",
-    icon: "cash-register",
+    icon: require("../../../assets/images/cash-coin.svg"),
   },
   {
     id: "reference",
-    label: "Pagamento com Referência\nMultibanco",
-    icon: "card-text-outline",
+    label: "Pagamento com Referência Multibanco",
+    icon: require("../../../assets/images/card-text.svg"),
   },
 ];
 
 function formatCurrency(value: number): string {
+  if (Number.isInteger(value)) {
+    return `${value}`;
+  }
   return value.toFixed(2).replace(".", ",");
 }
 
 export default function PaymentScreen() {
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const router = useRouter();
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
@@ -83,10 +90,6 @@ export default function PaymentScreen() {
       0,
     );
   }, []);
-
-  const handleProfilePress = () => {
-    router.push("/profile");
-  };
 
   const handlePaymentMethodPress = (paymentMethod: PaymentMethod) => {
     setSelectedPaymentMethod(paymentMethod);
@@ -101,60 +104,26 @@ export default function PaymentScreen() {
   };
 
   const handleFinalizePayment = () => {
-    const selectedOption = PAYMENT_OPTIONS.find(
-      (option) => option.id === selectedPaymentMethod,
-    );
+    setIsModalVisible(true);
+  };
 
-    Alert.alert(
-      "Confirmar pagamento",
-      `Método: ${
-        selectedOption?.label.replace("\n", " ") ?? selectedPaymentMethod
-      }\nTotal: ${formatCurrency(totalToPay)}€`,
-      [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "Confirmar",
-          onPress: () => {
-            console.log("Payment confirmed:", {
-              paymentMethod: selectedPaymentMethod,
-              products: SELECTED_PRODUCTS,
-              total: totalToPay,
-            });
-          },
-        },
-      ],
-    );
+  const handleConfirmModal = () => {
+    setIsModalVisible(false);
+    console.log("Payment confirmed:", {
+      paymentMethod: selectedPaymentMethod,
+      products: SELECTED_PRODUCTS,
+      total: totalToPay,
+    });
   };
 
   return (
-    <ScreenBackground>
-      <View style={styles.contentContainer}>
-        <View style={styles.header}>
-          <Image
-            source={require("../../../assets/images/logo.png")}
-            style={styles.logo}
-            contentFit="contain"
-          />
+    <View style={styles.contentContainer}>
+      <DashboardHeader />
+      <BackgroundImage />
 
-          <TouchableOpacity
-            style={styles.profileButton}
-            onPress={handleProfilePress}
-            activeOpacity={0.8}
-          >
-            <Image
-              source={require("../../../assets/images/profileButton.png")}
-              style={styles.profileImage}
-              contentFit="contain"
-            />
-          </TouchableOpacity>
-        </View>
-
+      <View style={styles.screenContent}>
         <View style={styles.titleSection}>
           <Text style={styles.tableText}>MESA 12</Text>
-
           <Text style={styles.title}>O MEU PEDIDO</Text>
         </View>
 
@@ -162,7 +131,6 @@ export default function PaymentScreen() {
           {SELECTED_PRODUCTS.map((product) => (
             <View key={product.id} style={styles.productRow}>
               <Text style={styles.productTitle}>{product.title}</Text>
-
               <Text style={styles.productPrice}>
                 {formatCurrency(product.price)}€
               </Text>
@@ -172,13 +140,11 @@ export default function PaymentScreen() {
 
         <View style={styles.totalSection}>
           <Text style={styles.totalLabel}>VALOR A PAGAR</Text>
-
           <Text style={styles.totalValue}>{formatCurrency(totalToPay)}€</Text>
         </View>
 
         <View style={styles.paymentTitleSection}>
           <Text style={styles.paymentTitle}>PAGAR COM</Text>
-
           <Text style={styles.paymentDescription}>
             Selecione o modo de pagamento que prefere:
           </Text>
@@ -196,19 +162,11 @@ export default function PaymentScreen() {
                 activeOpacity={0.85}
               >
                 <View style={styles.paymentOptionContent}>
-                  {option.id === "mbway" ? (
-                    <View style={styles.mbWayIcon}>
-                      <Text style={styles.mbWayText}>MB</Text>
-
-                      <View style={styles.mbWayLine} />
-                    </View>
-                  ) : (
-                    <MaterialCommunityIcons
-                      name={option.icon}
-                      size={41}
-                      color="#2E3852"
-                    />
-                  )}
+                  <Image
+                    source={option.icon}
+                    style={styles.paymentIcon}
+                    contentFit="contain"
+                  />
 
                   <Text style={styles.paymentOptionLabel}>{option.label}</Text>
                 </View>
@@ -234,11 +192,21 @@ export default function PaymentScreen() {
         <View style={styles.footer}>
           <View style={styles.footerActions}>
             <TouchableOpacity
-              style={styles.cancelButton}
+              style={styles.actionButton}
               onPress={handleCancel}
               activeOpacity={0.8}
             >
               <Text style={styles.actionButtonText}>CANCELAR</Text>
+            </TouchableOpacity>
+
+            <View style={styles.actionDivider} />
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={handleAdd}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.actionButtonText}>ADICIONAR</Text>
             </TouchableOpacity>
           </View>
 
@@ -251,46 +219,31 @@ export default function PaymentScreen() {
           </View>
         </View>
       </View>
-    </ScreenBackground>
+
+      <PaymentModal
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        onConfirm={handleConfirmModal}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
-    marginTop: 35,
-    marginHorizontal: 18,
-    marginBottom: 8,
-    paddingHorizontal: 20,
+    backgroundColor: colors.main,
   },
 
-  header: {
-    height: 68,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    zIndex: 10,
-  },
-
-  logo: {
-    width: 105,
-    height: 42,
-  },
-
-  profileButton: {
-    width: 30,
-    height: 30,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  profileImage: {
-    width: 54,
-    height: 54,
+  screenContent: {
+    flex: 1,
+    paddingTop: 110,
+    paddingHorizontal: 30,
   },
 
   titleSection: {
     alignItems: "center",
+    marginTop: 5,
   },
 
   tableText: {
@@ -301,18 +254,18 @@ const styles = StyleSheet.create({
 
   title: {
     color: "#2E3852",
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "900",
-    lineHeight: 27,
+    lineHeight: 26,
   },
 
   productsSection: {
-    marginTop: 18,
-    paddingHorizontal: 4,
+    marginTop: 12,
+    paddingHorizontal: 5,
   },
 
   productRow: {
-    minHeight: 54,
+    minHeight: 40,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -322,19 +275,20 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingRight: 20,
     color: "#303A53",
-    fontSize: 17,
-    fontWeight: "400",
-    lineHeight: 25,
+    fontSize: 15,
+    fontWeight: "500",
+    lineHeight: 20,
   },
 
   productPrice: {
     color: "#303A53",
-    fontSize: 19,
+    fontSize: 17,
     fontWeight: "400",
   },
 
   totalSection: {
-    minHeight: 55,
+    minHeight: 48,
+    marginTop: 5,
     borderTopWidth: 1,
     borderTopColor: "#D8D8D8",
     flexDirection: "row",
@@ -344,59 +298,49 @@ const styles = StyleSheet.create({
 
   totalLabel: {
     color: "#303A53",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "900",
   },
 
   totalValue: {
     color: "#303A53",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "900",
   },
 
   paymentTitleSection: {
-    marginTop: 2,
+    marginTop: 5,
   },
 
   paymentTitle: {
     color: "#2E3852",
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: "900",
   },
 
   paymentDescription: {
-    width: 210,
     marginTop: 5,
     color: "#303A53",
-    fontSize: 10,
+    fontSize: 15,
     fontWeight: "400",
-    lineHeight: 14,
   },
 
   optionsSection: {
-    marginTop: 20,
-    gap: 7,
+    marginTop: 10,
+    gap: 8,
   },
 
   paymentOption: {
     width: "100%",
-    minHeight: 60,
-    paddingLeft: 18,
-    paddingRight: 5,
-    borderRadius: 38,
+    minHeight: 20,
+    paddingLeft: 16,
+    paddingRight: 6,
+    borderRadius: 30,
     backgroundColor: "#FFFFFF",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-
-    shadowColor: "#000000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 4,
-    elevation: 6,
+    elevation: 4,
   },
 
   paymentOptionContent: {
@@ -405,54 +349,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  paymentIcon: {
+    width: 36,
+    height: 36,
+  },
+
   paymentOptionLabel: {
     flex: 1,
-    marginLeft: 14,
+    marginLeft: 12,
     paddingRight: 8,
     color: "#303A53",
-    fontSize: 12,
+    fontSize: 15,
     fontWeight: "400",
-    lineHeight: 17,
-  },
-
-  mbWayIcon: {
-    width: 42,
-    height: 42,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  mbWayText: {
-    color: "#111111",
-    fontSize: 22,
-    fontWeight: "500",
-  },
-
-  mbWayLine: {
-    width: 35,
-    height: 3,
-    marginTop: 1,
-    borderRadius: 2,
-    backgroundColor: "#E30613",
+    lineHeight: 15,
   },
 
   toggleTrack: {
-    width: 87,
-    height: 40,
+    width: 80,
+    height: 45,
+    marginVertical: 5,
     paddingHorizontal: 5,
     borderRadius: 30,
     backgroundColor: "#D8D8D8",
     justifyContent: "center",
     alignItems: "flex-start",
-
-    shadowColor: "#000000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3,
-    elevation: 4,
   },
 
   toggleTrackSelected: {
@@ -460,68 +380,52 @@ const styles = StyleSheet.create({
   },
 
   toggleThumb: {
-    width: 40,
-    height: 40,
-    borderRadius: 26,
+    width: 35,
+    height: 35,
+    borderRadius: 30,
     backgroundColor: "#2E3852",
-
-    shadowColor: "#000000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 3,
   },
 
   toggleThumbSelected: {
-    backgroundColor: "#F86400",
+    backgroundColor: colors.orange,
   },
 
   footer: {
-    flex: 1,
-    bottom: 38,
-    right: 16,
-    justifyContent: "flex-end",
+    height: 150,
   },
 
   footerActions: {
-    position: "absolute",
-    right: 4,
-    bottom: 83,
-    height: 37,
-    borderRadius: 36,
+    top: 30,
+    height: 60,
+    paddingHorizontal: 10,
+    borderRadius: 40,
     backgroundColor: "#2E3852",
     flexDirection: "row",
     alignItems: "center",
-    zIndex: 20,
+    alignSelf: "flex-end",
+    zIndex: 10,
   },
 
-  cancelButton: {
+  actionButton: {
     height: "100%",
-    paddingLeft: 42,
-    paddingRight: 36,
+    paddingHorizontal: 10,
     justifyContent: "center",
     alignItems: "center",
   },
 
   actionButtonText: {
     color: "#FFFFFF",
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "900",
+  },
+
+  actionDivider: {
+    width: 2,
+    height: 40,
+    backgroundColor: "rgba(255, 255, 255, 0.4)",
   },
 
   payButtonWrapper: {
     width: "100%",
-    height: 132,
-    transform: [
-      {
-        translateX: -12,
-      },
-      {
-        scale: 0.95,
-      },
-    ],
   },
 });

@@ -1,3 +1,4 @@
+import { colors } from "@/styles/global";
 import { Image } from "expo-image";
 import React from "react";
 import {
@@ -57,21 +58,23 @@ const styles = StyleSheet.create({
   },
 
   Background: {
-    position: "absolute",
-    left: 12,
-    bottom: 8,
+    //position: "absolute",
+    right: 10,
+    bottom: 5,
     width: SCREEN_WIDTH - 40,
     height: 125,
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   Button: {
     position: "absolute",
-    left: 30,
-    bottom: 30,
+    left: 3,
+    bottom: 35,
     width: 120,
-    height: 86,
+    height: 100,
     borderRadius: 46,
-    backgroundColor: "#FF5200",
+    backgroundColor: colors.orange,
     justifyContent: "center",
     alignItems: "center",
 
@@ -88,18 +91,18 @@ const styles = StyleSheet.create({
 
   ButtonText: {
     color: "#FFFFFF",
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "900",
     lineHeight: 20,
     textAlign: "center",
   },
 
   HelperContainer: {
-    left: 168,
-    top: 62,
-    height: 58,
+    marginLeft: 140,
+    marginTop: -25,
     width: SCREEN_WIDTH - 200,
-    justifyContent: "center",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
   },
 
   HelperText: {

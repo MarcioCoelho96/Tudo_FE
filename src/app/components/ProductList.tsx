@@ -35,6 +35,7 @@ type ProductListProps = {
   emptyMessage?: string;
   interactive?: boolean;
   showSelectionIndicator?: boolean;
+  dimUnselected?: boolean;
 };
 
 export default function ProductList({
@@ -44,18 +45,27 @@ export default function ProductList({
   emptyMessage = "Nenhum produto encontrado.",
   interactive = true,
   showSelectionIndicator = true,
+  dimUnselected = false,
 }: ProductListProps) {
   const renderProduct: ListRenderItem<Product> = ({ item, index }) => {
     const isSelected = selectedProductIds.includes(item.id);
 
     const isLastProduct = index === products.length - 1;
 
+    const isDimmed = dimUnselected && !isSelected;
+
     const productContent = (
       <>
         <View style={styles.productTextContainer}>
-          <Text style={styles.productTitle}>{item.title}</Text>
+          <Text style={[styles.productTitle, isDimmed && styles.dimmedText]}>
+            {item.title}
+          </Text>
 
-          <Text style={styles.productDescription}>{item.description}</Text>
+          <Text
+            style={[styles.productDescription, isDimmed && styles.dimmedText]}
+          >
+            {item.description}
+          </Text>
         </View>
 
         <View style={styles.productImageContainer}>
@@ -65,7 +75,7 @@ export default function ProductList({
 
           <Image
             source={item.image}
-            style={styles.productImage}
+            style={[styles.productImage, isDimmed && styles.dimmedImage]}
             contentFit="cover"
             transition={150}
           />
@@ -120,7 +130,7 @@ const styles = StyleSheet.create({
   },
 
   listContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 6,
     paddingBottom: 8,
   },
 
@@ -173,6 +183,14 @@ const styles = StyleSheet.create({
     height: 104,
     borderRadius: 28,
     backgroundColor: "#D9D9D9",
+  },
+
+  dimmedText: {
+    opacity: 0.35,
+  },
+
+  dimmedImage: {
+    opacity: 0.35,
   },
 
   selectedIndicator: {
