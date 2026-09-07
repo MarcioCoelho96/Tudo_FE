@@ -47,12 +47,12 @@ export default function CalendarScreen() {
   const totalPeoplePages = Math.ceil(PEOPLE_OPTIONS.length / ITEMS_PER_PAGE);
 
   useEffect(() => {
-    const deviceLanguageCode = getLocales()[0].languageCode || "en";
+    const deviceLanguageCode = getLocales()[0].languageCode || "pt";
 
     if (LocaleConfig.locales[deviceLanguageCode]) {
       LocaleConfig.defaultLocale = deviceLanguageCode;
     } else {
-      LocaleConfig.defaultLocale = "en";
+      LocaleConfig.defaultLocale = "pt";
     }
 
     const currentDate = new Date().toISOString().split("T")[0];

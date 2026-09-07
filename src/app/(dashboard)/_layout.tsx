@@ -1,5 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Image, View } from "react-native";
+import { View } from "react-native";
+import { Image } from "expo-image";
 import { CustomTabBar } from "../components/customTabBar";
 import HomeScreen from "./home";
 //import LocationScreen from "./location";
@@ -59,7 +60,7 @@ export default function DashboardLayout() {
             title: "Home UI",
             tabBarIcon: ({ color }) => (
               <Image
-                source={require("../../../assets/images/pin.png")}
+                source={require("../../../assets/images/pin-angle-fill.svg")}
                 style={{
                   width: 35,
                   height: 35,
@@ -82,7 +83,7 @@ export default function DashboardLayout() {
             title: "Calendar",
             tabBarIcon: ({ color }) => (
               <Image
-                source={require("../../../assets/images/calendar.png")}
+                source={require("../../../assets/images/calendar-event-fill.svg")}
                 style={{
                   width: 35,
                   height: 35,
@@ -101,7 +102,7 @@ export default function DashboardLayout() {
             headerShown: false,
             tabBarIcon: ({ color }) => (
               <Image
-                source={require("../../../assets/images/file.png")}
+                source={require("../../../assets/images/file-earmark-ruled-fill.svg")}
                 style={{
                   width: 35,
                   height: 35,
