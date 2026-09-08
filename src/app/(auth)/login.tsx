@@ -49,9 +49,10 @@ export default function LoginScreen() {
     }
 
     try {
+      debugger;
       setIsSubmitting(true);
       await authService.requestSmsCode(fullPhoneNumber);
-      setStep(LoginStep.EnterValidationCode);
+      setStep(LoginStep.EnterPhoneNumber);
       console.log("SMS code requested successfully");
     } catch (err: any) {
       setError(err.message);
@@ -107,7 +108,7 @@ export default function LoginScreen() {
       }}
     >
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        {isEnterPhoneStep ? (
+        {step === LoginStep.EnterValidationCode && (
           <View>
             <View style={{ paddingLeft: 10 }}>
               <Text style={styles.title}>{resources.loginTitle}</Text>
@@ -156,7 +157,8 @@ export default function LoginScreen() {
               </TouchableOpacity>
             </View>
           </View>
-        ) : (
+        )}
+        {step === LoginStep.EnterPhoneNumber && (
           <View>
             <ImageBackground
               source={require("../../../assets/images/smsLayout.svg")}

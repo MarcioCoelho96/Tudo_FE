@@ -27,22 +27,52 @@ export const authService = {
 
   async requestSmsCode(phoneNumber: string): Promise<void> {
     try {
+      // 1. Sanitize/format phone number (strips spaces/dashes, ensures leading '+')
+      const formattedPhone = phoneNumber.trim().startsWith("+")
+        ? phoneNumber.trim()
+        : `+${phoneNumber.replace(/\D/g, "")}`;
+
+      console.log(`[authService] Sending SMS code to: ${formattedPhone}`);
+      console.log(`[authService] Request URL: ${BASE_URL}/auth/login`);
+
       const response = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
-          accept: "*/*",
+          accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ phoneNumber: phoneNumber }),
+        body: JSON.stringify({ phoneNumber: formattedPhone }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to send SMS code");
+        // 2. Read raw response text first to handle empty or HTML error responses
+        const rawText = await response.text();
+        let errorData: Record<string, any> = {};
+
+        try {
+          errorData = JSON.parse(rawText);
+        } catch {
+          // Response was not JSON (e.g. 500 internal HTML error or proxy issue)
+        }
+
+        console.error(
+          `[authService] API HTTP Error ${response.status}:`,
+          rawText,
+        );
+
+        const errorMessage =
+          errorData.message ||
+          errorData.error ||
+          `Server responded with status ${response.status}`;
+
+        throw new Error(errorMessage);
       }
-    } catch (error) {
-      // If the network fails, it will hit this debugger instead!
-      console.error("Fetch failed entirely:", error);
+
+      console.log("[authService] SMS code requested successfully.");
+    } catch (error: any) {
+      console.error("[authService] requestSmsCode failed:", error);
+      // 3. Re-throw so your UI/screen can handle loading state and show an alert
+      throw error;
     }
   },
 
