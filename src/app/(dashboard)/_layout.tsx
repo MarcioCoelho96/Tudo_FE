@@ -1,13 +1,18 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { View } from "react-native";
 import { Image } from "expo-image";
+import { View } from "react-native";
 import { CustomTabBar } from "../components/customTabBar";
-import HomeScreen from "./home";
 //import LocationScreen from "./location";
 import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { useCallback, useRef, useState } from "react";
 import CalendarScreen from "./calendar";
 import LocationScreen from "./location";
+import OrderSummaryScreen from "./orderSummary";
+import PaymentScreen from "./pay"; //teste
+import RestaurantSearchScreen from "./restaurantSearch"; //teste
+import HomeScreen from "./home";
+import RestaurantSelectionScreen from "./restaurantSelection";
+import FileScreen from "./file";
 
 export type TabParamList = {
   home: undefined;
@@ -15,6 +20,8 @@ export type TabParamList = {
   location: undefined;
   calendar: undefined;
   restaurantSelection: undefined;
+  orderSummary: undefined;
+  pay: undefined;
 };
 
 export default function DashboardLayout() {
@@ -96,7 +103,7 @@ export default function DashboardLayout() {
         <Tabs.Screen
           name="location"
           // Original -> LocationScreen
-          component={LocationScreen}
+          component={LocationScreen }
           options={{
             title: "My Profile",
             headerShown: false,
@@ -112,6 +119,30 @@ export default function DashboardLayout() {
             ),
           }}
         />
+        <Tabs.Screen
+          name="restaurantSelection"
+          component={RestaurantSelectionScreen}
+          options={{
+            title: "Restaurant Selection",
+            tabBarStyle: { display: "none" },
+          }}
+        />
+        <Tabs.Screen
+          name="orderSummary"
+          component={OrderSummaryScreen}
+          options={{
+            title: "Order Summary",
+            tabBarStyle: { display: "none" },
+          }}
+        />
+        <Tabs.Screen
+          name="pay"
+          component={PaymentScreen}
+          options={{
+            title: "Pay",
+            tabBarStyle: { display: "none" },
+          }}
+        />
       </Tabs.Navigator>
 
       <BottomSheet
@@ -125,7 +156,7 @@ export default function DashboardLayout() {
         handleIndicatorStyle={{ backgroundColor: "#CBD5E0" }}
         handleComponent={null}
       >
-        <CalendarScreen />
+        <CalendarScreen onClose={() => bottomSheetRef.current?.close()} />
       </BottomSheet>
     </View>
   );

@@ -7,4 +7,8 @@ export enum Paths {
   profile = "/(dashboard)/profile",
   location = "/(dashboard)/location",
   calendar = "/(dashboard)/calendar",
+  restaurantSearch = "/(dashboard)/restaurantSearch", 
+  restaurantSelection = "/(dashboard)/restaurantSelection",
+  orderSummary = "/(dashboard)/orderSummary",
+  pay = "/(dashboard)/pay",
 }

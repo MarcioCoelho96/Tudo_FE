@@ -15,6 +15,16 @@ export function CustomTabBar({
 }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
 
+  const focusedOptions = descriptors[state.routes[state.index].key].options;
+
+  if (focusedOptions.tabBarStyle && "display" in focusedOptions.tabBarStyle && focusedOptions.tabBarStyle.display === "none") {
+    return null;
+  }
+
+  const visibleRoutes = state.routes.filter(
+    (route) => descriptors[route.key].options.tabBarIcon,
+  );
+
   const totalHeight = BASE_TAB_HEIGHT + insets.bottom;
   return (
     <View
@@ -38,9 +48,9 @@ export function CustomTabBar({
 
       {/* 2. Interactive Navigation Buttons */}
       <View style={styles.mainTabWrapper}>
-        {state.routes.map((route, index) => {
+        {visibleRoutes.map((route, index) => {
           const { options } = descriptors[route.key];
-          const isFocused = state.index === index;
+          const isFocused = state.routes[state.index].key === route.key;
 
           const onPress = () => {
             const event = navigation.emit({
@@ -54,7 +64,7 @@ export function CustomTabBar({
             }
           };
 
-          const isCenter = index === Math.floor(state.routes.length / 2);
+          const isCenter = index === Math.floor(visibleRoutes.length / 2);
 
           if (isCenter) {
             // Render the raised center button

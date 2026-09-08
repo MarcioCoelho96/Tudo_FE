@@ -36,6 +36,7 @@ const CATEGORIES = [
 export default function HomeScreen() {
   const router = useRouter();
   const address = useUserStore((state) => state.address);
+  
 
   const [isSearching, setIsSearching] = useState(false);
 
@@ -43,8 +44,11 @@ export default function HomeScreen() {
     router.push(Paths.location);
   };
 
-  // Mantém apenas a função sem lógica de router para o toque fazer a animação de opacidade
-  const handleCategoryPress = () => {};
+  const handleCategoryPress = (categoryId: string) => {
+    if (categoryId === "2") {
+      router.push(Paths.restaurantSearch);
+    }
+  };
 
   const displayAddress =
     address?.formattedAddress || "Rua Nova da Telha, nº261, 482...";
@@ -105,7 +109,7 @@ export default function HomeScreen() {
         {CATEGORIES.map((item) => (
           <TouchableOpacity
             key={item.id}
-            onPress={handleCategoryPress}
+            onPress={() => handleCategoryPress(item.id)}
             activeOpacity={0.9}
             style={styles.cardContainer}
           >
@@ -115,9 +119,9 @@ export default function HomeScreen() {
               contentFit="cover"
             />
 
-            <View style={styles.orangeCircle} />
+            <View style={styles.orangeCircle} pointerEvents="none"/>
 
-            <View style={styles.textOverlay}>
+            <View style={styles.textOverlay} pointerEvents="none">
               <Text style={styles.cardText}>{item.label}</Text>
             </View>
           </TouchableOpacity>

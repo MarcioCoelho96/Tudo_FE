@@ -12,7 +12,7 @@ import {
 import { BackgroundImage } from "../components/backgroundImage";
 import BookingModal from "../components/BookingModal";
 import { DashboardHeader } from "../components/dashboardHeader";
-import PaymentModal from "../components/payment-modal";
+import PaymentModal from "../components/paymentModal";
 import SearchBar from "../components/searchBar";
 
 interface RestaurantCard {

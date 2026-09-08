@@ -1,7 +1,9 @@
+import { Paths } from "@/const/global";
 import { colors } from "@/styles/global";
 import { BottomSheetView } from "@gorhom/bottom-sheet"; // Import this
 import { ImageBackground } from "expo-image";
 import { getLocales } from "expo-localization";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
@@ -24,7 +26,12 @@ const PEOPLE_OPTIONS = Array.from({ length: 39 }, (_, index) => index + 1);
 
 const ITEMS_PER_PAGE = 18;
 
-export default function CalendarScreen() {
+interface CalendarScreenProps {
+  onClose?: () => void;
+}
+
+export default function CalendarScreen({ onClose }: CalendarScreenProps) {
+  const router = useRouter();
   const [today, setToday] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
 
@@ -78,7 +85,8 @@ export default function CalendarScreen() {
     } else if (isHour) {
       setCurrentStep(BookingStep.People);
     } else if (isPeople) {
-      return 0;
+      onClose?.();
+      router.push(Paths.restaurantSelection);
     }
   };
 

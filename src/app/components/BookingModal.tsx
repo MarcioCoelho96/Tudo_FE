@@ -10,7 +10,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import BookingOptionModal from "./booking-option-modal";
+import BookingOptionModal from "./bookingOptionModal";
 
 interface BookingModalProps {
   visible: boolean;
