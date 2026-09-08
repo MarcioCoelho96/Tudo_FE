@@ -1,4 +1,5 @@
 import { Paths } from "@/const/global";
+import { useCategories } from "@/hooks/useCategories";
 import { useUserStore } from "@/store/userStore/userStore.store";
 import { colors } from "@/styles/global";
 import { Image } from "expo-image";
@@ -36,6 +37,7 @@ const CATEGORIES = [
 export default function HomeScreen() {
   const router = useRouter();
   const address = useUserStore((state) => state.address);
+  const { categories } = useCategories();
 
   const [isSearching, setIsSearching] = useState(false);
 

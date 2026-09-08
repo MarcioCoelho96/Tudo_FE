@@ -1,7 +1,6 @@
 import { colors } from "@/styles/global";
 import { BottomSheetView } from "@gorhom/bottom-sheet"; // Import this
 import { ImageBackground } from "expo-image";
-import { getLocales } from "expo-localization";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
@@ -47,13 +46,9 @@ export default function CalendarScreen() {
   const totalPeoplePages = Math.ceil(PEOPLE_OPTIONS.length / ITEMS_PER_PAGE);
 
   useEffect(() => {
-    const deviceLanguageCode = getLocales()[0].languageCode || "en";
+    // const deviceLanguageCode = getLocales()[0].languageCode || "en";
 
-    if (LocaleConfig.locales[deviceLanguageCode]) {
-      LocaleConfig.defaultLocale = deviceLanguageCode;
-    } else {
-      LocaleConfig.defaultLocale = "en";
-    }
+    // LocaleConfig.defaultLocale = "en";
 
     const currentDate = new Date().toISOString().split("T")[0];
     setToday(currentDate);

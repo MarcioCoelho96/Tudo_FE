@@ -1,11 +1,11 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Image, View } from "react-native";
 import { CustomTabBar } from "../components/customTabBar";
-import HomeScreen from "./home";
-//import LocationScreen from "./location";
+
 import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { useCallback, useRef, useState } from "react";
 import CalendarScreen from "./calendar";
+import HomeScreen from "./home";
 import LocationScreen from "./location";
 
 export type TabParamList = {

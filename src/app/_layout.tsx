@@ -12,7 +12,6 @@ function NavigateGate() {
   const router = useRouter();
 
   useEffect(() => {
-    debugger;
     if (isLoading) return;
 
     const inAuthGroup = segments[0] === "(auth)";
