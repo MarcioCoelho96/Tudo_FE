@@ -1,12 +1,9 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import { Tabs } from "expo-router";
+import { useCallback, useRef, useState } from "react";
 import { Image, View } from "react-native";
 import { CustomTabBar } from "../components/customTabBar";
-import HomeScreen from "./home";
-//import LocationScreen from "./location";
-import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import { useCallback, useRef, useState } from "react";
 import CalendarScreen from "./calendar";
-import LocationScreen from "./location";
 
 export type TabParamList = {
   home: undefined;
@@ -14,11 +11,11 @@ export type TabParamList = {
   location: undefined;
   calendar: undefined;
   restaurantSelection: undefined;
+  orderSummary: undefined;
+  pay: undefined;
 };
 
 export default function DashboardLayout() {
-  const Tabs = createBottomTabNavigator<TabParamList>();
-
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -46,7 +43,7 @@ export default function DashboardLayout() {
 
   return (
     <View style={{ flex: 1, position: "relative" }}>
-      <Tabs.Navigator
+      <Tabs
         tabBar={(props) => <CustomTabBar {...props} />}
         screenOptions={{
           headerShown: false,
@@ -54,9 +51,8 @@ export default function DashboardLayout() {
       >
         <Tabs.Screen
           name="home"
-          component={HomeScreen}
           options={{
-            title: "Home UI",
+            title: "Home",
             tabBarIcon: ({ color }) => (
               <Image
                 source={require("../../../assets/images/pin.png")}
@@ -71,7 +67,6 @@ export default function DashboardLayout() {
         />
         <Tabs.Screen
           name="calendar"
-          component={View}
           listeners={{
             tabPress: (e) => {
               e.preventDefault();
@@ -94,8 +89,6 @@ export default function DashboardLayout() {
         />
         <Tabs.Screen
           name="location"
-          // Original -> LocationScreen
-          component={LocationScreen}
           options={{
             title: "My Profile",
             headerShown: false,
@@ -111,7 +104,7 @@ export default function DashboardLayout() {
             ),
           }}
         />
-      </Tabs.Navigator>
+      </Tabs>
 
       <BottomSheet
         ref={bottomSheetRef}
@@ -124,7 +117,7 @@ export default function DashboardLayout() {
         handleIndicatorStyle={{ backgroundColor: "#CBD5E0" }}
         handleComponent={null}
       >
-        <CalendarScreen />
+        <CalendarScreen onClose={() => bottomSheetRef.current?.close()} />
       </BottomSheet>
     </View>
   );

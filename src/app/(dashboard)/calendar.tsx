@@ -1,10 +1,13 @@
+import { Paths } from "@/const/global";
 import { colors } from "@/styles/global";
 import { BottomSheetView } from "@gorhom/bottom-sheet"; // Import this
 import { ImageBackground } from "expo-image";
 import { getLocales } from "expo-localization";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
+import BookingOptionModal from "../components/bookingOptionModal";
 
 enum BookingStep {
   Date = "data",
@@ -24,15 +27,22 @@ const PEOPLE_OPTIONS = Array.from({ length: 39 }, (_, index) => index + 1);
 
 const ITEMS_PER_PAGE = 18;
 
-export default function CalendarScreen() {
-  const [today, setToday] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
+interface CalendarScreenProps {
+  onClose?: () => void;
+}
+
+export default function CalendarScreen({ onClose }: CalendarScreenProps) {
+  const currentDate = new Date().toISOString().split("T")[0];
+  const router = useRouter();
+  const [today, setToday] = useState(currentDate);
+  const [selectedDate, setSelectedDate] = useState(currentDate);
 
   const [currentStep, setCurrentStep] = useState<BookingStep>(BookingStep.Date);
   const [selectedTime, setSelectedTime] = useState("19:30");
   const [selectedPeople, setSelectedPeople] = useState(2);
   const [hourPage, setHourPage] = useState(0);
   const [peoplePage, setPeoplePage] = useState(0);
+  const [isOptionModalVisible, setIsOptionModalVisible] = useState(false);
 
   const paginatedTimeSlots = TIME_SLOTS.slice(
     hourPage * ITEMS_PER_PAGE,
@@ -47,17 +57,13 @@ export default function CalendarScreen() {
   const totalPeoplePages = Math.ceil(PEOPLE_OPTIONS.length / ITEMS_PER_PAGE);
 
   useEffect(() => {
-    const deviceLanguageCode = getLocales()[0].languageCode || "en";
+    const deviceLanguageCode = getLocales()[0].languageCode || "pt";
 
     if (LocaleConfig.locales[deviceLanguageCode]) {
       LocaleConfig.defaultLocale = deviceLanguageCode;
     } else {
-      LocaleConfig.defaultLocale = "en";
+      LocaleConfig.defaultLocale = "pt";
     }
-
-    const currentDate = new Date().toISOString().split("T")[0];
-    setToday(currentDate);
-    setSelectedDate(currentDate);
   }, []);
 
   const resources = {
@@ -78,209 +84,231 @@ export default function CalendarScreen() {
     } else if (isHour) {
       setCurrentStep(BookingStep.People);
     } else if (isPeople) {
-      return 0;
+      setIsOptionModalVisible(true);
     }
   };
 
+  const handleConfirmBookingOption = () => {
+    setIsOptionModalVisible(false);
+    onClose?.();
+    router.push(Paths.restaurantSelection);
+  };
+
+  const handleCloseBookingOption = () => {
+    setIsOptionModalVisible(false);
+    onClose?.();
+  };
+
   return (
-    <BottomSheetView style={styles.sheetContainer}>
-      <OrangeCurvedBackground>
-        <TouchableOpacity style={styles.nextBtn} onPress={handleNextStep}>
-          <Text style={styles.nextText}>
-            {currentStep === BookingStep.People
-              ? resources.bookingText
-              : resources.nextButton}
-          </Text>
-        </TouchableOpacity>
-
-        <View style={styles.segmentedControl}>
-          <TouchableOpacity
-            style={[styles.tab, isDate && styles.activeTab]}
-            onPress={() => setCurrentStep(BookingStep.Date)}
-          >
-            <Text style={isDate ? styles.activeTabText : styles.tabText}>
-              {resources.dateText}
+    <>
+      <BottomSheetView style={styles.sheetContainer}>
+        <OrangeCurvedBackground>
+          <TouchableOpacity style={styles.nextBtn} onPress={handleNextStep}>
+            <Text style={styles.nextText}>
+              {currentStep === BookingStep.People
+                ? resources.bookingText
+                : resources.nextButton}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.tab, isHour && styles.activeTab]}
-            onPress={() => setCurrentStep(BookingStep.Hour)}
-          >
-            <Text style={isHour ? styles.activeTabText : styles.tabText}>
-              {resources.hourText}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.tab, isPeople && styles.activeTab]}
-            onPress={() => setCurrentStep(BookingStep.People)}
-          >
-            <Text style={isPeople ? styles.activeTabText : styles.tabText}>
-              {resources.peopleText}
-            </Text>
-          </TouchableOpacity>
-        </View>
 
-        <View style={styles.calendarCard}>
-          {isDate && (
-            <Calendar
-              current={today}
-              minDate={today}
-              onDayPress={(day) => setSelectedDate(day.dateString)}
-              markedDates={{
-                [selectedDate]: {
-                  selected: true,
-                  selectedColor: colors.orange,
-                },
-              }}
-              theme={{
-                calendarBackground: colors.white,
-                textSectionTitleColor: colors.main,
-                selectedDayBackgroundColor: colors.orange,
-                selectedDayTextColor: colors.white,
-                todayTextColor: colors.orange,
-                dayTextColor: colors.main,
-                textDisabledColor: colors.gray,
-                monthTextColor: colors.main,
-                textMonthFontWeight: "bold",
-                textDayHeaderFontWeight: "600",
-                arrowColor: colors.orange,
-                arrowStyle: {},
-              }}
-            />
-          )}
+          <View style={styles.segmentedControl}>
+            <TouchableOpacity
+              style={[styles.tab, isDate && styles.activeTab]}
+              onPress={() => setCurrentStep(BookingStep.Date)}
+            >
+              <Text style={isDate ? styles.activeTabText : styles.tabText}>
+                {resources.dateText}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tab, isHour && styles.activeTab]}
+              onPress={() => setCurrentStep(BookingStep.Hour)}
+            >
+              <Text style={isHour ? styles.activeTabText : styles.tabText}>
+                {resources.hourText}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tab, isPeople && styles.activeTab]}
+              onPress={() => setCurrentStep(BookingStep.People)}
+            >
+              <Text style={isPeople ? styles.activeTabText : styles.tabText}>
+                {resources.peopleText}
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-          {isHour && (
-            <View style={styles.paginatedView}>
-              <View style={styles.paginationHeader}>
-                <TouchableOpacity
-                  disabled={hourPage === 0}
-                  onPress={() => setHourPage((prev) => Math.max(prev - 1, 0))}
-                  style={[
-                    styles.arrowButton,
-                    hourPage === 0 && styles.disabledArrow,
-                  ]}
-                >
-                  <Text style={styles.arrowText}>{"‹"}</Text>
-                </TouchableOpacity>
+          <View style={styles.calendarCard}>
+            {isDate && (
+              <Calendar
+                current={today}
+                minDate={today}
+                onDayPress={(day) => setSelectedDate(day.dateString)}
+                markedDates={{
+                  [selectedDate]: {
+                    selected: true,
+                    selectedColor: colors.orange,
+                  },
+                }}
+                theme={{
+                  calendarBackground: colors.white,
+                  textSectionTitleColor: colors.main,
+                  selectedDayBackgroundColor: colors.orange,
+                  selectedDayTextColor: colors.white,
+                  todayTextColor: colors.orange,
+                  dayTextColor: colors.main,
+                  textDisabledColor: colors.gray,
+                  monthTextColor: colors.main,
+                  textMonthFontWeight: "bold",
+                  textDayHeaderFontWeight: "600",
+                  arrowColor: colors.orange,
+                  arrowStyle: {},
+                }}
+              />
+            )}
 
-                <Text style={styles.pageTitle}>
-                  Página {hourPage + 1} de {totalHourPages}
-                </Text>
+            {isHour && (
+              <View style={styles.paginatedView}>
+                <View style={styles.paginationHeader}>
+                  <TouchableOpacity
+                    disabled={hourPage === 0}
+                    onPress={() => setHourPage((prev) => Math.max(prev - 1, 0))}
+                    style={[
+                      styles.arrowButton,
+                      hourPage === 0 && styles.disabledArrow,
+                    ]}
+                  >
+                    <Text style={styles.arrowText}>{"‹"}</Text>
+                  </TouchableOpacity>
 
-                <TouchableOpacity
-                  disabled={hourPage >= totalHourPages - 1}
-                  onPress={() =>
-                    setHourPage((prev) =>
-                      Math.min(prev + 1, totalHourPages - 1),
-                    )
-                  }
-                  style={[
-                    styles.arrowButton,
-                    hourPage >= totalHourPages - 1 && styles.disabledArrow,
-                  ]}
-                >
-                  <Text style={styles.arrowText}>{"›"}</Text>
-                </TouchableOpacity>
-              </View>
+                  <Text style={styles.pageTitle}>
+                    Página {hourPage + 1} de {totalHourPages}
+                  </Text>
 
-              <View style={styles.gridGridContainer}>
-                {paginatedTimeSlots.map((time) => {
-                  const isSelected = selectedTime === time;
-                  return (
-                    <TouchableOpacity
-                      key={time}
-                      style={[
-                        styles.pillButton,
-                        isSelected
-                          ? styles.pillSelected
-                          : styles.pillUnselected,
-                      ]}
-                      onPress={() => setSelectedTime(time)}
-                    >
-                      <Text
+                  <TouchableOpacity
+                    disabled={hourPage >= totalHourPages - 1}
+                    onPress={() =>
+                      setHourPage((prev) =>
+                        Math.min(prev + 1, totalHourPages - 1),
+                      )
+                    }
+                    style={[
+                      styles.arrowButton,
+                      hourPage >= totalHourPages - 1 && styles.disabledArrow,
+                    ]}
+                  >
+                    <Text style={styles.arrowText}>{"›"}</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.gridGridContainer}>
+                  {paginatedTimeSlots.map((time) => {
+                    const isSelected = selectedTime === time;
+                    return (
+                      <TouchableOpacity
+                        key={time}
                         style={[
-                          styles.pillText,
+                          styles.pillButton,
                           isSelected
-                            ? styles.pillTextSelected
-                            : styles.pillTextUnselected,
+                            ? styles.pillSelected
+                            : styles.pillUnselected,
                         ]}
+                        onPress={() => setSelectedTime(time)}
                       >
-                        {time}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
+                        <Text
+                          style={[
+                            styles.pillText,
+                            isSelected
+                              ? styles.pillTextSelected
+                              : styles.pillTextUnselected,
+                          ]}
+                        >
+                          {time}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
               </View>
-            </View>
-          )}
-          {isPeople && (
-            <View style={styles.paginatedView}>
-              <View style={styles.paginationHeader}>
-                <TouchableOpacity
-                  disabled={peoplePage === 0}
-                  onPress={() => setPeoplePage((prev) => Math.max(prev - 1, 0))}
-                  style={[
-                    styles.arrowButton,
-                    peoplePage === 0 && styles.disabledArrow,
-                  ]}
-                >
-                  <Text style={styles.arrowText}>{"‹"}</Text>
-                </TouchableOpacity>
+            )}
+            {isPeople && (
+              <View style={styles.paginatedView}>
+                <View style={styles.paginationHeader}>
+                  <TouchableOpacity
+                    disabled={peoplePage === 0}
+                    onPress={() =>
+                      setPeoplePage((prev) => Math.max(prev - 1, 0))
+                    }
+                    style={[
+                      styles.arrowButton,
+                      peoplePage === 0 && styles.disabledArrow,
+                    ]}
+                  >
+                    <Text style={styles.arrowText}>{"‹"}</Text>
+                  </TouchableOpacity>
 
-                <Text style={styles.pageTitle}>
-                  Página {peoplePage + 1} de {totalPeoplePages}
-                </Text>
+                  <Text style={styles.pageTitle}>
+                    Página {peoplePage + 1} de {totalPeoplePages}
+                  </Text>
 
-                <TouchableOpacity
-                  disabled={peoplePage >= totalPeoplePages - 1}
-                  onPress={() =>
-                    setPeoplePage((prev) =>
-                      Math.min(prev + 1, totalPeoplePages - 1),
-                    )
-                  }
-                  style={[
-                    styles.arrowButton,
-                    peoplePage >= totalPeoplePages - 1 && styles.disabledArrow,
-                  ]}
-                >
-                  <Text style={styles.arrowText}>{"›"}</Text>
-                </TouchableOpacity>
-              </View>
+                  <TouchableOpacity
+                    disabled={peoplePage >= totalPeoplePages - 1}
+                    onPress={() =>
+                      setPeoplePage((prev) =>
+                        Math.min(prev + 1, totalPeoplePages - 1),
+                      )
+                    }
+                    style={[
+                      styles.arrowButton,
+                      peoplePage >= totalPeoplePages - 1 &&
+                        styles.disabledArrow,
+                    ]}
+                  >
+                    <Text style={styles.arrowText}>{"›"}</Text>
+                  </TouchableOpacity>
+                </View>
 
-              <View style={styles.gridGridContainer}>
-                {paginatedPeopleOptions.map((count) => {
-                  const isSelected = selectedPeople === count;
-                  const label = `${count} ${count === 1 ? "Pessoa" : "Pessoas"}`;
-                  return (
-                    <TouchableOpacity
-                      key={count}
-                      style={[
-                        styles.pillButton,
-                        isSelected
-                          ? styles.pillSelected
-                          : styles.pillUnselected,
-                      ]}
-                      onPress={() => setSelectedPeople(count)}
-                    >
-                      <Text
+                <View style={styles.gridGridContainer}>
+                  {paginatedPeopleOptions.map((count) => {
+                    const isSelected = selectedPeople === count;
+                    const label = `${count} ${count === 1 ? "Pessoa" : "Pessoas"}`;
+                    return (
+                      <TouchableOpacity
+                        key={count}
                         style={[
-                          styles.pillText,
+                          styles.pillButton,
                           isSelected
-                            ? styles.pillTextSelected
-                            : styles.pillTextUnselected,
+                            ? styles.pillSelected
+                            : styles.pillUnselected,
                         ]}
+                        onPress={() => setSelectedPeople(count)}
                       >
-                        {label}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
+                        <Text
+                          style={[
+                            styles.pillText,
+                            isSelected
+                              ? styles.pillTextSelected
+                              : styles.pillTextUnselected,
+                          ]}
+                        >
+                          {label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
               </View>
-            </View>
-          )}
-        </View>
-      </OrangeCurvedBackground>
-    </BottomSheetView>
+            )}
+          </View>
+        </OrangeCurvedBackground>
+      </BottomSheetView>
+
+      <BookingOptionModal
+        visible={isOptionModalVisible}
+        onClose={handleCloseBookingOption}
+        onConfirm={handleConfirmBookingOption}
+      />
+    </>
   );
 }
 

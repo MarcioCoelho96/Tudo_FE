@@ -7,11 +7,13 @@ import { AddressData } from "./userStore.types";
 export interface UserState {
   location: Region | null;
   address: AddressData | null;
+  
 }
 
 export interface UserAction {
   setLocation: (location: Region | null) => void;
   setAddress: (address: AddressData | null) => void;
+  
 }
 
 export interface UserStore extends UserAction, UserState {}
@@ -20,9 +22,11 @@ export const useUserStore = create<UserStore>()(
     (set) => ({
       location: null,
       address: null,
+      
 
       setAddress: (address) => set({ address }),
       setLocation: (location) => set({ location }),
+      
     }),
     {
       name: "user-storage",

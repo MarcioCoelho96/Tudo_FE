@@ -2,18 +2,20 @@ import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
   ImageSourcePropType,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 
+import { useOrderStore } from "@/store/orderStore/orderStore.store";
 import { colors } from "@/styles/global";
 import { Image } from "expo-image";
-import PayButton from "../components/PayButton";
-import PaymentModal from "../components/payment-modal";
 import { BackgroundImage } from "../components/backgroundImage";
 import { DashboardHeader } from "../components/dashboardHeader";
+import PayButton from "../components/PayButton";
+import PaymentModal from "../components/paymentModal";
 
 type PaymentMethod = "mbway" | "multibanco" | "counter" | "reference";
 
@@ -22,30 +24,6 @@ type PaymentOption = {
   label: string;
   icon: ImageSourcePropType;
 };
-
-type SelectedProduct = {
-  id: string;
-  title: string;
-  price: number;
-};
-
-const SELECTED_PRODUCTS: SelectedProduct[] = [
-  {
-    id: "mushroom-rice",
-    title: "Arroz de Cogumelos\ncom Omelete",
-    price: 8,
-  },
-  {
-    id: "lemonade",
-    title: "Limonada",
-    price: 2,
-  },
-  {
-    id: "chicken",
-    title: "1 Dose de Frango",
-    price: 5,
-  },
-];
 
 const PAYMENT_OPTIONS: PaymentOption[] = [
   {
@@ -84,12 +62,14 @@ export default function PaymentScreen() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod>("mbway");
 
+  const productsToPay = useOrderStore((state) => state.productsToPay);
+
   const totalToPay = useMemo(() => {
-    return SELECTED_PRODUCTS.reduce(
-      (currentTotal, product) => currentTotal + product.price,
+    return productsToPay.reduce(
+      (currentTotal, product) => currentTotal + (product.price ?? 0),
       0,
     );
-  }, []);
+  }, [productsToPay]);
 
   const handlePaymentMethodPress = (paymentMethod: PaymentMethod) => {
     setSelectedPaymentMethod(paymentMethod);
@@ -111,7 +91,7 @@ export default function PaymentScreen() {
     setIsModalVisible(false);
     console.log("Payment confirmed:", {
       paymentMethod: selectedPaymentMethod,
-      products: SELECTED_PRODUCTS,
+      products: productsToPay,
       total: totalToPay,
     });
   };
@@ -121,18 +101,22 @@ export default function PaymentScreen() {
       <DashboardHeader />
       <BackgroundImage />
 
-      <View style={styles.screenContent}>
+      <ScrollView
+        style={styles.scrollView} // 👈 Adicionado limite de topo
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.titleSection}>
           <Text style={styles.tableText}>MESA 12</Text>
           <Text style={styles.title}>O MEU PEDIDO</Text>
         </View>
 
         <View style={styles.productsSection}>
-          {SELECTED_PRODUCTS.map((product) => (
+          {productsToPay.map((product) => (
             <View key={product.id} style={styles.productRow}>
               <Text style={styles.productTitle}>{product.title}</Text>
               <Text style={styles.productPrice}>
-                {formatCurrency(product.price)}€
+                {formatCurrency(product.price ?? 0)}€
               </Text>
             </View>
           ))}
@@ -218,7 +202,7 @@ export default function PaymentScreen() {
             />
           </View>
         </View>
-      </View>
+      </ScrollView>
 
       <PaymentModal
         visible={isModalVisible}
@@ -235,10 +219,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.main,
   },
 
-  screenContent: {
+  scrollView: {
     flex: 1,
-    paddingTop: 110,
+    marginTop: 108, 
+  },
+
+  scrollContent: {
     paddingHorizontal: 30,
+    paddingBottom: 90,
   },
 
   titleSection: {

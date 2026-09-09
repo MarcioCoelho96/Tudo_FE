@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   // MODIFICADO: Criado para empurrar o início do ScrollView para baixo do cabeçalho
   scrollViewContainer: {
     flex: 1,
-    marginTop: 100, // Ajusta este valor de acordo com a altura exata do teu DashboardHeader
+    marginTop: 110, // Ajusta este valor de acordo com a altura exata do teu DashboardHeader
   },
 
   scrollContent: {

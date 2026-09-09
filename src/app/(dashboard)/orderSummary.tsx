@@ -1,3 +1,5 @@
+import { Paths } from "@/const/global";
+import { useOrderStore } from "@/store/orderStore/orderStore.store";
 import { colors } from "@/styles/global";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
@@ -11,43 +13,6 @@ import { DashboardHeader } from "../components/dashboardHeader";
 
 type PaymentScope = "select" | "all";
 
-const ORDERED_PRODUCTS: Product[] = [
-  {
-    id: "mushroom-rice-1",
-    title: "Arroz de Cogumelos\ncom Omelete",
-    description:
-      "Um cozido, cujos componentes\nbásicos são diversas variedades de\npeixe, batata, cebola, tomate e\npimentão.",
-    category: "Pratos",
-    price: 10,
-    image: {},
-  },
-  {
-    id: "beer-1",
-    title: "Cerveja Super Bock",
-    description: "Super Bock é uma marca de cerveja\nportuguesa.",
-    category: "Bebidas",
-    price: 8,
-    image: {},
-  },
-  {
-    id: "lemonade-1",
-    title: "Limonada",
-    description:
-      "Limonada feita à base de água, sumo\nde limão, açúcar e folhas de menta.",
-    category: "Bebidas",
-    price: 5,
-    image: {},
-  },
-  {
-    id: "chicken-1",
-    title: "1 Dose de Frango",
-    description: "Uma dose de frango acompanhado\ncom batata frita e arroz.",
-    category: "Pratos",
-    price: 7,
-    image: {},
-  },
-];
-
 function formatCurrency(value: number): string {
   return `${value.toFixed(2).replace(".00", "")}€`;
 }
@@ -56,27 +21,31 @@ export default function OrderSummaryScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
+  const orderedProducts = useOrderStore((state) => state.orderedProducts);
+  const setProductsToPay = useOrderStore((state) => state.setProductsToPay);
+
   const [paymentScope, setPaymentScope] = useState<PaymentScope>("all");
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
 
-  const totalLabel = useMemo(() => {
-    const relevantProducts =
-      paymentScope === "select"
-        ? ORDERED_PRODUCTS.filter((product) =>
-            selectedProductIds.includes(product.id),
-          )
-        : ORDERED_PRODUCTS;
+  const relevantProducts = useMemo(() => {
+    return paymentScope === "select"
+      ? orderedProducts.filter((product) =>
+          selectedProductIds.includes(product.id),
+        )
+      : orderedProducts;
+  }, [orderedProducts, paymentScope, selectedProductIds]);
 
-    const total = relevantProducts.reduce(
+  const total = useMemo(() => {
+    return relevantProducts.reduce(
       (currentTotal, product) => currentTotal + (product.price ?? 0),
       0,
     );
+  }, [relevantProducts]);
 
-    return formatCurrency(total);
-  }, [paymentScope, selectedProductIds]);
+  const totalLabel = useMemo(() => formatCurrency(total), [total]);
 
   const handleOrderMorePress = () => {
-    router.push("/restaurant-selection");
+    router.push(Paths.restaurantSelection);
   };
 
   const handlePaymentScopePress = (scope: PaymentScope) => {
@@ -101,7 +70,12 @@ export default function OrderSummaryScreen() {
   };
 
   const handlePayPress = () => {
-    router.push("/pay");
+    if (paymentScope === "select" && total <= 0) {
+      return;
+    }
+
+    setProductsToPay(relevantProducts);
+    router.push(Paths.pay);
   };
 
   return (
@@ -132,7 +106,7 @@ export default function OrderSummaryScreen() {
 
         <View style={styles.listContainer}>
           <ProductList
-            products={ORDERED_PRODUCTS}
+            products={orderedProducts}
             selectedProductIds={selectedProductIds}
             onProductPress={handleProductPress}
             interactive={paymentScope === "select"}
@@ -265,12 +239,12 @@ const styles = StyleSheet.create({
   },
 
   footer: {
-    height: 150,
+    height: 200,
   },
 
   scopeToggle: {
     alignSelf: "flex-end",
-    height: 80,
+    height: 60,
     borderRadius: 40,
     flexDirection: "row",
     overflow: "hidden",

@@ -1,8 +1,17 @@
-import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import React from "react";
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
+
+import { colors } from "@/styles/global";
+import { Tabs } from "expo-router";
+import { ComponentProps } from "react";
+
+type CustomTabBarProps =
+  NonNullable<ComponentProps<typeof Tabs>["tabBar"]> extends (
+    props: infer P,
+  ) => any
+    ? P
+    : never;
 
 const { width } = Dimensions.get("window");
 const BASE_TAB_HEIGHT = 70;
@@ -12,10 +21,28 @@ export function CustomTabBar({
   state,
   descriptors,
   navigation,
-}: BottomTabBarProps) {
+}: CustomTabBarProps) {
   const insets = useSafeAreaInsets();
 
+  const focusedOptions = descriptors[state.routes[state.index].key].options;
+
+  if (
+    focusedOptions.tabBarStyle &&
+    "display" in focusedOptions.tabBarStyle &&
+    focusedOptions.tabBarStyle.display === "none"
+  ) {
+    return null;
+  }
+
+  const visibleRoutes = state.routes.filter(
+    (route) => descriptors[route.key].options.tabBarIcon,
+  );
+
   const totalHeight = BASE_TAB_HEIGHT + insets.bottom;
+
+  const tabRoutes = state.routes.filter((route) =>
+    ["home", "calendar", "location"].includes(route.name),
+  );
   return (
     <View
       style={[styles.container, { paddingBottom: Math.max(insets.bottom, 16) }]}
@@ -32,15 +59,20 @@ export function CustomTabBar({
           L 0 ${totalHeight} 
           Z
         `}
-          fill="#232C43"
+          fill={colors.main}
         />
       </Svg>
 
       {/* 2. Interactive Navigation Buttons */}
-      <View style={styles.mainTabWrapper}>
-        {state.routes.map((route, index) => {
+      <View
+        style={[
+          styles.mainTabWrapper,
+          { paddingBottom: Math.max(insets.bottom, 8) },
+        ]}
+      >
+        {tabRoutes.map((route, index) => {
           const { options } = descriptors[route.key];
-          const isFocused = state.index === index;
+          const isFocused = state.routes[state.index].key === route.key;
 
           const onPress = () => {
             const event = navigation.emit({
@@ -54,7 +86,7 @@ export function CustomTabBar({
             }
           };
 
-          const isCenter = index === Math.floor(state.routes.length / 2);
+          const isCenter = route.name === "calendar";
 
           if (isCenter) {
             // Render the raised center button
@@ -89,7 +121,7 @@ export function CustomTabBar({
               {options.tabBarIcon &&
                 options.tabBarIcon({
                   focused: isFocused,
-                  color: "#FFF",
+                  color: isFocused ? colors.white : "#8E94A4",
                   size: 24,
                 })}
             </TouchableOpacity>
@@ -125,6 +157,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: "100%",
+    bottom: -20,
   },
   centerButtonContainer: {
     flex: 1,
@@ -138,7 +171,7 @@ const styles = StyleSheet.create({
     width: 66,
     height: 66,
     borderRadius: 33,
-    backgroundColor: "#232C43",
+    backgroundColor: colors.main,
     justifyContent: "center",
     alignItems: "center",
 

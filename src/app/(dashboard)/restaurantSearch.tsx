@@ -1,6 +1,6 @@
 import { colors } from "@/styles/global";
 import { Image } from "expo-image";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -11,8 +11,8 @@ import {
 
 import { BackgroundImage } from "../components/backgroundImage";
 import BookingModal from "../components/BookingModal";
-import { DashboardHeader } from "../components/dashboardHeader";
-import PaymentModal from "../components/payment-modal";
+import DashboardHeader from "../components/dashboardHeader";
+import PaymentModal from "../components/paymentModal";
 import SearchBar from "../components/searchBar";
 
 interface RestaurantCard {
@@ -109,7 +109,7 @@ export default function RestaurantSearchScreen() {
               >
                 <Image
                   source={restaurant.image}
-                  style={StyleSheet.absoluteFillObject}
+                  style={styles.absoluteFillObject}
                   contentFit="cover"
                 />
 
@@ -139,7 +139,7 @@ export default function RestaurantSearchScreen() {
             >
               <Image
                 source={restaurant.image}
-                style={StyleSheet.absoluteFillObject}
+                style={styles.absoluteFillObject}
                 contentFit="cover"
               />
 
@@ -221,6 +221,13 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     overflow: "hidden",
     position: "relative",
+  },
+  absoluteFillObject: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
 
   recentOrangeDot: {
