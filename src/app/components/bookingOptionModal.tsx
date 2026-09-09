@@ -55,7 +55,7 @@ export default function BookingOptionModal({
               buttonText={"RESERVAR E\nPEDIR"}
               cardText="Pretende fazer já o seu pedido?
               "
-              onPress={onClose}
+              onPress={onConfirm}
             />
           </View>
 

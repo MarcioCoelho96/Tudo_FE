@@ -35,14 +35,14 @@ export default function OrderSummaryScreen() {
       : orderedProducts;
   }, [orderedProducts, paymentScope, selectedProductIds]);
 
-  const totalLabel = useMemo(() => {
-    const total = relevantProducts.reduce(
+  const total = useMemo(() => {
+    return relevantProducts.reduce(
       (currentTotal, product) => currentTotal + (product.price ?? 0),
       0,
     );
-
-    return formatCurrency(total);
   }, [relevantProducts]);
+
+  const totalLabel = useMemo(() => formatCurrency(total), [total]);
 
   const handleOrderMorePress = () => {
     router.push(Paths.restaurantSelection);
@@ -70,6 +70,10 @@ export default function OrderSummaryScreen() {
   };
 
   const handlePayPress = () => {
+    if (paymentScope === "select" && total <= 0) {
+      return;
+    }
+
     setProductsToPay(relevantProducts);
     router.push(Paths.pay);
   };
@@ -240,7 +244,7 @@ const styles = StyleSheet.create({
 
   scopeToggle: {
     alignSelf: "flex-end",
-    height: 80,
+    height: 60,
     borderRadius: 40,
     flexDirection: "row",
     overflow: "hidden",

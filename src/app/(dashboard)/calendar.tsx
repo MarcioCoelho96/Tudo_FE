@@ -7,6 +7,7 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
+import BookingOptionModal from "../components/bookingOptionModal";
 
 enum BookingStep {
   Date = "data",
@@ -40,6 +41,7 @@ export default function CalendarScreen({ onClose }: CalendarScreenProps) {
   const [selectedPeople, setSelectedPeople] = useState(2);
   const [hourPage, setHourPage] = useState(0);
   const [peoplePage, setPeoplePage] = useState(0);
+  const [isOptionModalVisible, setIsOptionModalVisible] = useState(false);
 
   const paginatedTimeSlots = TIME_SLOTS.slice(
     hourPage * ITEMS_PER_PAGE,
@@ -85,14 +87,25 @@ export default function CalendarScreen({ onClose }: CalendarScreenProps) {
     } else if (isHour) {
       setCurrentStep(BookingStep.People);
     } else if (isPeople) {
-      onClose?.();
-      router.push(Paths.restaurantSelection);
+      setIsOptionModalVisible(true);
     }
   };
 
+  const handleConfirmBookingOption = () => {
+    setIsOptionModalVisible(false);
+    onClose?.();
+    router.push(Paths.restaurantSelection);
+  };
+
+  const handleCloseBookingOption = () => {
+    setIsOptionModalVisible(false);
+    onClose?.();
+  };
+
   return (
-    <BottomSheetView style={styles.sheetContainer}>
-      <OrangeCurvedBackground>
+    <>
+      <BottomSheetView style={styles.sheetContainer}>
+        <OrangeCurvedBackground>
         <TouchableOpacity style={styles.nextBtn} onPress={handleNextStep}>
           <Text style={styles.nextText}>
             {currentStep === BookingStep.People
@@ -286,9 +299,16 @@ export default function CalendarScreen({ onClose }: CalendarScreenProps) {
               </View>
             </View>
           )}
-        </View>
-      </OrangeCurvedBackground>
-    </BottomSheetView>
+          </View>
+        </OrangeCurvedBackground>
+      </BottomSheetView>
+
+      <BookingOptionModal
+        visible={isOptionModalVisible}
+        onClose={handleCloseBookingOption}
+        onConfirm={handleConfirmBookingOption}
+      />
+    </>
   );
 }
 
