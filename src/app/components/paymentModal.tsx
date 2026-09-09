@@ -1,6 +1,5 @@
 import { colors } from "@/styles/global";
 import { Image } from "expo-image";
-import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import PayButton from "./PayButton";
 
@@ -16,14 +15,19 @@ export default function PaymentModal({
   onConfirm,
 }: PaymentModalProps) {
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent={true}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+      statusBarTranslucent={true}
+    >
       <View style={styles.overlay}>
         <View style={styles.modalContent}>
-          
           <View style={styles.darkCard}>
             <Image
               source={require("../../../assets/images/Subtract_1.svg")}
-              style={StyleSheet.absoluteFillObject}
+              style={styles.absoluteFillObject}
               contentFit="fill"
             />
 
@@ -33,10 +37,10 @@ export default function PaymentModal({
                   Por Favor, dirija-se ao balcão para o pagamento.
                 </Text>
                 <Text style={styles.modalDescription}>
-                  Ao escolher a opção de Pagamento com Multibanco, ou Pagamento ao
-                  Balcão, deve dirigir-se ao Balcão mais próximo para efectuar o
-                  pagamento, caso queira alterar o método de pagamento clique em
-                  alterar.
+                  Ao escolher a opção de Pagamento com Multibanco, ou Pagamento
+                  ao Balcão, deve dirigir-se ao Balcão mais próximo para
+                  efectuar o pagamento, caso queira alterar o método de
+                  pagamento clique em alterar.
                 </Text>
               </View>
 
@@ -57,7 +61,6 @@ export default function PaymentModal({
               onPress={onConfirm}
             />
           </View>
-
         </View>
       </View>
     </Modal>
@@ -84,7 +87,7 @@ const styles = StyleSheet.create({
     height: 300,
     borderRadius: 15,
     position: "relative",
-    overflow: "hidden", 
+    overflow: "hidden",
   },
 
   cardInner: {
@@ -136,5 +139,13 @@ const styles = StyleSheet.create({
   payButtonWrapper: {
     width: "100%",
     marginTop: -40,
+  },
+
+  absoluteFillObject: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
 });
