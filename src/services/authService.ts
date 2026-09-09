@@ -32,9 +32,6 @@ export const authService = {
         ? phoneNumber.trim()
         : `+${phoneNumber.replace(/\D/g, "")}`;
 
-      console.log(`[authService] Sending SMS code to: ${formattedPhone}`);
-      console.log(`[authService] Request URL: ${BASE_URL}/auth/login`);
-
       const response = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
