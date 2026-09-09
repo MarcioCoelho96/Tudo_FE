@@ -1,5 +1,8 @@
+import { Paths } from "@/const/global";
+import { useOrderStore } from "@/store/orderStore/orderStore.store";
 import { colors } from "@/styles/global";
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
   StyleSheet,
@@ -113,6 +116,9 @@ function normalizeText(value: unknown): string {
 }
 
 export default function RestaurantSelectionScreen() {
+  const router = useRouter();
+  const setOrderedProducts = useOrderStore((state) => state.setOrderedProducts);
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const [activeTab, setActiveTab] = useState<ProductCategory>("Bebidas");
@@ -179,7 +185,8 @@ export default function RestaurantSelectionScreen() {
       selectedProductIds.includes(product.id),
     );
 
-    console.log("Selected products:", selectedProducts);
+    setOrderedProducts(selectedProducts);
+    router.push(Paths.orderSummary);
   };
 
   return (
@@ -286,6 +293,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 110,
     paddingHorizontal: 30,
+    
   },
 
   restaurantImageContainer: {
@@ -389,6 +397,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 20,
     marginTop: 1,
+    marginBottom: 26,
   },
 
   footer: {

@@ -11,6 +11,8 @@ export type TabParamList = {
   location: undefined;
   calendar: undefined;
   restaurantSelection: undefined;
+  orderSummary: undefined;
+  pay: undefined;
 };
 
 export default function DashboardLayout() {
@@ -115,7 +117,7 @@ export default function DashboardLayout() {
         handleIndicatorStyle={{ backgroundColor: "#CBD5E0" }}
         handleComponent={null}
       >
-        <CalendarScreen />
+        <CalendarScreen onClose={() => bottomSheetRef.current?.close()} />
       </BottomSheet>
     </View>
   );

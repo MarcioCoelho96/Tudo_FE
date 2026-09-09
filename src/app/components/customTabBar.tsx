@@ -24,6 +24,20 @@ export function CustomTabBar({
 }: CustomTabBarProps) {
   const insets = useSafeAreaInsets();
 
+  const focusedOptions = descriptors[state.routes[state.index].key].options;
+
+  if (
+    focusedOptions.tabBarStyle &&
+    "display" in focusedOptions.tabBarStyle &&
+    focusedOptions.tabBarStyle.display === "none"
+  ) {
+    return null;
+  }
+
+  const visibleRoutes = state.routes.filter(
+    (route) => descriptors[route.key].options.tabBarIcon,
+  );
+
   const totalHeight = BASE_TAB_HEIGHT + insets.bottom;
 
   const tabRoutes = state.routes.filter((route) =>
@@ -58,7 +72,7 @@ export function CustomTabBar({
       >
         {tabRoutes.map((route, index) => {
           const { options } = descriptors[route.key];
-          const isFocused = state.index === index;
+          const isFocused = state.routes[state.index].key === route.key;
 
           const onPress = () => {
             const event = navigation.emit({

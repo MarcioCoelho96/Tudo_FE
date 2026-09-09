@@ -1,6 +1,5 @@
 import { colors } from "@/styles/global";
 import { Image } from "expo-image";
-import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import PayButton from "./PayButton";
 
@@ -16,14 +15,19 @@ export default function BookingOptionModal({
   onConfirm,
 }: BookingOptionModalProps) {
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent={true}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+      statusBarTranslucent={true}
+    >
       <View style={styles.overlay}>
         <View style={styles.modalContent}>
-          
           <View style={styles.darkCard}>
             <Image
               source={require("../../../assets/images/Subtract_1.svg")}
-              style={StyleSheet.absoluteFillObject}
+              style={styles.absoluteFillObject}
               contentFit="fill"
             />
 
@@ -33,10 +37,9 @@ export default function BookingOptionModal({
                   Deseja reservar mesa e fazer o pedido já?
                 </Text>
                 <Text style={styles.modalDescription}>
-                  Podes reservar a mesa e podes optar por fazer já o
-                  teu pedido, para que sejas atendido mais rápido. 
-                  Ao fazeres o pedido pela app terás de fazer o pagamento
-                  em simultâneo com a reserva.
+                  Podes reservar a mesa e podes optar por fazer já o teu pedido,
+                  para que sejas atendido mais rápido. Ao fazeres o pedido pela
+                  app terás de fazer o pagamento em simultâneo com a reserva.
                 </Text>
               </View>
 
@@ -55,10 +58,9 @@ export default function BookingOptionModal({
               buttonText={"RESERVAR E\nPEDIR"}
               cardText="Pretende fazer já o seu pedido?
               "
-              onPress={onClose}
+              onPress={onConfirm}
             />
           </View>
-
         </View>
       </View>
     </Modal>
@@ -85,7 +87,7 @@ const styles = StyleSheet.create({
     height: 300,
     borderRadius: 15,
     position: "relative",
-    overflow: "hidden", 
+    overflow: "hidden",
   },
 
   cardInner: {
@@ -109,7 +111,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     lineHeight: 20,
   },
-
+  absoluteFillObject: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+  },
   modalDescription: {
     color: colors.lightBlue,
     fontSize: 12,

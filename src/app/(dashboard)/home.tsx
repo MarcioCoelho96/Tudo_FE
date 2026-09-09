@@ -94,6 +94,15 @@ export default function HomeScreen() {
       </View>
     );
   }
+  const handleCategoryPress = (categoryId: string) => {
+    if (categoryId === "2") {
+      router.push(Paths.restaurantSearch);
+    }
+  };
+
+  const displayAddress =
+    address?.formattedAddress || "Rua Nova da Telha, nº261, 482...";
+
   return (
     <View style={styles.container}>
       <DashboardHeader />
