@@ -1,7 +1,12 @@
-import { API_BASE_URL, TOKEN_KEY } from "@/const/global";
+import { API_BASE_URL, REFRESH_TOKEN_KEY, TOKEN_KEY } from "@/const/global";
 import * as SecureStore from "expo-secure-store";
 
 import { Platform } from "react-native";
+
+export interface AuthResponse {
+  token: string;
+  refreshToken: string;
+}
 
 const getBaseUrl = () => {
   if (Platform.OS === "android") {
@@ -17,12 +22,22 @@ export const authService = {
     return await SecureStore.getItemAsync(TOKEN_KEY);
   },
 
-  async saveSessionToken(token: string): Promise<void> {
-    await SecureStore.setItemAsync(TOKEN_KEY, token);
+  async getRefreshToken(): Promise<string | null> {
+    return await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
+  },
+
+  async saveSessionToken(tokens: AuthResponse): Promise<void> {
+    await Promise.all([
+      SecureStore.setItemAsync(TOKEN_KEY, tokens.token),
+      SecureStore.setItemAsync(REFRESH_TOKEN_KEY, tokens.refreshToken),
+    ]);
   },
 
   async deleteSessionToken(): Promise<void> {
-    await SecureStore.deleteItemAsync(TOKEN_KEY);
+    await Promise.all([
+      SecureStore.deleteItemAsync(TOKEN_KEY),
+      SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY),
+    ]);
   },
 
   async requestSmsCode(phoneNumber: string): Promise<void> {
@@ -76,7 +91,7 @@ export const authService = {
   async validateSmsCode(
     phoneNumber: string,
     validationCode: string,
-  ): Promise<string> {
+  ): Promise<AuthResponse> {
     const response = await fetch(`${BASE_URL}/auth/validate`, {
       method: "POST",
       headers: {
@@ -95,6 +110,24 @@ export const authService = {
     }
 
     const data = await response.json();
-    return data.token;
+    return data;
+  },
+
+  async logout(refreshToken: string): Promise<void> {
+    const response = await fetch(`${BASE_URL}/auth/logout`, {
+      method: "POST",
+      headers: {
+        accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        refreshToken: refreshToken,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "Failed to logout");
+    }
   },
 };

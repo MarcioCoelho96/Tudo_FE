@@ -11,7 +11,7 @@ import {
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
-  logout: () => Promise<void>;
+  logout: (refreshToken: string) => Promise<void>;
   login: (phoneNumber: string, validationCode: string) => Promise<void>;
 }
 
@@ -50,17 +50,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const login = async (phoneNumber: string, validationCode: string) => {
-    const token = await authService.validateSmsCode(
-      phoneNumber,
-      validationCode,
-    );
+    const data = await authService.validateSmsCode(phoneNumber, validationCode);
 
-    await authService.saveSessionToken(token);
+    await authService.saveSessionToken(data);
 
     setIsAuthenticated(true);
   };
 
-  const logout = async () => {
+  const logout = async (refreshToken: string) => {
+    await authService.logout(refreshToken);
     await authService.deleteSessionToken();
     setIsAuthenticated(false);
   };

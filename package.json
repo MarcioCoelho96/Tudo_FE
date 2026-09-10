@@ -58,6 +58,7 @@
     "eslint": "^9.25.0",
     "eslint-config-expo": "~57.0.2",
     "eslint-import-resolver-typescript": "^4.4.5",
+    "reactotron-react-native": "^5.3.1",
     "typescript": "~6.0.3"
   },
   "private": true

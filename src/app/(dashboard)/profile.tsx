@@ -1,8 +1,8 @@
 import { useUserStore } from "@/store/userStore/userStore.store";
 import { colors } from "@/styles/global";
 import { StyleSheet, Text, View } from "react-native";
-import BackgroundImage from "../components/backgroundImage";
-import DashboardHeader from "../components/dashboardHeader";
+import { BackgroundImage } from "../components/backgroundImage";
+import { DashboardHeader } from "../components/dashboardHeader";
 
 export default function ProfileScreen() {
   const resources = {

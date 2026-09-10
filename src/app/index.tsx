@@ -1,6 +1,9 @@
 import { colors } from "@/styles/global";
-import React from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
+
+if (__DEV__) {
+  import("../../ReactotronConfig");
+}
 
 export default function Index() {
   // The layout's NavigateGate will handle the redirection automatically
