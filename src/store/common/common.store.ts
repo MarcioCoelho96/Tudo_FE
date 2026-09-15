@@ -3,20 +3,27 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 export interface CommonState {
-  refreshToken: string | null;
+  refreshToken: string | undefined;
+  categorySelected: string | undefined;
 }
 
 export interface CommonAction {
-  setRefreshToken: (refreshToken: string | null) => void;
+  setRefreshToken: (refreshToken: string | undefined) => void;
+  setCategorySelected: (category: string | undefined) => void;
 }
 
+const initialState = {
+  refreshToken: undefined,
+  categorySelected: undefined,
+};
+
 export interface CommonStore extends CommonState, CommonAction {}
-export const useUserStore = create<CommonStore>()(
+export const useCommonStore = create<CommonStore>()(
   persist(
     (set) => ({
-      refreshToken: null,
-
+      ...initialState,
       setRefreshToken: (refreshToken) => set({ refreshToken }),
+      setCategorySelected: (category) => set({ categorySelected: category }),
     }),
     {
       name: "user-storage",

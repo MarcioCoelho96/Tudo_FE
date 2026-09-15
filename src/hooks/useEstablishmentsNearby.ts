@@ -1,13 +1,13 @@
-import { Establishment, ServiceType } from "@/services/establishmentsServices";
+import { EstablishmentDto } from "@/services/establishmentsServices";
 import { useUserStore } from "@/store/userStore/userStore.store";
 import { AddressData } from "@/store/userStore/userStore.types";
 import { useState } from "react";
 import { Region } from "react-native-maps";
-import { DashboardService } from "../services";
+import { DashboardServices } from "../services";
 
 // Define what this custom hook will return to your UI component
 interface UseEstablishmentsReturn {
-  establishments: Establishment[];
+  establishments: EstablishmentDto[];
   isLoading: boolean;
   error: Error | null;
   fetchEstablishmentsNearby: (
@@ -17,7 +17,7 @@ interface UseEstablishmentsReturn {
 }
 
 export const useEstablishmentsNearby = (): UseEstablishmentsReturn => {
-  const [establishments, setEstablishments] = useState<Establishment[]>([]);
+  const [establishments, setEstablishments] = useState<EstablishmentDto[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -30,12 +30,11 @@ export const useEstablishmentsNearby = (): UseEstablishmentsReturn => {
   ) => {
     try {
       setIsLoading(true);
-      const data = await DashboardService.getEstablishmentsNearby({
+      const data = await DashboardServices.getEstablishmentsNearby({
         address: address?.formattedAddress,
         lat: location?.latitude,
         lon: location?.longitude,
         radius: 100,
-        type: ServiceType.CAFE,
       });
       setEstablishments(data);
     } catch (err) {
