@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DashboardService } from "../services";
+import { DashboardServices } from "../services";
 import { Category } from "../services/categoryService"; // Import the type from your service file
 
 // Define what this custom hook will return to your UI component
@@ -18,7 +18,7 @@ export const useCategories = (): UseCategoriesReturn => {
     const fetchCategories = async () => {
       try {
         setIsLoading(true);
-        const data = await DashboardService.getCategories();
+        const data = await DashboardServices.getCategories();
         setCategories(data);
       } catch (err) {
         // Cast or wrap the caught error so it matches the Error type

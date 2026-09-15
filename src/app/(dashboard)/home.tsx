@@ -1,6 +1,6 @@
 import { Paths } from "@/const/global";
 import { useCategories } from "@/hooks/useCategories";
-import { useEstablishmentsNearby } from "@/hooks/useEstablishmentsNearby";
+import { useCommonStore } from "@/store/common/common.store";
 import { useUserStore } from "@/store/userStore/userStore.store";
 import { colors } from "@/styles/global";
 import { Image } from "expo-image";
@@ -26,13 +26,11 @@ export default function HomeScreen() {
 
   const setLocation = useUserStore((state) => state.setLocation);
   const setAddress = useUserStore((state) => state.setAddress);
+  const setCategorySelected = useCommonStore(
+    (state) => state.setCategorySelected,
+  );
 
   const address = useUserStore((state) => state.address);
-
-  const { establishments, fetchEstablishmentsNearby } =
-    useEstablishmentsNearby();
-
-  console.log("here", establishments);
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -72,7 +70,6 @@ export default function HomeScreen() {
           formattedAddress: `${firstResult.streetNumber ? firstResult.streetNumber + " " : ""}${firstResult.street || ""}, ${firstResult.city || ""}`,
         };
         setAddress(address);
-        fetchEstablishmentsNearby(address, currentCoords);
       }
     }
 
@@ -95,13 +92,10 @@ export default function HomeScreen() {
     );
   }
   const handleCategoryPress = (categoryId: string) => {
-    if (categoryId === "2") {
-      router.push(Paths.restaurantSearch);
-    }
+    console.log("here", categoryId);
+    setCategorySelected(categoryId);
+    router.push(Paths.restaurantSearch);
   };
-
-  const displayAddress =
-    address?.formattedAddress || "Rua Nova da Telha, nº261, 482...";
 
   return (
     <View style={styles.container}>
@@ -191,14 +185,22 @@ export default function HomeScreen() {
       </View>
       <ScrollView
         contentContainerStyle={{
-          paddingLeft: 20,
+          justifyContent: "center",
+          alignItems: "center",
           paddingTop: 10,
-          paddingBottom: 110,
-          gap: 21,
+          paddingBottom: 180,
+          gap: 20,
         }}
+        scrollEnabled
       >
         {categories.map((category) => {
-          return <ServiceCard key={category.key} category={category.label} />;
+          return (
+            <ServiceCard
+              key={category.key}
+              category={category.label}
+              handleOnPress={() => handleCategoryPress(category.key)}
+            />
+          );
         })}
       </ScrollView>
     </View>
